@@ -1,22 +1,27 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product, CartItem, Order } from '../types';
+import { Product, CartItem, Order, WatchlistItem } from '../types';
 import { FREE_SHIPPING_THRESHOLD } from '../constants';
 
 interface ShopContextType {
   cart: CartItem[];
-  wishlist: string[]; // Product IDs
+  wishlist: WatchlistItem[]; 
   addToCart: (product: Product, selectedSize: string, quantity: number) => void;
   removeFromCart: (productId: string, selectedSize: string) => void;
   updateQuantity: (productId: string, selectedSize: string, quantity: number) => void;
+  
+  // New Watchlist methods
   toggleWishlist: (productId: string) => void;
+  isInWishlist: (productId: string) => boolean;
+  updateWishlistPreferences: (productId: string, prefs: Partial<WatchlistItem['preferences']>) => void;
+  
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
   shippingDiff: number;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
-  notify: (message: string, type?: 'success' | 'error') => void;
-  notification: { message: string; type: 'success' | 'error' } | null;
+  notify: (message: string, type?: 'success' | 'error' | 'info') => void;
+  notification: { message: string; type: 'success' | 'error' | 'info' } | null;
   orders: Order[];
   placeOrder: (order: Order) => void;
 }
@@ -25,9 +30,9 @@ const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [wishlist, setWishlist] = useState<WatchlistItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
 
   const addToCart = (product: Product, selectedSize: string, quantity: number) => {
@@ -59,15 +64,33 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   };
 
+  const isInWishlist = (productId: string) => {
+    return wishlist.some(item => item.productId === productId);
+  };
+
   const toggleWishlist = (productId: string) => {
     setWishlist((prev) => {
-      if (prev.includes(productId)) {
-        notify('Removed from wishlist', 'success');
-        return prev.filter((id) => id !== productId);
+      if (prev.some(item => item.productId === productId)) {
+        notify('Removed from watchlist', 'info');
+        return prev.filter((item) => item.productId !== productId);
       }
-      notify('Added to wishlist', 'success');
-      return [...prev, productId];
+      notify('Added to watchlist', 'success');
+      return [...prev, {
+        productId,
+        addedAt: new Date().toISOString(),
+        preferences: { priceDrop: true, backInStock: true, onSale: true }
+      }];
     });
+  };
+
+  const updateWishlistPreferences = (productId: string, prefs: Partial<WatchlistItem['preferences']>) => {
+    setWishlist(prev => prev.map(item => {
+      if (item.productId === productId) {
+        return { ...item, preferences: { ...item.preferences, ...prefs } };
+      }
+      return item;
+    }));
+    notify('Alert preferences updated', 'success');
   };
 
   const clearCart = () => setCart([]);
@@ -77,7 +100,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     clearCart();
   };
 
-  const notify = (message: string, type: 'success' | 'error' = 'success') => {
+  const notify = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
@@ -95,6 +118,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         removeFromCart,
         updateQuantity,
         toggleWishlist,
+        isInWishlist,
+        updateWishlistPreferences,
         clearCart,
         cartTotal,
         cartCount,

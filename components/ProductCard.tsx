@@ -10,13 +10,12 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addToCart, toggleWishlist, wishlist } = useShop();
-  const isWishlisted = wishlist.includes(product.id);
+  const { addToCart, toggleWishlist, isInWishlist } = useShop();
+  const isWishlisted = isInWishlist(product.id);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Default to first size
     if(product.sizes.length > 0) {
         addToCart(product, product.sizes[0], 1);
     }
@@ -44,14 +43,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           />
         )}
         
-        {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {product.isNew && <span className="bg-white/90 backdrop-blur text-xs font-semibold px-2 py-1 uppercase tracking-wider text-teal">New</span>}
           {product.isSale && <span className="bg-amber text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">Sale</span>}
           {!product.inStock && <span className="bg-gray-800 text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">Sold Out</span>}
         </div>
 
-        {/* Quick Actions */}
         <div className="absolute right-3 top-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 flex flex-col gap-2">
            <button 
              onClick={handleWishlist}
@@ -61,7 +58,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
            </button>
         </div>
 
-        {/* Quick Add Button Mobile/Desktop */}
         <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
              {product.inStock ? (
                 <Button 

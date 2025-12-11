@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, User, Menu, X, Heart } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import SearchBar from './Search/SearchBar';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,7 +18,6 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
@@ -27,7 +27,7 @@ const Header: React.FC = () => {
     { name: 'Collections', path: '/shop?filter=collections' },
     { name: 'Events', path: '/events' },
     { name: 'Lookbook', path: '/lookbook' },
-    { name: 'Bespoke', path: '/bespoke' }, // Placeholder
+    { name: 'Bespoke', path: '/bespoke' }, 
   ];
 
   return (
@@ -37,9 +37,8 @@ const Header: React.FC = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           
-          {/* Mobile Menu Button */}
           <button 
             className="lg:hidden p-2 -ml-2 text-text-body"
             onClick={() => setIsMobileMenuOpen(true)}
@@ -47,41 +46,49 @@ const Header: React.FC = () => {
             <Menu size={24} />
           </button>
 
-          {/* Logo */}
-          <Link to="/" className="flex-shrink-0 flex items-center justify-center lg:justify-start flex-1 lg:flex-none">
+          <Link to="/" className="flex-shrink-0 flex items-center">
             <span className={`font-serif text-2xl md:text-3xl font-bold tracking-tight text-text-body transition-colors ${isScrolled ? 'text-terracotta' : ''}`}>
               Vinayka<span className="font-light">Rugs</span>
             </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-8 mx-8">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                to={link.path} 
-                className="text-sm uppercase tracking-widest font-medium text-text-body hover:text-terracotta transition-colors relative group"
-              >
-                {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-terracotta transition-all group-hover:w-full"></span>
-              </Link>
-            ))}
-          </nav>
+          {/* Desktop Nav & Search */}
+          <div className="hidden lg:flex flex-1 items-center justify-between ml-8 gap-8">
+            <nav className="flex items-center gap-6 xl:gap-8">
+                {navLinks.map((link) => (
+                <Link 
+                    key={link.name} 
+                    to={link.path} 
+                    className="text-sm uppercase tracking-widest font-medium text-text-body hover:text-terracotta transition-colors relative group whitespace-nowrap"
+                >
+                    {link.name}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-terracotta transition-all group-hover:w-full"></span>
+                </Link>
+                ))}
+            </nav>
+            {/* Global Search Bar */}
+            <div className="flex-1 max-w-sm">
+                <SearchBar />
+            </div>
+          </div>
 
           {/* Icons */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-text-body hover:text-terracotta transition-colors hidden sm:block">
-              <Search size={20} />
-            </button>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="lg:hidden">
+                 {/* Mobile simple search icon trigger could go here, but for now assuming mobile uses menu search or we add a toggle */}
+            </div>
+
             <Link to="/account" className="p-2 text-text-body hover:text-terracotta transition-colors hidden sm:block">
               <User size={20} />
             </Link>
-             <button className="p-2 text-text-body hover:text-terracotta transition-colors relative hidden sm:block">
+             
+            <Link to="/watchlist" className="p-2 text-text-body hover:text-terracotta transition-colors relative">
               <Heart size={20} />
               {wishlist.length > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+                <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full ring-2 ring-white"></span>
               )}
-            </button>
+            </Link>
+
             <button 
               className="p-2 text-text-body hover:text-terracotta transition-colors relative"
               onClick={() => setIsCartOpen(true)}
@@ -101,11 +108,16 @@ const Header: React.FC = () => {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="absolute inset-y-0 left-0 w-64 bg-white shadow-xl flex flex-col p-6 animate-fade-in">
-            <div className="flex justify-between items-center mb-8">
+          <div className="absolute inset-y-0 left-0 w-80 bg-white shadow-xl flex flex-col p-6 animate-fade-in">
+            <div className="flex justify-between items-center mb-6">
                <span className="font-serif text-xl font-bold">Menu</span>
                <button onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
             </div>
+            
+            <div className="mb-6">
+                <SearchBar />
+            </div>
+
             <nav className="flex flex-col gap-6">
               {navLinks.map((link) => (
                 <Link 
@@ -120,8 +132,8 @@ const Header: React.FC = () => {
                 <Link to="/account" className="flex items-center gap-2 text-text-muted">
                     <User size={18} /> My Account
                 </Link>
-                 <Link to="/search" className="flex items-center gap-2 text-text-muted">
-                    <Search size={18} /> Search
+                <Link to="/watchlist" className="flex items-center gap-2 text-text-muted">
+                    <Heart size={18} /> Watchlist ({wishlist.length})
                 </Link>
               </div>
             </nav>

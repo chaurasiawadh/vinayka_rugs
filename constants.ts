@@ -127,5 +127,16 @@ export const MOCK_PRODUCTS: Product[] = [
   }
 ];
 
+export const MOCK_BLOGS = [
+  { id: 'b1', title: 'The Art of Hand-Knotting', type: 'blog', url: '/blog/art-of-hand-knotting' },
+  { id: 'b2', title: 'Choosing the Right Size Rug', type: 'blog', url: '/blog/guide-rug-size' },
+  { id: 'b3', title: 'Care Instructions for Silk Rugs', type: 'blog', url: '/care' }
+];
+
+export const MOCK_EVENTS = [
+  { id: 'e1', title: 'India Design ID 2025', type: 'event', url: '/events' },
+  { id: 'e2', title: 'Maison & Objet Paris', type: 'event', url: '/events' }
+];
+
 export const FREE_SHIPPING_THRESHOLD = 50000;
 export const SHIPPING_COST = 2500;

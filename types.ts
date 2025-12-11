@@ -71,3 +71,40 @@ export interface Appointment {
   consent: boolean;
   createdAt: string;
 }
+
+// --- NEW TYPES FOR SEARCH & WATCHLIST ---
+
+export interface WatchlistItem {
+  productId: string;
+  addedAt: string;
+  preferences: {
+    priceDrop: boolean;
+    backInStock: boolean;
+    onSale: boolean;
+  };
+}
+
+export interface SearchSuggestion {
+  id: string;
+  title: string;
+  type: 'product' | 'collection' | 'event' | 'blog' | 'page';
+  image?: string;
+  url: string;
+  subtitle?: string;
+}
+
+export interface Facet {
+  id: string; // e.g., 'material'
+  label: string; // e.g., 'Material'
+  options: {
+    value: string;
+    label: string;
+    count: number;
+  }[];
+}
+
+export interface SearchResult {
+  products: Product[];
+  facets: Facet[];
+  totalCount: number;
+}

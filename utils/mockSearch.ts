@@ -1,0 +1,111 @@
+import { MOCK_PRODUCTS, MOCK_BLOGS, MOCK_EVENTS } from '../constants';
+import { Product, SearchResult, SearchSuggestion, Facet } from '../types';
+
+// Simulate indexing fields
+const searchIndex = [
+  ...MOCK_PRODUCTS.map(p => ({
+    id: p.id,
+    title: p.name,
+    type: 'product' as const,
+    subtitle: `₹${p.price.toLocaleString('en-IN')}`,
+    image: p.images[0],
+    url: `/product/${p.id}`,
+    keywords: `${p.name} ${p.category} ${p.collection} ${p.material} ${p.colors?.join(' ')}`.toLowerCase(),
+    obj: p
+  })),
+  ...MOCK_BLOGS.map(b => ({
+    ...b,
+    type: 'blog' as const,
+    keywords: b.title.toLowerCase(),
+    subtitle: 'Editorial',
+    image: undefined,
+    obj: null
+  })),
+  ...MOCK_EVENTS.map(e => ({
+    ...e,
+    type: 'event' as const,
+    keywords: e.title.toLowerCase(),
+    subtitle: 'Exhibition',
+    image: undefined,
+    obj: null
+  }))
+];
+
+export const mockAutocomplete = (query: string): SearchSuggestion[] => {
+  if (!query || query.length < 2) return [];
+  const lowerQ = query.toLowerCase();
+  
+  return searchIndex
+    .filter(item => item.keywords.includes(lowerQ))
+    .slice(0, 5)
+    .map(({ id, title, type, image, url, subtitle }) => ({ id, title, type, image, url, subtitle }));
+};
+
+export const mockSearchProducts = (
+  query: string, 
+  filters: Record<string, string[]> = {},
+  sort: string = 'relevance'
+): SearchResult => {
+  let results = MOCK_PRODUCTS;
+
+  // 1. Text Search
+  if (query) {
+    const lowerQ = query.toLowerCase();
+    results = results.filter(p => 
+      p.name.toLowerCase().includes(lowerQ) || 
+      p.category.toLowerCase().includes(lowerQ) ||
+      p.collection.toLowerCase().includes(lowerQ) ||
+      p.material.toLowerCase().includes(lowerQ)
+    );
+  }
+
+  // 2. Filters
+  if (filters.category?.length) {
+    results = results.filter(p => filters.category.includes(p.category));
+  }
+  if (filters.material?.length) {
+    results = results.filter(p => filters.material.includes(p.material));
+  }
+  if (filters.collection?.length) {
+    results = results.filter(p => filters.collection.includes(p.collection));
+  }
+
+  // 3. Facets Calculation (based on current filtered set)
+  const calculateFacet = (key: keyof Product, label: string): Facet => {
+    const counts: Record<string, number> = {};
+    results.forEach(p => {
+      const val = p[key];
+      if (typeof val === 'string') {
+        counts[val] = (counts[val] || 0) + 1;
+      }
+    });
+    return {
+      id: key as string,
+      label,
+      options: Object.entries(counts).map(([value, count]) => ({ value, label: value, count }))
+    };
+  };
+
+  const facets: Facet[] = [
+    calculateFacet('category', 'Category'),
+    calculateFacet('material', 'Material'),
+    calculateFacet('collection', 'Collection')
+  ];
+
+  // 4. Sorting
+  if (sort === 'price-low-high') {
+    results.sort((a, b) => a.price - b.price);
+  } else if (sort === 'price-high-low') {
+    results.sort((a, b) => b.price - a.price);
+  } else if (sort === 'newest') {
+    results.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+  } else if (sort === 'popular') {
+     results.sort((a, b) => b.rating - a.rating);
+  }
+
+  return {
+    products: results,
+    facets,
+    totalCount: results.length
+  };
+};

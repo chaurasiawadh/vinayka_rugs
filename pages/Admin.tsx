@@ -1,16 +1,21 @@
 import React from 'react';
-import { Package, ShoppingCart, Users, TrendingUp } from 'lucide-react';
+import { Package, ShoppingCart, Users, TrendingUp, Bell } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { MOCK_PRODUCTS } from '../constants';
+import Button from '../components/Button';
 
 const Admin: React.FC = () => {
-  const { orders } = useShop();
+  const { orders, notify } = useShop();
+
+  const handleTriggerNotification = () => {
+      notify('Test notification blast sent to 142 subscribers', 'success');
+  };
 
   const stats = [
     { title: 'Total Sales', value: '₹4.2M', icon: <TrendingUp size={20} className="text-success" /> },
     { title: 'Orders', value: orders.length.toString(), icon: <ShoppingCart size={20} className="text-terracotta" /> },
     { title: 'Products', value: MOCK_PRODUCTS.length.toString(), icon: <Package size={20} className="text-teal" /> },
-    { title: 'Customers', value: '1,204', icon: <Users size={20} className="text-amber" /> },
+    { title: 'Watchlist Subs', value: '1,204', icon: <Bell size={20} className="text-amber" /> },
   ];
 
   return (
@@ -62,41 +67,47 @@ const Admin: React.FC = () => {
                              <td colSpan={4} className="py-4 text-center text-text-muted">No recent orders (Place one in Checkout)</td>
                           </tr>
                        )}
-                       {/* Mock Rows */}
                        <tr className="opacity-60">
                           <td className="py-4 font-medium">ORD-9921</td>
                           <td className="py-4">Rajesh Kumar</td>
                           <td className="py-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium uppercase">Shipped</span></td>
                           <td className="py-4">₹125,000</td>
                        </tr>
-                       <tr className="opacity-60">
-                          <td className="py-4 font-medium">ORD-9920</td>
-                          <td className="py-4">Sarah Jenkins</td>
-                          <td className="py-4"><span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium uppercase">Delivered</span></td>
-                          <td className="py-4">₹45,000</td>
-                       </tr>
                     </tbody>
                  </table>
               </div>
            </div>
 
-           {/* Inventory Alert */}
-           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="font-serif text-xl mb-6">Low Stock Alert</h2>
-              <ul className="space-y-4">
-                 {MOCK_PRODUCTS.slice(0, 3).map(p => (
-                    <li key={p.id} className="flex gap-4 items-center">
-                       <img src={p.images[0]} className="w-12 h-12 rounded object-cover" alt={p.name} />
-                       <div>
-                          <p className="font-medium text-sm">{p.name}</p>
-                          <p className="text-xs text-error">Only 2 left in stock</p>
-                       </div>
-                    </li>
-                 ))}
-              </ul>
-              <button className="w-full mt-6 py-2 text-sm text-terracotta border border-terracotta rounded-lg hover:bg-terracotta hover:text-white transition-colors">
-                 Manage Inventory
-              </button>
+           {/* Watchlist & Inventory Actions */}
+           <div className="space-y-8">
+               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 className="font-serif text-xl mb-4">Watchlist Campaigns</h2>
+                    <p className="text-sm text-text-muted mb-4">Notify users about price drops on 'Aether Mist'.</p>
+                    <div className="bg-amber/10 text-amber-800 p-3 rounded text-sm mb-4">
+                        142 users waiting for price drop on Aether Mist.
+                    </div>
+                    <Button fullWidth size="sm" onClick={handleTriggerNotification}>
+                        Send "Price Drop" Alert
+                    </Button>
+               </div>
+
+               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <h2 className="font-serif text-xl mb-4">Low Stock Alert</h2>
+                  <ul className="space-y-4">
+                     {MOCK_PRODUCTS.slice(0, 3).map(p => (
+                        <li key={p.id} className="flex gap-4 items-center">
+                           <img src={p.images[0]} className="w-12 h-12 rounded object-cover" alt={p.name} />
+                           <div>
+                              <p className="font-medium text-sm">{p.name}</p>
+                              <p className="text-xs text-error">Only 2 left in stock</p>
+                           </div>
+                        </li>
+                     ))}
+                  </ul>
+                  <button className="w-full mt-6 py-2 text-sm text-terracotta border border-terracotta rounded-lg hover:bg-terracotta hover:text-white transition-colors">
+                     Restock Now
+                  </button>
+               </div>
            </div>
         </div>
       </div>

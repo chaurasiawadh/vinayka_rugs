@@ -7,10 +7,11 @@ import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Events from './pages/Events';
 import Admin from './pages/Admin';
+import SearchResults from './pages/SearchResults';
+import Watchlist from './pages/Watchlist';
 import { ShopProvider } from './context/ShopContext';
 
 const ScrollToTop = () => {
-    // Boilerplate for ScrollRestoration in RRv6 inside Router
     const { pathname } = React.useMemo(() => window.location, []); 
     React.useEffect(() => {
         window.scrollTo(0, 0);
@@ -30,6 +31,8 @@ const App: React.FC = () => {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/search" element={<SearchResults />} />
+            <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<div className="p-20 text-center">Page Not Found</div>} />
           </Routes>
