@@ -1,11 +1,11 @@
 import React from 'react';
-import { Package, ShoppingCart, Users, TrendingUp, Bell } from 'lucide-react';
+import { Package, ShoppingCart, Users, TrendingUp, Bell, PenTool } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { MOCK_PRODUCTS } from '../constants';
 import Button from '../components/Button';
 
 const Admin: React.FC = () => {
-  const { orders, notify } = useShop();
+  const { orders, notify, bespokeRequests } = useShop();
 
   const handleTriggerNotification = () => {
       notify('Test notification blast sent to 142 subscribers', 'success');
@@ -14,7 +14,7 @@ const Admin: React.FC = () => {
   const stats = [
     { title: 'Total Sales', value: '₹4.2M', icon: <TrendingUp size={20} className="text-success" /> },
     { title: 'Orders', value: orders.length.toString(), icon: <ShoppingCart size={20} className="text-terracotta" /> },
-    { title: 'Products', value: MOCK_PRODUCTS.length.toString(), icon: <Package size={20} className="text-teal" /> },
+    { title: 'Bespoke Requests', value: bespokeRequests.length.toString(), icon: <PenTool size={20} className="text-teal" /> },
     { title: 'Watchlist Subs', value: '1,204', icon: <Bell size={20} className="text-amber" /> },
   ];
 
@@ -40,42 +40,78 @@ const Admin: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
            {/* Recent Orders */}
-           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="font-serif text-xl mb-6">Recent Orders</h2>
-              <div className="overflow-x-auto">
-                 <table className="w-full text-left text-sm">
-                    <thead>
-                       <tr className="border-b border-gray-100 text-text-muted">
-                          <th className="pb-3 font-medium">Order ID</th>
-                          <th className="pb-3 font-medium">Customer</th>
-                          <th className="pb-3 font-medium">Status</th>
-                          <th className="pb-3 font-medium">Total</th>
-                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                       {orders.length > 0 ? orders.map(order => (
-                          <tr key={order.id}>
-                             <td className="py-4 font-medium">{order.id}</td>
-                             <td className="py-4">{order.shippingAddress.fullName}</td>
-                             <td className="py-4">
-                                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium uppercase">{order.status}</span>
-                             </td>
-                             <td className="py-4">₹{order.total.toLocaleString('en-IN')}</td>
-                          </tr>
-                       )) : (
-                          <tr>
-                             <td colSpan={4} className="py-4 text-center text-text-muted">No recent orders (Place one in Checkout)</td>
-                          </tr>
-                       )}
-                       <tr className="opacity-60">
-                          <td className="py-4 font-medium">ORD-9921</td>
-                          <td className="py-4">Rajesh Kumar</td>
-                          <td className="py-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium uppercase">Shipped</span></td>
-                          <td className="py-4">₹125,000</td>
-                       </tr>
-                    </tbody>
-                 </table>
-              </div>
+           <div className="lg:col-span-2 space-y-8">
+               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <h2 className="font-serif text-xl mb-6">Recent Orders</h2>
+                  <div className="overflow-x-auto">
+                     <table className="w-full text-left text-sm">
+                        <thead>
+                           <tr className="border-b border-gray-100 text-text-muted">
+                              <th className="pb-3 font-medium">Order ID</th>
+                              <th className="pb-3 font-medium">Customer</th>
+                              <th className="pb-3 font-medium">Status</th>
+                              <th className="pb-3 font-medium">Total</th>
+                           </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                           {orders.length > 0 ? orders.map(order => (
+                              <tr key={order.id}>
+                                 <td className="py-4 font-medium">{order.id}</td>
+                                 <td className="py-4">{order.shippingAddress.fullName}</td>
+                                 <td className="py-4">
+                                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium uppercase">{order.status}</span>
+                                 </td>
+                                 <td className="py-4">₹{order.total.toLocaleString('en-IN')}</td>
+                              </tr>
+                           )) : (
+                              <tr>
+                                 <td colSpan={4} className="py-4 text-center text-text-muted">No recent orders (Place one in Checkout)</td>
+                              </tr>
+                           )}
+                           <tr className="opacity-60">
+                              <td className="py-4 font-medium">ORD-9921</td>
+                              <td className="py-4">Rajesh Kumar</td>
+                              <td className="py-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium uppercase">Shipped</span></td>
+                              <td className="py-4">₹125,000</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+
+               {/* Bespoke Requests List */}
+               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <h2 className="font-serif text-xl mb-6">Bespoke Inquiries</h2>
+                  <div className="overflow-x-auto">
+                     <table className="w-full text-left text-sm">
+                        <thead>
+                           <tr className="border-b border-gray-100 text-text-muted">
+                              <th className="pb-3 font-medium">Client</th>
+                              <th className="pb-3 font-medium">Method</th>
+                              <th className="pb-3 font-medium">Req Type</th>
+                              <th className="pb-3 font-medium">Source</th>
+                           </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                           {bespokeRequests.length > 0 ? bespokeRequests.map((req, i) => (
+                              <tr key={i}>
+                                 <td className="py-4 font-medium">
+                                     {req.name}<br/>
+                                     <span className="text-xs text-text-muted">{req.phone}</span>
+                                 </td>
+                                 <td className="py-4">{req.communicationMethod}</td>
+                                 <td className="py-4">{req.rugType}</td>
+                                 <td className="py-4 text-xs text-text-muted">{req.source}</td>
+                              </tr>
+                           )) : (
+                              <tr>
+                                 <td colSpan={4} className="py-4 text-center text-text-muted">No pending bespoke requests.</td>
+                              </tr>
+                           )}
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
            </div>
 
            {/* Watchlist & Inventory Actions */}

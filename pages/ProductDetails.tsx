@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Truck, ShieldCheck, RefreshCcw, Info } from 'lucide-react';
+import { Star, Truck, ShieldCheck, RefreshCcw, Info, PenTool } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../constants';
 import { useShop } from '../context/ShopContext';
 import Button from '../components/Button';
@@ -8,7 +8,7 @@ import Button from '../components/Button';
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const product = MOCK_PRODUCTS.find(p => p.id === id);
-  const { addToCart } = useShop();
+  const { addToCart, openBespokeModal } = useShop();
 
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [activeImage, setActiveImage] = useState<string>('');
@@ -88,7 +88,7 @@ const ProductDetails: React.FC = () => {
              {/* Actions */}
              <div className="pt-4 border-t border-gray-100 space-y-4">
                 {product.inStock ? (
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                      <Button 
                        size="lg" 
                        fullWidth 
@@ -96,8 +96,14 @@ const ProductDetails: React.FC = () => {
                      >
                        Add to Cart
                      </Button>
-                     <Button variant="outline" size="lg" className="px-6">
-                        <Star size={20} />
+                     <Button 
+                        variant="outline" 
+                        size="lg" 
+                        fullWidth
+                        onClick={() => openBespokeModal(`Product Page: ${product.name}`)}
+                        className="flex items-center justify-center gap-2"
+                     >
+                        <PenTool size={16} /> Customize Design
                      </Button>
                   </div>
                 ) : (
@@ -107,6 +113,15 @@ const ProductDetails: React.FC = () => {
                        <input type="email" placeholder="Enter your email" className="flex-1 border border-gray-300 rounded-lg px-4 py-2" />
                        <Button>Notify Me</Button>
                      </div>
+                     <Button 
+                        variant="outline" 
+                        size="md" 
+                        fullWidth
+                        onClick={() => openBespokeModal(`Product Page (OOS): ${product.name}`)}
+                        className="mt-2"
+                     >
+                        Request Custom Order for this Design
+                     </Button>
                   </div>
                 )}
                 <div className="flex items-center justify-center gap-2 text-sm text-text-muted bg-cream p-3 rounded-lg">

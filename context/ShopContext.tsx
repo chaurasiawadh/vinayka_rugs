@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product, CartItem, Order, WatchlistItem } from '../types';
+import { Product, CartItem, Order, WatchlistItem, BespokeRequest } from '../types';
 import { FREE_SHIPPING_THRESHOLD } from '../constants';
 
 interface ShopContextType {
   cart: CartItem[];
   wishlist: WatchlistItem[]; 
+  orders: Order[];
+  bespokeRequests: BespokeRequest[];
+  
   addToCart: (product: Product, selectedSize: string, quantity: number) => void;
   removeFromCart: (productId: string, selectedSize: string) => void;
   updateQuantity: (productId: string, selectedSize: string, quantity: number) => void;
@@ -15,15 +18,24 @@ interface ShopContextType {
   updateWishlistPreferences: (productId: string, prefs: Partial<WatchlistItem['preferences']>) => void;
   
   clearCart: () => void;
+  placeOrder: (order: Order) => void;
+  submitBespokeRequest: (request: BespokeRequest) => void;
+
   cartTotal: number;
   cartCount: number;
   shippingDiff: number;
+  
+  // UI States
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
-  notify: (message: string, type?: 'success' | 'error' | 'info') => void;
+  
+  isBespokeOpen: boolean;
+  openBespokeModal: (source?: string) => void;
+  closeBespokeModal: () => void;
+  bespokeSource: string; // Tracks where the user clicked "Bespoke"
+
   notification: { message: string; type: 'success' | 'error' | 'info' } | null;
-  orders: Order[];
-  placeOrder: (order: Order) => void;
+  notify: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -31,9 +43,14 @@ const ShopContext = createContext<ShopContextType | undefined>(undefined);
 export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WatchlistItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [bespokeRequests, setBespokeRequests] = useState<BespokeRequest[]>([]);
+  
+  // UI State
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isBespokeOpen, setIsBespokeOpen] = useState(false);
+  const [bespokeSource, setBespokeSource] = useState('');
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const addToCart = (product: Product, selectedSize: string, quantity: number) => {
     setCart((prev) => {
@@ -100,6 +117,20 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     clearCart();
   };
 
+  const submitBespokeRequest = (request: BespokeRequest) => {
+    setBespokeRequests(prev => [request, ...prev]);
+  };
+
+  const openBespokeModal = (source: string = 'General') => {
+    setBespokeSource(source);
+    setIsBespokeOpen(true);
+  };
+
+  const closeBespokeModal = () => {
+    setIsBespokeOpen(false);
+    setBespokeSource('');
+  };
+
   const notify = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
@@ -114,6 +145,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         cart,
         wishlist,
+        orders,
+        bespokeRequests,
         addToCart,
         removeFromCart,
         updateQuantity,
@@ -121,15 +154,19 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isInWishlist,
         updateWishlistPreferences,
         clearCart,
+        placeOrder,
+        submitBespokeRequest,
         cartTotal,
         cartCount,
         shippingDiff,
         isCartOpen,
         setIsCartOpen,
+        isBespokeOpen,
+        openBespokeModal,
+        closeBespokeModal,
+        bespokeSource,
         notify,
         notification,
-        orders,
-        placeOrder
       }}
     >
       {children}

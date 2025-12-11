@@ -72,6 +72,23 @@ export interface Appointment {
   createdAt: string;
 }
 
+export interface BespokeRequest {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  communicationMethod: 'WhatsApp' | 'Email' | 'Call';
+  preferredDate: string;
+  rugType: string;
+  material: string;
+  size: string;
+  budget: string;
+  colors: string[];
+  message?: string;
+  source?: string; // e.g., "Product Page: Aether Mist"
+  createdAt: string;
+}
+
 // --- NEW TYPES FOR SEARCH & WATCHLIST ---
 
 export interface WatchlistItem {

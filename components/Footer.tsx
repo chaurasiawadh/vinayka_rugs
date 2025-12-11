@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-serif mb-6">Explore</h3>
             <ul className="space-y-3 text-sm text-gray-400">
               <li><Link to="/shop" className="hover:text-terracotta transition-colors">All Rugs</Link></li>
-              <li><Link to="/shop?cat=Modern" className="hover:text-terracotta transition-colors">Modern Collection</Link></li>
+              <li><Link to="/bespoke" className="hover:text-terracotta transition-colors">Bespoke Services</Link></li>
               <li><Link to="/shop?cat=Traditional" className="hover:text-terracotta transition-colors">Traditional & Vintage</Link></li>
               <li><Link to="/events" className="hover:text-terracotta transition-colors">Events & Exhibitions</Link></li>
               <li><Link to="/lookbook" className="hover:text-terracotta transition-colors">Lookbook</Link></li>

@@ -1,15 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Filter, ChevronDown, Check } from 'lucide-react';
+import { Filter, ChevronDown, Check, PenTool } from 'lucide-react';
 import { MOCK_PRODUCTS, CATEGORIES, COLLECTIONS, MATERIALS } from '../constants';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
+import { useShop } from '../context/ShopContext';
 
 const Shop: React.FC = () => {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const initialCategory = queryParams.get('cat');
   const initialCollection = queryParams.get('collection');
+  const { openBespokeModal } = useShop();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategory ? [initialCategory] : []);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
@@ -140,24 +142,40 @@ const Shop: React.FC = () => {
 
           {/* Product Grid */}
           <div className="flex-1">
-             {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                   {filteredProducts.map(product => (
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                {/* Bespoke Promo Card (Inserted at index 2) */}
+                <div className="sm:col-span-2 lg:col-span-3 bg-teal text-white rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+                    <div>
+                        <div className="flex items-center gap-2 mb-2 text-amber font-medium">
+                            <PenTool size={18} />
+                            <span className="text-sm uppercase tracking-wide">Bespoke Services</span>
+                        </div>
+                        <h3 className="font-serif text-2xl mb-1">Can't find the perfect match?</h3>
+                        <p className="text-white/80 text-sm">Customize colors, sizes, and designs to fit your space perfectly.</p>
+                    </div>
+                    <Button onClick={() => openBespokeModal('Shop Page Banner')} className="bg-white text-teal hover:bg-gray-100 border-none shrink-0">
+                        Create Custom Rug
+                    </Button>
+                </div>
+
+                {filteredProducts.length > 0 ? (
+                   filteredProducts.map(product => (
                       <ProductCard key={product.id} product={product} />
-                   ))}
-                </div>
-             ) : (
-                <div className="py-20 text-center bg-white rounded-lg border border-dashed border-gray-300">
-                   <h3 className="font-serif text-xl mb-2">No products found</h3>
-                   <p className="text-text-muted mb-6">Try adjusting your filters.</p>
-                   <Button 
-                      variant="outline" 
-                      onClick={() => { setSelectedCategories([]); setSelectedMaterials([]); }}
-                   >
-                     Clear Filters
-                   </Button>
-                </div>
-             )}
+                   ))
+                ) : (
+                   <div className="col-span-full py-20 text-center bg-white rounded-lg border border-dashed border-gray-300">
+                      <h3 className="font-serif text-xl mb-2">No products found</h3>
+                      <p className="text-text-muted mb-6">Try adjusting your filters.</p>
+                      <Button 
+                         variant="outline" 
+                         onClick={() => { setSelectedCategories([]); setSelectedMaterials([]); }}
+                      >
+                        Clear Filters
+                      </Button>
+                   </div>
+                )}
+             </div>
           </div>
         </div>
       </div>

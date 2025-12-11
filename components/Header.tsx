@@ -26,7 +26,6 @@ const Header: React.FC = () => {
     { name: 'Shop', path: '/shop' },
     { name: 'Collections', path: '/shop?filter=collections' },
     { name: 'Events', path: '/events' },
-    { name: 'Lookbook', path: '/lookbook' },
     { name: 'Bespoke', path: '/bespoke' }, 
   ];
 
@@ -74,10 +73,6 @@ const Header: React.FC = () => {
 
           {/* Icons */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <div className="lg:hidden">
-                 {/* Mobile simple search icon trigger could go here, but for now assuming mobile uses menu search or we add a toggle */}
-            </div>
-
             <Link to="/account" className="p-2 text-text-body hover:text-terracotta transition-colors hidden sm:block">
               <User size={20} />
             </Link>
@@ -135,6 +130,9 @@ const Header: React.FC = () => {
                 <Link to="/watchlist" className="flex items-center gap-2 text-text-muted">
                     <Heart size={18} /> Watchlist ({wishlist.length})
                 </Link>
+                <button onClick={() => { setIsMobileMenuOpen(false); }} className="w-full text-left bg-terracotta text-white p-3 rounded-lg text-center mt-2">
+                    Request Bespoke Design
+                </button>
               </div>
             </nav>
           </div>

@@ -4,9 +4,11 @@ import { ArrowRight, Star } from 'lucide-react';
 import { MOCK_PRODUCTS, COLLECTIONS } from '../constants';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
+import { useShop } from '../context/ShopContext';
 
 const Home: React.FC = () => {
   const featuredProducts = MOCK_PRODUCTS.slice(0, 4);
+  const { openBespokeModal } = useShop();
 
   return (
     <div className="animate-fade-in">
@@ -103,6 +105,40 @@ const Home: React.FC = () => {
              <Button variant="outline">View All Products</Button>
           </div>
         </div>
+      </section>
+
+      {/* NEW: Bespoke Section on Home */}
+      <section className="py-24 bg-white">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             <div className="bg-text-body text-white rounded-2xl overflow-hidden shadow-2xl">
+                 <div className="grid grid-cols-1 lg:grid-cols-2">
+                     <div className="p-12 lg:p-20 flex flex-col justify-center">
+                         <span className="text-terracotta uppercase tracking-widest text-sm font-bold mb-6">Bespoke Services</span>
+                         <h2 className="text-4xl md:text-5xl font-serif mb-6 leading-tight">Create a Rug That Is <br/> Uniquely Yours</h2>
+                         <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+                             From custom sizes to color matching and completely new designs, our master artisans bring your vision to life.
+                         </p>
+                         <div className="flex flex-col sm:flex-row gap-4">
+                             <Button onClick={() => openBespokeModal('Home Page Section')} className="bg-white text-text-body hover:bg-gray-100 border-none">
+                                 Start Custom Project
+                             </Button>
+                             <Link to="/bespoke">
+                                 <Button variant="outline" className="border-gray-600 text-white hover:border-white">
+                                     Learn More
+                                 </Button>
+                             </Link>
+                         </div>
+                     </div>
+                     <div className="relative h-[400px] lg:h-auto">
+                         <img 
+                            src="https://images.unsplash.com/photo-1618221639257-285627f5264c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                            className="absolute inset-0 w-full h-full object-cover" 
+                            alt="Custom Rug Design"
+                         />
+                     </div>
+                 </div>
+             </div>
+         </div>
       </section>
 
       {/* Event Promo */}
