@@ -58,3 +58,16 @@ export interface User {
   email: string;
   role: 'customer' | 'admin';
 }
+
+export interface Appointment {
+  id?: string;
+  eventName: string;
+  name: string;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+  message?: string;
+  consent: boolean;
+  createdAt: string;
+}

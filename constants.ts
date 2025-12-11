@@ -6,6 +6,12 @@ export const MATERIALS = ['Wool', 'Bamboo Silk', 'Viscose', 'Cotton', 'Jute'];
 export const CONSTRUCTIONS = ['Hand-knotted', 'Hand-tufted', 'Flat Weave'];
 export const SIZES = ['5x8 ft', '8x10 ft', '9x12 ft', '10x14 ft', 'Custom'];
 
+export const CONTACT_PHONE = '+91 9936169852';
+export const WHATSAPP_NUMBER = '919936169852';
+export const ADMIN_EMAIL = 'concierge@vinaykarugs.com';
+
+export const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1615529182904-14819c35db37?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'; // Neutral texture
+
 export const MOCK_PRODUCTS: Product[] = [
   {
     id: '1',
