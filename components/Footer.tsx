@@ -51,15 +51,15 @@ const Footer: React.FC = () => {
              <ul className="space-y-3 text-sm text-gray-400 mb-6">
                <li className="flex items-start gap-3">
                  <MapPin size={18} className="shrink-0 mt-0.5 text-terracotta" />
-                 <span>Flagship Store, Connaught Place,<br/>New Delhi, India</span>
+                 <span>Lanka BHU,<br/>Varanasi, India</span>
                </li>
                <li className="flex items-center gap-3">
                  <Phone size={18} className="text-terracotta" />
-                 <span>+91 11 2345 6789</span>
+                 <span>+91 9936169852</span>
                </li>
                <li className="flex items-center gap-3">
                  <Mail size={18} className="text-terracotta" />
-                 <span>concierge@vinaykarugs.com</span>
+                 <span>info@vinaykarugs.com</span>
                </li>
              </ul>
              <div className="relative">
@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-          <p>&copy; 2024 Vinayka Rugs. All rights reserved.</p>
+          <p>&copy; 2026 Vinayka Rugs. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
              <Link to="/privacy">Privacy Policy</Link>
              <Link to="/terms">Terms of Service</Link>
