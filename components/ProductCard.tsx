@@ -16,8 +16,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if(product.sizes.length > 0) {
-        addToCart(product, product.sizes[0], 1);
+    if (product.sizes.length > 0) {
+      addToCart(product, product.sizes[0], 1);
     }
   };
 
@@ -42,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className="absolute inset-0 object-cover w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
         )}
-        
+
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {product.isNew && <span className="bg-white/90 backdrop-blur text-xs font-semibold px-2 py-1 uppercase tracking-wider text-teal">New</span>}
           {product.isSale && <span className="bg-amber text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">Sale</span>}
@@ -50,30 +50,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         <div className="absolute right-3 top-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 flex flex-col gap-2">
-           <button 
-             onClick={handleWishlist}
-             className={`p-2 rounded-full shadow-md transition-colors ${isWishlisted ? 'bg-error text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-           >
-             <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
-           </button>
+          <button
+            onClick={handleWishlist}
+            className={`p-2 rounded-full shadow-md transition-colors ${isWishlisted ? 'bg-error text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+          >
+            <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
+          </button>
         </div>
 
         <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-             {product.inStock ? (
-                <Button 
-                    onClick={handleQuickAdd} 
-                    variant="primary" 
-                    fullWidth 
-                    size="sm" 
-                    className="shadow-lg backdrop-blur-sm bg-terracotta/90"
-                >
-                    <ShoppingBag size={16} className="mr-2" /> Quick Add
-                </Button>
-             ) : (
-                 <Button variant="ghost" fullWidth size="sm" className="bg-white/90 cursor-not-allowed">
-                     Notify Me
-                 </Button>
-             )}
+          {product.inStock ? (
+            <Button
+              onClick={handleQuickAdd}
+              variant="primary"
+              fullWidth
+              size="sm"
+              className="shadow-lg backdrop-blur-sm bg-terracotta/90"
+            >
+              <ShoppingBag size={16} className="mr-2" /> Quick Add
+            </Button>
+          ) : (
+            <Button fullWidth size="sm" className="bg-white/90 cursor-not-allowed">
+              Notify Me
+            </Button>
+          )}
         </div>
       </Link>
 
@@ -83,10 +83,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Link>
         <p className="text-sm text-text-muted mt-1 mb-2 line-clamp-1">{product.shortDescription}</p>
         <div className="flex items-center justify-between">
-           <p className="font-medium text-text-body">₹{product.price.toLocaleString('en-IN')}</p>
-           {product.sizes.length > 0 && (
-               <span className="text-xs text-text-muted">{product.sizes.length} sizes</span>
-           )}
+          <p className="font-medium text-text-body">₹{product.price.toLocaleString('en-IN')}</p>
+          {product.sizes.length > 0 && (
+            <span className="text-xs text-text-muted">{product.sizes.length} sizes</span>
+          )}
         </div>
       </div>
     </div>
