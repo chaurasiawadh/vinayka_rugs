@@ -10,6 +10,8 @@ import Admin from './pages/Admin';
 import SearchResults from './pages/SearchResults';
 import Watchlist from './pages/Watchlist';
 import Bespoke from './pages/Bespoke';
+import Contact from './pages/Contact';
+import About from './pages/About';
 import { ShopProvider } from './context/ShopContext';
 
 const ScrollToTop = () => {
@@ -35,6 +37,8 @@ const App: React.FC = () => {
             <Route path="/search" element={<SearchResults />} />
             <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/bespoke" element={<Bespoke />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<div className="p-20 text-center">Page Not Found</div>} />
           </Routes>

@@ -1,12 +1,12 @@
 import React from 'react';
-import { X, Minus, Plus, Trash2, ArrowRight } from 'lucide-react';
+import { X, Minus, Plus, Trash2, ArrowRight, PenTool } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { FREE_SHIPPING_THRESHOLD } from '../constants';
 
 const CartDrawer: React.FC = () => {
-  const { isCartOpen, setIsCartOpen, cart, updateQuantity, removeFromCart, cartTotal, shippingDiff } = useShop();
+  const { isCartOpen, setIsCartOpen, cart, updateQuantity, removeFromCart, cartTotal, shippingDiff, openBespokeModal } = useShop();
   const navigate = useNavigate();
 
   if (!isCartOpen) return null;
@@ -66,6 +66,12 @@ const CartDrawer: React.FC = () => {
               >
                 Start Shopping
               </Button>
+              <button
+                onClick={() => { setIsCartOpen(false); openBespokeModal('Cart Drawer Empty'); }}
+                className="mt-6 text-sm font-medium text-terracotta hover:underline flex items-center gap-2"
+              >
+                <PenTool size={14} /> Create a Custom Rug
+              </button>
             </div>
           ) : (
             cart.map((item) => (
@@ -119,6 +125,15 @@ const CartDrawer: React.FC = () => {
               <span>Checkout</span>
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Button>
+
+            <div className="mt-4 pt-4 border-t border-gray-100">
+                <button
+                    onClick={() => { setIsCartOpen(false); openBespokeModal('Cart Drawer Footer'); }}
+                    className="w-full text-xs font-medium text-text-muted hover:text-terracotta flex items-center justify-center gap-2 py-2"
+                >
+                    <PenTool size={12} /> Need a custom size? Request Bespoke
+                </button>
+            </div>
           </div>
         )}
       </div>

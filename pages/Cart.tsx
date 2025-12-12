@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowLeft, PenTool } from 'lucide-react';
 import Button from '../components/Button';
 import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from '../constants';
 
 const Cart: React.FC = () => {
-  const { cart, updateQuantity, removeFromCart, cartTotal, shippingDiff, placeOrder } = useShop();
+  const { cart, updateQuantity, removeFromCart, cartTotal, shippingDiff, placeOrder, openBespokeModal } = useShop();
   const navigate = useNavigate();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
@@ -235,6 +235,27 @@ const Cart: React.FC = () => {
                    )}
                 </div>
              </div>
+
+             {/* Bespoke Services Promo */}
+             <div className="bg-teal text-white rounded-xl p-6 mt-6 shadow-sm sticky top-[500px]">
+                <div className="flex items-start gap-3">
+                    <PenTool size={24} className="mt-1 text-amber" />
+                    <div>
+                        <h3 className="font-serif text-lg mb-2">Go Bespoke</h3>
+                        <p className="text-sm text-white/80 mb-4 leading-relaxed">
+                            Need a specific size or color match? Create your own masterpiece with our design team.
+                        </p>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-white text-white hover:bg-white hover:text-teal w-full"
+                            onClick={() => openBespokeModal('Cart Sidebar')}
+                        >
+                            Start Custom Request
+                        </Button>
+                    </div>
+                </div>
+            </div>
           </div>
         </div>
       </div>
