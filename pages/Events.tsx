@@ -3,10 +3,12 @@ import Button from '../components/Button';
 import { Calendar, MapPin, Clock, ArrowRight, CheckCircle2 } from 'lucide-react';
 import ImageSmart from '../components/ImageSmart';
 import AppointmentModal from '../components/AppointmentModal';
+import { useShop } from '../context/ShopContext';
 
 const Events: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeEventName, setActiveEventName] = useState('India Design ID 2025');
+  const { openBespokeModal } = useShop();
 
   const openAppointment = (eventName: string) => {
     setActiveEventName(eventName);
@@ -161,6 +163,18 @@ const Events: React.FC = () => {
                         <p className="text-xs text-center text-text-muted mt-3">
                             Instant confirmation via WhatsApp
                         </p>
+
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                             <p className="text-sm font-medium mb-3 text-center">Looking for custom work?</p>
+                             <Button 
+                                fullWidth 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => openBespokeModal('Event Page Sidebar')}
+                             >
+                                Book Bespoke Consultation
+                             </Button>
+                        </div>
                     </div>
 
                     {/* Location Map Placeholder */}
