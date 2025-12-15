@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, User, Menu, X, Heart, ChevronRight, PenTool } from 'lucide-react';
@@ -38,7 +39,6 @@ const Header: React.FC = () => {
   const navLinks = [
     { name: 'Shop', path: '/shop' },
     { name: 'Collections', path: '/shop?filter=collections' },
-    { name: 'Events', path: '/events' },
     { name: 'Bespoke', path: '/bespoke' }, 
   ];
 

@@ -1,4 +1,5 @@
-import { MOCK_PRODUCTS, MOCK_BLOGS, MOCK_EVENTS } from '../constants';
+
+import { MOCK_PRODUCTS } from '../constants';
 import { Product, SearchResult, SearchSuggestion, Facet } from '../types';
 
 // Simulate indexing fields
@@ -12,22 +13,6 @@ const searchIndex = [
     url: `/product/${p.id}`,
     keywords: `${p.name} ${p.category} ${p.collection} ${p.specifications.material} ${p.colors?.join(' ')}`.toLowerCase(),
     obj: p
-  })),
-  ...MOCK_BLOGS.map(b => ({
-    ...b,
-    type: 'blog' as const,
-    keywords: b.title.toLowerCase(),
-    subtitle: 'Editorial',
-    image: undefined,
-    obj: null
-  })),
-  ...MOCK_EVENTS.map(e => ({
-    ...e,
-    type: 'event' as const,
-    keywords: e.title.toLowerCase(),
-    subtitle: 'Exhibition',
-    image: undefined,
-    obj: null
   }))
 ];
 

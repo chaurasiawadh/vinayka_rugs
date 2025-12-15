@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -8,6 +9,7 @@ import { useShop } from '../context/ShopContext';
 import ImageSmart from '../components/ImageSmart';
 import Button from '../components/Button';
 import { MOCK_PRODUCTS } from '../constants'; 
+import { Product } from '../types';
 
 // --- Helper Components ---
 
@@ -55,14 +57,29 @@ interface SpecGroupProps {
   children?: React.ReactNode;
 }
 
-const SpecGroup = ({ title, children }: SpecGroupProps) => (
-    <div className="mb-6 last:mb-0">
-        <h4 className="font-medium text-terracotta text-sm uppercase tracking-wider mb-3">{title}</h4>
-        <div className="bg-gray-50 rounded-lg px-4 border border-gray-100">
-            {children}
+const SpecGroup = ({ title, children }: SpecGroupProps) => {
+    const [isOpen, setIsOpen] = useState(true);
+    return (
+        <div className="mb-6 last:mb-0">
+            <button 
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center justify-between w-full mb-3 group focus:outline-none"
+            >
+                <h4 className="font-medium text-terracotta text-sm uppercase tracking-wider group-hover:text-text-body transition-colors">{title}</h4>
+                {isOpen ? 
+                    <ChevronUp size={16} className="text-terracotta" /> : 
+                    <ChevronDown size={16} className="text-gray-400 group-hover:text-terracotta" />
+                }
+            </button>
+            {isOpen && (
+                <div className="bg-gray-50 rounded-lg px-4 border border-gray-100 animate-fade-in">
+                    {children}
+                </div>
+            )}
         </div>
-    </div>
-);
+    );
+};
 
 // --- Main Component ---
 
@@ -84,7 +101,7 @@ const ProductDetails: React.FC = () => {
   if (!product) return <div className="min-h-screen flex items-center justify-center text-xl font-serif">Product not found</div>;
 
   const isWishlisted = isInWishlist(product.id);
-  const specs = product.specifications || {};
+  const specs = product.specifications || {} as Partial<Product['specifications']>;
   
   const handleAddToCart = () => addToCart(product, selectedSize, qty);
   const handleBuyNow = () => {
