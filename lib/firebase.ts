@@ -5,12 +5,13 @@ import { getStorage } from 'firebase/storage';
 
 // REPLACE WITH YOUR FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyB5KVEDkLam_Zdz0bW9P-8sJ3EdtyaneD8",
+  authDomain: "vinaykarugs.firebaseapp.com",
+  projectId: "vinaykarugs",
+  storageBucket: "vinaykarugs.firebasestorage.app",
+  messagingSenderId: "1020806689038",
+  appId: "1:1020806689038:web:c524176fcec737508fe75f",
+  measurementId: "G-2S2V45SXJC"
 };
 
 const app = initializeApp(firebaseConfig);
