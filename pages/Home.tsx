@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
-import { MOCK_PRODUCTS, COLLECTIONS } from '../constants';
+import { COLLECTIONS } from '../constants';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
 import { useShop } from '../context/ShopContext';
 
 const Home: React.FC = () => {
-  const featuredProducts = MOCK_PRODUCTS.slice(0, 4);
-  const { openBespokeModal } = useShop();
+  const { products, openBespokeModal } = useShop();
+  // Filter for trending products, or fall back to first 4
+  const featuredProducts = products.filter(p => p.isTrending).slice(0, 4);
+  const displayProducts = featuredProducts.length > 0 ? featuredProducts : products.slice(0, 4);
 
   return (
     <div className="animate-fade-in">
@@ -97,7 +99,7 @@ const Home: React.FC = () => {
              <Link to="/shop" className="text-terracotta font-medium hover:underline hidden sm:block">View All</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map(product => (
+            {displayProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

@@ -1,8 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Product, CartItem, Order, WatchlistItem, BespokeRequest } from '../types';
 import { FREE_SHIPPING_THRESHOLD } from '../constants';
+import { useProducts } from '../hooks/useFirestore';
 
 interface ShopContextType {
+  products: Product[]; // Now dynamic
+  loading: boolean;
   cart: CartItem[];
   wishlist: WatchlistItem[]; 
   orders: Order[];
@@ -12,7 +15,6 @@ interface ShopContextType {
   removeFromCart: (productId: string, selectedSize: string) => void;
   updateQuantity: (productId: string, selectedSize: string, quantity: number) => void;
   
-  // New Watchlist methods
   toggleWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
   updateWishlistPreferences: (productId: string, prefs: Partial<WatchlistItem['preferences']>) => void;
@@ -25,14 +27,13 @@ interface ShopContextType {
   cartCount: number;
   shippingDiff: number;
   
-  // UI States
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
   
   isBespokeOpen: boolean;
   openBespokeModal: (source?: string) => void;
   closeBespokeModal: () => void;
-  bespokeSource: string; // Tracks where the user clicked "Bespoke"
+  bespokeSource: string;
 
   notification: { message: string; type: 'success' | 'error' | 'info' } | null;
   notify: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -41,12 +42,13 @@ interface ShopContextType {
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { products, loading } = useProducts(); // Fetch from Firestore
+  
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WatchlistItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [bespokeRequests, setBespokeRequests] = useState<BespokeRequest[]>([]);
   
-  // UI State
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isBespokeOpen, setIsBespokeOpen] = useState(false);
   const [bespokeSource, setBespokeSource] = useState('');
@@ -143,6 +145,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return (
     <ShopContext.Provider
       value={{
+        products, // EXPOSED HERE
+        loading,
         cart,
         wishlist,
         orders,

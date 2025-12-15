@@ -1,152 +1,221 @@
-import React from 'react';
-import { Package, ShoppingCart, Users, TrendingUp, Bell, PenTool } from 'lucide-react';
-import { useShop } from '../context/ShopContext';
-import { MOCK_PRODUCTS } from '../constants';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
+import { 
+  LayoutDashboard, ShoppingBag, Calendar, Image as ImageIcon, 
+  LogOut, Plus, Trash2, Edit2, Loader 
+} from 'lucide-react';
+import { db, storage } from '../lib/firebase';
+import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useProducts, useCollection } from '../hooks/useFirestore';
 import Button from '../components/Button';
+import { CATEGORIES, MATERIALS } from '../constants';
 
-const Admin: React.FC = () => {
-  const { orders, notify, bespokeRequests } = useShop();
+// --- SUB-COMPONENT: Product Manager ---
+const ProductManager: React.FC = () => {
+  const { products } = useProducts();
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentProd, setCurrentProd] = useState<any>({});
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleTriggerNotification = () => {
-      notify('Test notification blast sent to 142 subscribers', 'success');
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+        let imageUrl = currentProd.images?.[0] || '';
+
+        // 1. Upload Image if exists
+        if (imageFile) {
+            const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
+            await uploadBytes(storageRef, imageFile);
+            imageUrl = await getDownloadURL(storageRef);
+        }
+
+        const productData = {
+            ...currentProd,
+            price: Number(currentProd.price),
+            images: [imageUrl],
+            sizes: currentProd.sizes ? (typeof currentProd.sizes === 'string' ? currentProd.sizes.split(',') : currentProd.sizes) : [],
+            colors: currentProd.colors ? (typeof currentProd.colors === 'string' ? currentProd.colors.split(',') : currentProd.colors) : [],
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        };
+
+        if (currentProd.id) {
+            await updateDoc(doc(db, 'products', currentProd.id), productData);
+        } else {
+            await addDoc(collection(db, 'products'), productData);
+        }
+        setIsEditing(false);
+        setCurrentProd({});
+        setImageFile(null);
+    } catch (error) {
+        console.error("Error saving product", error);
+        alert("Error saving product. Check console.");
+    } finally {
+        setLoading(false);
+    }
   };
 
-  const stats = [
-    { title: 'Total Sales', value: '₹4.2M', icon: <TrendingUp size={20} className="text-success" /> },
-    { title: 'Orders', value: orders.length.toString(), icon: <ShoppingCart size={20} className="text-terracotta" /> },
-    { title: 'Bespoke Requests', value: bespokeRequests.length.toString(), icon: <PenTool size={20} className="text-teal" /> },
-    { title: 'Watchlist Subs', value: '1,204', icon: <Bell size={20} className="text-amber" /> },
+  const handleDelete = async (id: string) => {
+    if(confirm('Are you sure you want to delete this product?')) {
+        await deleteDoc(doc(db, 'products', id));
+    }
+  };
+
+  if (isEditing) {
+      return (
+          <div className="bg-white p-6 rounded-xl shadow-sm animate-fade-in">
+              <h3 className="font-serif text-xl mb-4">{currentProd.id ? 'Edit Product' : 'Add New Product'}</h3>
+              <form onSubmit={handleSave} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                      <input placeholder="Name" className="border p-2 rounded" value={currentProd.name || ''} onChange={e => setCurrentProd({...currentProd, name: e.target.value})} required />
+                      <input placeholder="Price" type="number" className="border p-2 rounded" value={currentProd.price || ''} onChange={e => setCurrentProd({...currentProd, price: e.target.value})} required />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                      <select className="border p-2 rounded" value={currentProd.category || ''} onChange={e => setCurrentProd({...currentProd, category: e.target.value})} required>
+                          <option value="">Select Category</option>
+                          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                      <select className="border p-2 rounded" value={currentProd.material || ''} onChange={e => setCurrentProd({...currentProd, material: e.target.value})} required>
+                          <option value="">Select Material</option>
+                          {MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                  </div>
+                  <textarea placeholder="Description" className="border p-2 rounded w-full" rows={3} value={currentProd.description || ''} onChange={e => setCurrentProd({...currentProd, description: e.target.value})} />
+                  
+                  <div className="border p-4 rounded border-dashed">
+                      <label className="block mb-2 text-sm font-medium">Main Image</label>
+                      <input type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} />
+                      {currentProd.images?.[0] && !imageFile && (
+                          <img src={currentProd.images[0]} alt="Current" className="h-20 w-20 object-cover mt-2 rounded" />
+                      )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                      <input type="checkbox" checked={currentProd.isTrending || false} onChange={e => setCurrentProd({...currentProd, isTrending: e.target.checked})} />
+                      <label>Mark as Trending / Best Seller</label>
+                  </div>
+
+                  <div className="flex gap-2">
+                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+                      <Button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Product'}</Button>
+                  </div>
+              </form>
+          </div>
+      );
+  }
+
+  return (
+      <div className="space-y-6">
+          <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-serif">Product Inventory</h2>
+              <Button onClick={() => { setCurrentProd({}); setIsEditing(true); }}>
+                  <Plus size={18} className="mr-2" /> Add Product
+              </Button>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <table className="w-full text-left">
+                  <thead className="bg-gray-50 text-text-muted text-sm uppercase">
+                      <tr>
+                          <th className="p-4">Image</th>
+                          <th className="p-4">Name</th>
+                          <th className="p-4">Category</th>
+                          <th className="p-4">Price</th>
+                          <th className="p-4">Trending</th>
+                          <th className="p-4 text-right">Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                      {products.map(p => (
+                          <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                              <td className="p-4">
+                                  <img src={p.images[0]} className="h-12 w-12 rounded object-cover" alt="" />
+                              </td>
+                              <td className="p-4 font-medium">{p.name}</td>
+                              <td className="p-4 text-sm text-text-muted">{p.category}</td>
+                              <td className="p-4">₹{p.price.toLocaleString()}</td>
+                              <td className="p-4">
+                                  {p.isTrending ? <span className="bg-amber/10 text-amber text-xs px-2 py-1 rounded-full">Trending</span> : '-'}
+                              </td>
+                              <td className="p-4 text-right space-x-2">
+                                  <button onClick={() => { setCurrentProd(p); setIsEditing(true); }} className="p-2 hover:bg-gray-200 rounded text-gray-600"><Edit2 size={16} /></button>
+                                  <button onClick={() => handleDelete(p.id)} className="p-2 hover:bg-error/10 rounded text-error"><Trash2 size={16} /></button>
+                              </td>
+                          </tr>
+                      ))}
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  );
+};
+
+// --- MAIN ADMIN LAYOUT ---
+
+const Admin: React.FC = () => {
+  const { user, loading, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'gallery'>('products');
+
+  if (loading) return <div className="h-screen flex items-center justify-center"><Loader className="animate-spin text-terracotta" /></div>;
+  
+  if (!user) return <Navigate to="/login" replace />;
+
+  const menuItems = [
+    { id: 'products', label: 'All Rugs & Collections', icon: <ShoppingBag size={20} /> },
+    { id: 'events', label: 'Exhibitions', icon: <Calendar size={20} /> },
+    { id: 'gallery', label: 'Gallery', icon: <ImageIcon size={20} /> },
   ];
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-serif mb-8">Dashboard</h1>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, i) => (
-            <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-               <div>
-                  <p className="text-sm text-text-muted mb-1">{stat.title}</p>
-                  <h3 className="text-2xl font-bold">{stat.value}</h3>
-               </div>
-               <div className="p-3 bg-gray-50 rounded-full">
-                  {stat.icon}
-               </div>
-            </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Sidebar */}
+      <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col h-auto md:h-screen sticky top-0 z-10">
+        <div className="p-6 border-b border-gray-100">
+          <h1 className="font-serif text-2xl font-bold">Admin<span className="text-terracotta">Panel</span></h1>
+          <p className="text-xs text-text-muted mt-1">{user.email}</p>
+        </div>
+        <nav className="flex-1 p-4 space-y-1">
+          {menuItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id as any)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === item.id ? 'bg-terracotta text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              {item.icon}
+              <span className="font-medium">{item.label}</span>
+            </button>
           ))}
+        </nav>
+        <div className="p-4 border-t border-gray-200">
+          <button onClick={logout} className="flex items-center gap-3 px-4 py-3 text-error hover:bg-error/5 w-full rounded-lg transition-colors">
+            <LogOut size={20} />
+            <span>Sign Out</span>
+          </button>
         </div>
+      </aside>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-           {/* Recent Orders */}
-           <div className="lg:col-span-2 space-y-8">
-               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                  <h2 className="font-serif text-xl mb-6">Recent Orders</h2>
-                  <div className="overflow-x-auto">
-                     <table className="w-full text-left text-sm">
-                        <thead>
-                           <tr className="border-b border-gray-100 text-text-muted">
-                              <th className="pb-3 font-medium">Order ID</th>
-                              <th className="pb-3 font-medium">Customer</th>
-                              <th className="pb-3 font-medium">Status</th>
-                              <th className="pb-3 font-medium">Total</th>
-                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                           {orders.length > 0 ? orders.map(order => (
-                              <tr key={order.id}>
-                                 <td className="py-4 font-medium">{order.id}</td>
-                                 <td className="py-4">{order.shippingAddress.fullName}</td>
-                                 <td className="py-4">
-                                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium uppercase">{order.status}</span>
-                                 </td>
-                                 <td className="py-4">₹{order.total.toLocaleString('en-IN')}</td>
-                              </tr>
-                           )) : (
-                              <tr>
-                                 <td colSpan={4} className="py-4 text-center text-text-muted">No recent orders (Place one in Checkout)</td>
-                              </tr>
-                           )}
-                           <tr className="opacity-60">
-                              <td className="py-4 font-medium">ORD-9921</td>
-                              <td className="py-4">Rajesh Kumar</td>
-                              <td className="py-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium uppercase">Shipped</span></td>
-                              <td className="py-4">₹125,000</td>
-                           </tr>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-
-               {/* Bespoke Requests List */}
-               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                  <h2 className="font-serif text-xl mb-6">Bespoke Inquiries</h2>
-                  <div className="overflow-x-auto">
-                     <table className="w-full text-left text-sm">
-                        <thead>
-                           <tr className="border-b border-gray-100 text-text-muted">
-                              <th className="pb-3 font-medium">Client</th>
-                              <th className="pb-3 font-medium">Method</th>
-                              <th className="pb-3 font-medium">Req Type</th>
-                              <th className="pb-3 font-medium">Source</th>
-                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                           {bespokeRequests.length > 0 ? bespokeRequests.map((req, i) => (
-                              <tr key={i}>
-                                 <td className="py-4 font-medium">
-                                     {req.name}<br/>
-                                     <span className="text-xs text-text-muted">{req.phone}</span>
-                                 </td>
-                                 <td className="py-4">{req.communicationMethod}</td>
-                                 <td className="py-4">{req.rugType}</td>
-                                 <td className="py-4 text-xs text-text-muted">{req.source}</td>
-                              </tr>
-                           )) : (
-                              <tr>
-                                 <td colSpan={4} className="py-4 text-center text-text-muted">No pending bespoke requests.</td>
-                              </tr>
-                           )}
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-           </div>
-
-           {/* Watchlist & Inventory Actions */}
-           <div className="space-y-8">
-               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 className="font-serif text-xl mb-4">Watchlist Campaigns</h2>
-                    <p className="text-sm text-text-muted mb-4">Notify users about price drops on 'Aether Mist'.</p>
-                    <div className="bg-amber/10 text-amber-800 p-3 rounded text-sm mb-4">
-                        142 users waiting for price drop on Aether Mist.
-                    </div>
-                    <Button fullWidth size="sm" onClick={handleTriggerNotification}>
-                        Send "Price Drop" Alert
-                    </Button>
-               </div>
-
-               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                  <h2 className="font-serif text-xl mb-4">Low Stock Alert</h2>
-                  <ul className="space-y-4">
-                     {MOCK_PRODUCTS.slice(0, 3).map(p => (
-                        <li key={p.id} className="flex gap-4 items-center">
-                           <img src={p.images[0]} className="w-12 h-12 rounded object-cover" alt={p.name} />
-                           <div>
-                              <p className="font-medium text-sm">{p.name}</p>
-                              <p className="text-xs text-error">Only 2 left in stock</p>
-                           </div>
-                        </li>
-                     ))}
-                  </ul>
-                  <button className="w-full mt-6 py-2 text-sm text-terracotta border border-terracotta rounded-lg hover:bg-terracotta hover:text-white transition-colors">
-                     Restock Now
-                  </button>
-               </div>
-           </div>
-        </div>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 p-6 md:p-8 overflow-y-auto">
+        {activeTab === 'products' && <ProductManager />}
+        {activeTab === 'events' && (
+            <div className="text-center py-20 bg-white rounded-xl">
+                <Calendar size={48} className="mx-auto text-gray-300 mb-4" />
+                <h2 className="text-xl font-serif">Exhibitions Manager</h2>
+                <p className="text-text-muted">Module under construction. Will manage upcoming events here.</p>
+            </div>
+        )}
+        {activeTab === 'gallery' && (
+            <div className="text-center py-20 bg-white rounded-xl">
+                <ImageIcon size={48} className="mx-auto text-gray-300 mb-4" />
+                <h2 className="text-xl font-serif">Gallery Manager</h2>
+                <p className="text-text-muted">Module under construction. Will manage photo uploads here.</p>
+            </div>
+        )}
+      </main>
     </div>
   );
 };

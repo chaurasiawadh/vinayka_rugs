@@ -15,9 +15,12 @@ export interface Product {
   inStock: boolean;
   isNew?: boolean;
   isSale?: boolean;
+  isTrending?: boolean; // NEW FIELD
   rating: number;
   reviews: number;
   artisanStory?: string;
+  createdAt?: any; // For Firestore timestamp
+  updatedAt?: any;
 }
 
 export interface CartItem extends Product {

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Filter, ChevronDown, Check, PenTool } from 'lucide-react';
-import { MOCK_PRODUCTS, CATEGORIES, COLLECTIONS, MATERIALS } from '../constants';
+import { CATEGORIES, MATERIALS } from '../constants';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
 import { useShop } from '../context/ShopContext';
@@ -11,7 +11,9 @@ const Shop: React.FC = () => {
   const queryParams = new URLSearchParams(search);
   const initialCategory = queryParams.get('cat');
   const initialCollection = queryParams.get('collection');
-  const { openBespokeModal } = useShop();
+  
+  // USE DYNAMIC PRODUCTS
+  const { products, openBespokeModal, loading } = useShop();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategory ? [initialCategory] : []);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
@@ -20,7 +22,7 @@ const Shop: React.FC = () => {
 
   // Filter Logic
   const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter(product => {
+    return products.filter(product => {
       const matchCat = selectedCategories.length === 0 || selectedCategories.includes(product.category);
       const matchMat = selectedMaterials.length === 0 || selectedMaterials.includes(product.material);
       const matchCol = !initialCollection || product.collection === initialCollection;
@@ -31,7 +33,7 @@ const Shop: React.FC = () => {
       if (sortOption === 'newest') return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
       return b.rating - a.rating; // Popular default
     });
-  }, [selectedCategories, selectedMaterials, sortOption, initialCollection]);
+  }, [selectedCategories, selectedMaterials, sortOption, initialCollection, products]);
 
   const toggleFilter = (item: string, current: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
     if (current.includes(item)) {
@@ -40,6 +42,8 @@ const Shop: React.FC = () => {
       setter([...current, item]);
     }
   };
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-terracotta border-t-transparent rounded-full animate-spin"></div></div>;
 
   return (
     <div className="bg-cream min-h-screen pb-20 pt-8">
@@ -144,7 +148,7 @@ const Shop: React.FC = () => {
           <div className="flex-1">
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                {/* Bespoke Promo Card (Inserted at index 2) */}
+                {/* Bespoke Promo Card */}
                 <div className="sm:col-span-2 lg:col-span-3 bg-teal text-white rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
                     <div>
                         <div className="flex items-center gap-2 mb-2 text-amber font-medium">
