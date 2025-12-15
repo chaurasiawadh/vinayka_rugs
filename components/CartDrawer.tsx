@@ -89,7 +89,7 @@ const CartDrawer: React.FC = () => {
                         <Trash2 size={16} />
                     </button>
                   </div>
-                  <p className="text-sm text-text-muted">{item.selectedSize} | {item.material}</p>
+                  <p className="text-sm text-text-muted">{item.selectedSize} | {item.specifications.material}</p>
                   <p className="text-sm font-medium mt-1">₹{item.price.toLocaleString('en-IN')}</p>
                   
                   <div className="flex items-center gap-3 mt-3">

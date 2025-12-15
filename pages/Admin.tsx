@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { 
   ShoppingBag, Calendar, Image as ImageIcon, 
-  LogOut, Plus, Trash2, Edit2, Loader, AlertTriangle
+  LogOut, Plus, Trash2, Edit2, Loader, Save, X, 
+  ChevronDown, ChevronUp, Layers, Tag, Truck, Star, Info
 } from 'lucide-react';
 import { db, storage } from '../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
@@ -11,181 +13,441 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useProducts } from '../hooks/useFirestore';
 import Button from '../components/Button';
 import ImageInput from '../components/ImageInput';
-import { CATEGORIES, MATERIALS } from '../constants';
+import { CATEGORIES, MATERIALS, CONSTRUCTIONS, WEAVE_TYPES, SIZES, REVIEW_TAGS, COLLECTIONS } from '../constants';
+import { Product } from '../types';
 
-// --- SUB-COMPONENT: Product Manager ---
+// Default State for New Product
+const INITIAL_PRODUCT: Partial<Product> = {
+    name: '',
+    brand: 'Vinayka Rugs',
+    sku: '',
+    category: 'Modern',
+    collection: '',
+    description: '',
+    shortDescription: '',
+    price: 0,
+    mrp: 0,
+    discount: 0,
+    taxInclusive: true,
+    emiAvailable: true,
+    images: [],
+    sizes: [],
+    colors: [],
+    specifications: {
+        material: 'Wool',
+        weaveType: 'Flat Woven',
+        pileHeight: 'Low',
+        itemWeight: '10 Kg',
+        construction: 'Hand-knotted',
+        origin: 'India'
+    },
+    aboutItems: [],
+    rating: 4.5,
+    reviews: 0,
+    reviewSummary: 'Customers find the rug to be well-made, soft, and comfortable.',
+    reviewTags: [],
+    reviewDistribution: { fiveStar: 70, fourStar: 20, threeStar: 5, twoStar: 2, oneStar: 3 },
+    inStock: true,
+    deliveryText: '7-10 Business Days',
+    returnPolicy: '10 Days Return',
+    warranty: '1 Year Manufacturer Warranty',
+    isTrending: false,
+    isNew: true
+};
+
 const ProductManager: React.FC = () => {
   const { products } = useProducts();
   const [isEditing, setIsEditing] = useState(false);
-  const [currentProd, setCurrentProd] = useState<any>({});
-  const [imageInput, setImageInput] = useState<File | string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<Partial<Product>>(INITIAL_PRODUCT);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('basic');
+
+  // Helper to update nested state
+  const updateField = (field: keyof Product, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const updateNestedField = (parent: keyof Product, child: string, value: any) => {
+    setFormData(prev => ({
+        ...prev,
+        [parent]: {
+            ...(prev[parent] as any),
+            [child]: value
+        }
+    }));
+  };
+
+  // Pricing Calculator
+  useEffect(() => {
+    if (formData.price && formData.mrp && formData.mrp > formData.price) {
+        const discount = Math.round(((formData.mrp - formData.price) / formData.mrp) * 100);
+        updateField('discount', discount);
+    }
+  }, [formData.price, formData.mrp]);
+
+  // Handle Array Fields (About Bullets, Colors)
+  const handleArrayAdd = (field: 'aboutItems' | 'colors', value: string) => {
+      if(!value) return;
+      setFormData(prev => ({
+          ...prev,
+          [field]: [...(prev[field] || []), value]
+      }));
+  };
+
+  const handleArrayRemove = (field: 'aboutItems' | 'colors', index: number) => {
+      setFormData(prev => ({
+          ...prev,
+          [field]: (prev[field] || []).filter((_, i) => i !== index)
+      }));
+  };
+
+  const handleImageUpload = async (fileOrUrl: File | string | null) => {
+      if (!fileOrUrl) return;
+      setLoading(true);
+      try {
+          let url = '';
+          if (typeof fileOrUrl === 'string') {
+              url = fileOrUrl;
+          } else {
+            const storageRef = ref(storage, `products/${Date.now()}_${fileOrUrl.name}`);
+            await uploadBytes(storageRef, fileOrUrl);
+            url = await getDownloadURL(storageRef);
+          }
+          setFormData(prev => ({ ...prev, images: [...(prev.images || []), url] }));
+          setUploadError(null);
+      } catch (err: any) {
+          setUploadError(err.message?.includes('CORS') ? "CORS Error: Use 'Paste URL'" : "Upload Failed");
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  const removeImage = (index: number) => {
+      setFormData(prev => ({
+          ...prev,
+          images: (prev.images || []).filter((_, i) => i !== index)
+      }));
+  };
 
   const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setUploadError(null);
-
-    try {
-        let imageUrl = currentProd.images?.[0] || '';
-
-        // Handle Image Input (File Upload or URL)
-        if (imageInput) {
-            if (typeof imageInput === 'string') {
-                // User provided a URL directly
-                imageUrl = imageInput;
-            } else if (imageInput instanceof File) {
-                // User provided a file, upload to Firebase
-                try {
-                    const storageRef = ref(storage, `products/${Date.now()}_${imageInput.name}`);
-                    await uploadBytes(storageRef, imageInput);
-                    imageUrl = await getDownloadURL(storageRef);
-                } catch (uploadErr: any) {
-                    console.error("Upload Error:", uploadErr);
-                    // Check for common CORS or permissions issues
-                    let errorMsg = "Upload failed.";
-                    if (uploadErr.message?.includes('CORS') || uploadErr.code === 'storage/unauthorized' || uploadErr.code === 'storage/unknown') {
-                        errorMsg = "CORS Policy Error: Cannot upload from localhost. Please switch to 'Paste URL' tab and use a direct image link.";
-                    } else {
-                        errorMsg = `Upload failed: ${uploadErr.message}`;
-                    }
-                    setUploadError(errorMsg);
-                    setLoading(false);
-                    return; // Stop saving if image upload fails
-                }
-            }
-        }
-
-        const productData = {
-            ...currentProd,
-            price: Number(currentProd.price),
-            images: [imageUrl],
-            sizes: currentProd.sizes ? (typeof currentProd.sizes === 'string' ? currentProd.sizes.split(',') : currentProd.sizes) : [],
-            colors: currentProd.colors ? (typeof currentProd.colors === 'string' ? currentProd.colors.split(',') : currentProd.colors) : [],
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        };
-
-        if (currentProd.id) {
-            await updateDoc(doc(db, 'products', currentProd.id), productData);
-        } else {
-            await addDoc(collection(db, 'products'), productData);
-        }
-        setIsEditing(false);
-        setCurrentProd({});
-        setImageInput(null);
-    } catch (error) {
-        console.error("Error saving product", error);
-        alert("Error saving product. Check console for details.");
-    } finally {
-        setLoading(false);
-    }
+      e.preventDefault();
+      setLoading(true);
+      try {
+          const payload = {
+              ...formData,
+              updatedAt: serverTimestamp()
+          };
+          if (!formData.id) {
+              payload.createdAt = serverTimestamp();
+              await addDoc(collection(db, 'products'), payload);
+          } else {
+              await updateDoc(doc(db, 'products', formData.id), payload);
+          }
+          setIsEditing(false);
+          setFormData(INITIAL_PRODUCT);
+      } catch (err) {
+          console.error(err);
+          alert("Error saving product");
+      } finally {
+          setLoading(false);
+      }
   };
 
-  const handleDelete = async (id: string) => {
-    if(confirm('Are you sure you want to delete this product?')) {
-        await deleteDoc(doc(db, 'products', id));
-    }
-  };
-
-  const handleEditClick = (product: any) => {
-      setCurrentProd(product);
-      // Reset image input logic
-      setImageInput(null);
-      setUploadError(null);
+  const handleEdit = (product: Product) => {
+      setFormData(product);
       setIsEditing(true);
   };
 
-  const handleCancel = () => {
-      setIsEditing(false);
-      setUploadError(null);
-  }
+  const handleDelete = async (id: string) => {
+      if(confirm('Delete product?')) await deleteDoc(doc(db, 'products', id));
+  };
 
   if (isEditing) {
       return (
-          <div className="bg-white p-6 rounded-xl shadow-sm animate-fade-in">
-              <div className="flex justify-between items-start mb-6">
-                  <h3 className="font-serif text-xl">{currentProd.id ? 'Edit Product' : 'Add New Product'}</h3>
-                  <button onClick={handleCancel} className="text-gray-400 hover:text-gray-600"><Trash2 size={18} className="opacity-0" /></button>
-              </div>
-              
-              <form onSubmit={handleSave} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                      <input placeholder="Name" className="border p-2 rounded" value={currentProd.name || ''} onChange={e => setCurrentProd({...currentProd, name: e.target.value})} required />
-                      <input placeholder="Price" type="number" className="border p-2 rounded" value={currentProd.price || ''} onChange={e => setCurrentProd({...currentProd, price: e.target.value})} required />
+          <form onSubmit={handleSave} className="bg-gray-50 min-h-screen p-6 pb-20">
+              {/* Header */}
+              <div className="sticky top-0 z-10 bg-white shadow-sm p-4 rounded-lg flex justify-between items-center mb-6">
+                  <div>
+                      <h2 className="text-xl font-bold font-serif">{formData.id ? 'Edit Product' : 'New Product'}</h2>
+                      <p className="text-xs text-text-muted">Fill in all details carefully</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                      <select className="border p-2 rounded" value={currentProd.category || ''} onChange={e => setCurrentProd({...currentProd, category: e.target.value})} required>
-                          <option value="">Select Category</option>
-                          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                      <select className="border p-2 rounded" value={currentProd.material || ''} onChange={e => setCurrentProd({...currentProd, material: e.target.value})} required>
-                          <option value="">Select Material</option>
-                          {MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
-                      </select>
-                  </div>
-                  <textarea placeholder="Description" className="border p-2 rounded w-full" rows={3} value={currentProd.description || ''} onChange={e => setCurrentProd({...currentProd, description: e.target.value})} />
-                  
-                  <ImageInput 
-                    label="Product Image"
-                    initialValue={currentProd.images?.[0]}
-                    onChange={(val) => {
-                        setImageInput(val);
-                        if(uploadError) setUploadError(null); // Clear error on new selection
-                    }}
-                    error={uploadError}
-                  />
-
-                  <div className="flex items-center gap-2">
-                      <input type="checkbox" id="isTrending" checked={currentProd.isTrending || false} onChange={e => setCurrentProd({...currentProd, isTrending: e.target.checked})} />
-                      <label htmlFor="isTrending">Mark as Trending / Best Seller</label>
-                  </div>
-
-                  <div className="flex gap-2 pt-2">
-                      <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
+                  <div className="flex gap-2">
+                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
                       <Button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Product'}</Button>
                   </div>
-              </form>
-          </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  
+                  {/* LEFT COLUMN */}
+                  <div className="lg:col-span-2 space-y-6">
+                      
+                      {/* Basic Info */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Info size={18} /> Basic Information</h3>
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div className="col-span-2">
+                                  <label className="text-xs font-bold uppercase text-gray-500">Product Name</label>
+                                  <input className="w-full border p-2 rounded" value={formData.name} onChange={e => updateField('name', e.target.value)} required />
+                              </div>
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">Brand</label>
+                                  <input className="w-full border p-2 rounded" value={formData.brand} onChange={e => updateField('brand', e.target.value)} />
+                              </div>
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">SKU</label>
+                                  <input className="w-full border p-2 rounded" value={formData.sku} onChange={e => updateField('sku', e.target.value)} />
+                              </div>
+                              <div className="col-span-2">
+                                  <label className="text-xs font-bold uppercase text-gray-500">Short Description (Card)</label>
+                                  <input className="w-full border p-2 rounded" value={formData.shortDescription} onChange={e => updateField('shortDescription', e.target.value)} />
+                              </div>
+                              <div className="col-span-2">
+                                  <label className="text-xs font-bold uppercase text-gray-500">Full Description</label>
+                                  <textarea className="w-full border p-2 rounded" rows={4} value={formData.description} onChange={e => updateField('description', e.target.value)} />
+                              </div>
+                          </div>
+                      </section>
+
+                      {/* Images */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><ImageIcon size={18} /> Media Gallery</h3>
+                          <div className="grid grid-cols-4 gap-4 mb-4">
+                              {formData.images?.map((img, i) => (
+                                  <div key={i} className="relative aspect-square rounded border overflow-hidden group">
+                                      <img src={img} className="w-full h-full object-cover" />
+                                      <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><X size={12} /></button>
+                                  </div>
+                              ))}
+                              <div className="aspect-square bg-gray-50 border-2 border-dashed rounded flex flex-col items-center justify-center p-2">
+                                  <ImageInput onChange={handleImageUpload} label="" error={uploadError} />
+                              </div>
+                          </div>
+                      </section>
+
+                      {/* Specs */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Layers size={18} /> Specifications</h3>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                              {Object.keys(formData.specifications || {}).map((key) => (
+                                  <div key={key}>
+                                      <label className="text-xs font-bold uppercase text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
+                                      {key === 'material' ? (
+                                           <select className="w-full border p-2 rounded" value={formData.specifications?.material} onChange={e => updateNestedField('specifications', 'material', e.target.value)}>
+                                               {MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
+                                           </select>
+                                      ) : key === 'weaveType' ? (
+                                            <select className="w-full border p-2 rounded" value={formData.specifications?.weaveType} onChange={e => updateNestedField('specifications', 'weaveType', e.target.value)}>
+                                                {WEAVE_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
+                                            </select>
+                                      ) : key === 'construction' ? (
+                                            <select className="w-full border p-2 rounded" value={formData.specifications?.construction} onChange={e => updateNestedField('specifications', 'construction', e.target.value)}>
+                                                {CONSTRUCTIONS.map(m => <option key={m} value={m}>{m}</option>)}
+                                            </select>
+                                      ) : (
+                                          <input 
+                                            className="w-full border p-2 rounded" 
+                                            value={(formData.specifications as any)[key]} 
+                                            onChange={e => updateNestedField('specifications', key, e.target.value)} 
+                                          />
+                                      )}
+                                  </div>
+                              ))}
+                          </div>
+                      </section>
+
+                      {/* About Bullets */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg">About This Item (Bullet Points)</h3>
+                          <div className="space-y-2 mb-4">
+                              {formData.aboutItems?.map((item, i) => (
+                                  <div key={i} className="flex gap-2">
+                                      <input className="flex-1 border p-2 rounded" value={item} onChange={(e) => {
+                                          const newItems = [...(formData.aboutItems || [])];
+                                          newItems[i] = e.target.value;
+                                          updateField('aboutItems', newItems);
+                                      }} />
+                                      <button type="button" onClick={() => handleArrayRemove('aboutItems', i)} className="text-red-500"><Trash2 size={18}/></button>
+                                  </div>
+                              ))}
+                          </div>
+                          <Button type="button" variant="outline" size="sm" onClick={() => handleArrayAdd('aboutItems', 'New Feature')}>+ Add Bullet Point</Button>
+                      </section>
+                  </div>
+
+                  {/* RIGHT COLUMN */}
+                  <div className="space-y-6">
+                      
+                      {/* Pricing */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Tag size={18} /> Pricing</h3>
+                          <div className="space-y-4">
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">MRP (₹)</label>
+                                  <input type="number" className="w-full border p-2 rounded" value={formData.mrp} onChange={e => updateField('mrp', Number(e.target.value))} />
+                              </div>
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">Selling Price (₹)</label>
+                                  <input type="number" className="w-full border p-2 rounded font-bold text-lg" value={formData.price} onChange={e => updateField('price', Number(e.target.value))} />
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                  <span className="text-gray-500">Discount:</span>
+                                  <span className="font-bold text-green-600">{formData.discount}% OFF</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                  <input type="checkbox" checked={formData.taxInclusive} onChange={e => updateField('taxInclusive', e.target.checked)} />
+                                  <span className="text-sm">Price inclusive of taxes</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                  <input type="checkbox" checked={formData.emiAvailable} onChange={e => updateField('emiAvailable', e.target.checked)} />
+                                  <span className="text-sm">EMI Available</span>
+                              </div>
+                          </div>
+                      </section>
+
+                      {/* Categorization */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="font-bold mb-4 text-lg">Categorization</h3>
+                          <div className="space-y-4">
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">Category</label>
+                                  <select className="w-full border p-2 rounded" value={formData.category} onChange={e => updateField('category', e.target.value)}>
+                                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                  </select>
+                              </div>
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">Collection</label>
+                                  <select className="w-full border p-2 rounded" value={formData.collection} onChange={e => updateField('collection', e.target.value)}>
+                                      <option value="">None</option>
+                                      {COLLECTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                                  </select>
+                              </div>
+                              <div className="flex flex-wrap gap-4 pt-2">
+                                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={formData.isNew} onChange={e => updateField('isNew', e.target.checked)} /> New Arrival</label>
+                                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={formData.isTrending} onChange={e => updateField('isTrending', e.target.checked)} /> Trending</label>
+                                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={formData.isSale} onChange={e => updateField('isSale', e.target.checked)} /> On Sale</label>
+                              </div>
+                          </div>
+                      </section>
+
+                      {/* Sizes & Stock */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="font-bold mb-4 text-lg">Sizes & Stock</h3>
+                          <div className="mb-4">
+                              <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">Available Sizes</label>
+                              <div className="flex flex-wrap gap-2">
+                                  {SIZES.map(size => (
+                                      <button 
+                                        type="button" 
+                                        key={size}
+                                        onClick={() => {
+                                            const current = formData.sizes || [];
+                                            updateField('sizes', current.includes(size) ? current.filter(s => s !== size) : [...current, size]);
+                                        }}
+                                        className={`px-3 py-1 rounded-full text-xs border ${formData.sizes?.includes(size) ? 'bg-terracotta text-white border-terracotta' : 'bg-white text-gray-600'}`}
+                                      >
+                                          {size}
+                                      </button>
+                                  ))}
+                              </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold uppercase text-gray-500">Delivery Text</label>
+                                    <input className="w-full border p-2 rounded" value={formData.deliveryText} onChange={e => updateField('deliveryText', e.target.value)} />
+                                </div>
+                                <div className="flex items-center pt-6">
+                                     <label className="flex items-center gap-2 font-bold"><input type="checkbox" checked={formData.inStock} onChange={e => updateField('inStock', e.target.checked)} /> In Stock</label>
+                                </div>
+                          </div>
+                      </section>
+
+                      {/* Reviews (Admin Controlled) */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Star size={18} /> Reviews (Admin)</h3>
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">Rating (0-5)</label>
+                                  <input type="number" step="0.1" max="5" className="w-full border p-2 rounded" value={formData.rating} onChange={e => updateField('rating', Number(e.target.value))} />
+                              </div>
+                              <div>
+                                  <label className="text-xs font-bold uppercase text-gray-500">Count</label>
+                                  <input type="number" className="w-full border p-2 rounded" value={formData.reviews} onChange={e => updateField('reviews', Number(e.target.value))} />
+                              </div>
+                          </div>
+                          <div className="mb-4">
+                              <label className="text-xs font-bold uppercase text-gray-500">"Customers Say" Summary</label>
+                              <textarea className="w-full border p-2 rounded" rows={3} value={formData.reviewSummary} onChange={e => updateField('reviewSummary', e.target.value)} />
+                          </div>
+                          <div>
+                              <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">Review Tags</label>
+                              <div className="flex flex-wrap gap-2">
+                                  {REVIEW_TAGS.map(tag => (
+                                      <button 
+                                        type="button" 
+                                        key={tag}
+                                        onClick={() => {
+                                            const current = formData.reviewTags || [];
+                                            updateField('reviewTags', current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag]);
+                                        }}
+                                        className={`px-2 py-1 rounded-sm text-xs border ${formData.reviewTags?.includes(tag) ? 'bg-green-100 border-green-200 text-green-800' : 'bg-white border-gray-200'}`}
+                                      >
+                                          {tag}
+                                      </button>
+                                  ))}
+                              </div>
+                          </div>
+                      </section>
+
+                  </div>
+              </div>
+          </form>
       );
   }
 
+  // List View (Existing but cleaned up)
   return (
       <div className="space-y-6">
           <div className="flex justify-between items-center">
               <h2 className="text-2xl font-serif">Product Inventory</h2>
-              <Button onClick={() => { setCurrentProd({}); setImageInput(null); setUploadError(null); setIsEditing(true); }}>
+              <Button onClick={() => { setFormData(INITIAL_PRODUCT); setIsEditing(true); }}>
                   <Plus size={18} className="mr-2" /> Add Product
               </Button>
           </div>
-          
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <table className="w-full text-left">
                   <thead className="bg-gray-50 text-text-muted text-sm uppercase">
                       <tr>
-                          <th className="p-4">Image</th>
-                          <th className="p-4">Name</th>
-                          <th className="p-4">Category</th>
+                          <th className="p-4">Product</th>
                           <th className="p-4">Price</th>
-                          <th className="p-4">Trending</th>
+                          <th className="p-4">Stock</th>
+                          <th className="p-4">Stats</th>
                           <th className="p-4 text-right">Actions</th>
                       </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                       {products.map(p => (
-                          <tr key={p.id} className="hover:bg-gray-50 transition-colors">
-                              <td className="p-4">
-                                  <img src={p.images[0]} className="h-12 w-12 rounded object-cover" alt="" />
+                          <tr key={p.id} className="hover:bg-gray-50">
+                              <td className="p-4 flex gap-3 items-center">
+                                  <img src={p.images[0]} className="h-10 w-10 rounded object-cover" />
+                                  <div>
+                                      <div className="font-medium">{p.name}</div>
+                                      <div className="text-xs text-text-muted">{p.category}</div>
+                                  </div>
                               </td>
-                              <td className="p-4 font-medium">{p.name}</td>
-                              <td className="p-4 text-sm text-text-muted">{p.category}</td>
-                              <td className="p-4">₹{p.price.toLocaleString()}</td>
                               <td className="p-4">
-                                  {p.isTrending ? <span className="bg-amber/10 text-amber text-xs px-2 py-1 rounded-full">Trending</span> : '-'}
+                                  <div>₹{p.price.toLocaleString()}</div>
+                                  {p.mrp > p.price && <div className="text-xs text-gray-400 line-through">₹{p.mrp.toLocaleString()}</div>}
+                              </td>
+                              <td className="p-4">
+                                  {p.inStock ? <span className="text-green-600 text-xs font-bold bg-green-50 px-2 py-1 rounded">In Stock</span> : <span className="text-red-500 text-xs font-bold bg-red-50 px-2 py-1 rounded">Out of Stock</span>}
+                              </td>
+                              <td className="p-4 text-xs text-text-muted">
+                                  ★ {p.rating} ({p.reviews})
                               </td>
                               <td className="p-4 text-right space-x-2">
-                                  <button onClick={() => handleEditClick(p)} className="p-2 hover:bg-gray-200 rounded text-gray-600"><Edit2 size={16} /></button>
+                                  <button onClick={() => handleEdit(p)} className="p-2 hover:bg-gray-200 rounded text-gray-600"><Edit2 size={16} /></button>
                                   <button onClick={() => handleDelete(p.id)} className="p-2 hover:bg-error/10 rounded text-error"><Trash2 size={16} /></button>
                               </td>
                           </tr>
@@ -197,67 +459,31 @@ const ProductManager: React.FC = () => {
   );
 };
 
-// --- MAIN ADMIN LAYOUT ---
-
 const Admin: React.FC = () => {
   const { user, loading, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'gallery'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'events'>('products');
 
   if (loading) return <div className="h-screen flex items-center justify-center"><Loader className="animate-spin text-terracotta" /></div>;
-  
   if (!user) return <Navigate to="/login" replace />;
-
-  const menuItems = [
-    { id: 'products', label: 'All Rugs & Collections', icon: <ShoppingBag size={20} /> },
-    { id: 'events', label: 'Exhibitions', icon: <Calendar size={20} /> },
-    { id: 'gallery', label: 'Gallery', icon: <ImageIcon size={20} /> },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col h-auto md:h-screen sticky top-0 z-10">
+      <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col h-auto md:h-screen sticky top-0 z-20">
         <div className="p-6 border-b border-gray-100">
           <h1 className="font-serif text-2xl font-bold">Admin<span className="text-terracotta">Panel</span></h1>
-          <p className="text-xs text-text-muted mt-1">{user.email}</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          {menuItems.map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id as any)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === item.id ? 'bg-terracotta text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-            >
-              {item.icon}
-              <span className="font-medium">{item.label}</span>
+            <button onClick={() => setActiveTab('products')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'products' ? 'bg-terracotta text-white' : 'hover:bg-gray-100'}`}>
+                <ShoppingBag size={20} /> Products
             </button>
-          ))}
+            <button onClick={() => setActiveTab('events')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'events' ? 'bg-terracotta text-white' : 'hover:bg-gray-100'}`}>
+                <Calendar size={20} /> Events
+            </button>
         </nav>
-        <div className="p-4 border-t border-gray-200">
-          <button onClick={logout} className="flex items-center gap-3 px-4 py-3 text-error hover:bg-error/5 w-full rounded-lg transition-colors">
-            <LogOut size={20} />
-            <span>Sign Out</span>
-          </button>
-        </div>
+        <div className="p-4 border-t"><button onClick={logout} className="flex items-center gap-2 text-error"><LogOut size={20} /> Sign Out</button></div>
       </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-        {activeTab === 'products' && <ProductManager />}
-        {activeTab === 'events' && (
-            <div className="text-center py-20 bg-white rounded-xl">
-                <Calendar size={48} className="mx-auto text-gray-300 mb-4" />
-                <h2 className="text-xl font-serif">Exhibitions Manager</h2>
-                <p className="text-text-muted">Module under construction. Will manage upcoming events here.</p>
-            </div>
-        )}
-        {activeTab === 'gallery' && (
-            <div className="text-center py-20 bg-white rounded-xl">
-                <ImageIcon size={48} className="mx-auto text-gray-300 mb-4" />
-                <h2 className="text-xl font-serif">Gallery Manager</h2>
-                <p className="text-text-muted">Module under construction. Will manage photo uploads here.</p>
-            </div>
-        )}
+      <main className="flex-1 p-8 overflow-y-auto">
+        {activeTab === 'products' ? <ProductManager /> : <div className="text-center p-20">Events Module Coming Soon</div>}
       </main>
     </div>
   );

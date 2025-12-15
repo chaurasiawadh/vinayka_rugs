@@ -24,7 +24,7 @@ const Shop: React.FC = () => {
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchCat = selectedCategories.length === 0 || selectedCategories.includes(product.category);
-      const matchMat = selectedMaterials.length === 0 || selectedMaterials.includes(product.material);
+      const matchMat = selectedMaterials.length === 0 || selectedMaterials.includes(product.specifications.material);
       const matchCol = !initialCollection || product.collection === initialCollection;
       return matchCat && matchMat && matchCol;
     }).sort((a, b) => {

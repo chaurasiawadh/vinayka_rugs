@@ -1,25 +1,66 @@
+
 export interface Product {
   id: string;
   name: string;
+  brand: string; // New
   sku: string;
-  price: number;
   description: string;
   shortDescription: string;
   category: string;
   collection: string;
-  material: string;
-  construction: string; // e.g., Hand-knotted, Hand-tufted
+  
+  // Pricing & Offers
+  price: number; // Current selling price
+  mrp: number; // New
+  discount: number; // New (calculated)
+  taxInclusive: boolean; // New
+  emiAvailable: boolean; // New
+  
+  // Media & Variants
   images: string[];
   sizes: string[];
+  defaultSize?: string; // New
   colors: string[];
-  inStock: boolean;
-  isNew?: boolean;
-  isSale?: boolean;
-  isTrending?: boolean; // NEW FIELD
+  
+  // Specifications
+  specifications: {
+    material: string;
+    weaveType: string;
+    pileHeight: string;
+    itemWeight: string;
+    construction: string;
+    origin: string;
+  };
+
+  // About This Item (Dynamic Bullets)
+  aboutItems: string[]; 
+
+  // Admin Controlled Review Data
   rating: number;
   reviews: number;
-  artisanStory?: string;
-  createdAt?: any; // For Firestore timestamp
+  reviewSummary: string; // "Customers say..."
+  reviewTags: string[]; // ["Quality", "Softness"]
+  reviewDistribution: {
+    fiveStar: number;
+    fourStar: number;
+    threeStar: number;
+    twoStar: number;
+    oneStar: number;
+  };
+
+  // Delivery & Stock
+  inStock: boolean;
+  stockCount?: number;
+  deliveryText: string;
+  returnPolicy: string;
+  warranty: string;
+
+  // Flags
+  isNew?: boolean;
+  isSale?: boolean;
+  isTrending?: boolean;
+  
+  createdAt?: any; 
   updatedAt?: any;
 }
 
@@ -88,11 +129,9 @@ export interface BespokeRequest {
   budget: string;
   colors: string[];
   message?: string;
-  source?: string; // e.g., "Product Page: Aether Mist"
+  source?: string;
   createdAt: string;
 }
-
-// --- NEW TYPES FOR SEARCH & WATCHLIST ---
 
 export interface WatchlistItem {
   productId: string;
@@ -114,8 +153,8 @@ export interface SearchSuggestion {
 }
 
 export interface Facet {
-  id: string; // e.g., 'material'
-  label: string; // e.g., 'Material'
+  id: string; 
+  label: string; 
   options: {
     value: string;
     label: string;

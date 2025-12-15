@@ -10,7 +10,7 @@ const searchIndex = [
     subtitle: `₹${p.price.toLocaleString('en-IN')}`,
     image: p.images[0],
     url: `/product/${p.id}`,
-    keywords: `${p.name} ${p.category} ${p.collection} ${p.material} ${p.colors?.join(' ')}`.toLowerCase(),
+    keywords: `${p.name} ${p.category} ${p.collection} ${p.specifications.material} ${p.colors?.join(' ')}`.toLowerCase(),
     obj: p
   })),
   ...MOCK_BLOGS.map(b => ({
@@ -55,7 +55,7 @@ export const mockSearchProducts = (
       p.name.toLowerCase().includes(lowerQ) || 
       p.category.toLowerCase().includes(lowerQ) ||
       p.collection.toLowerCase().includes(lowerQ) ||
-      p.material.toLowerCase().includes(lowerQ)
+      p.specifications.material.toLowerCase().includes(lowerQ)
     );
   }
 
@@ -64,17 +64,23 @@ export const mockSearchProducts = (
     results = results.filter(p => filters.category.includes(p.category));
   }
   if (filters.material?.length) {
-    results = results.filter(p => filters.material.includes(p.material));
+    results = results.filter(p => filters.material.includes(p.specifications.material));
   }
   if (filters.collection?.length) {
     results = results.filter(p => filters.collection.includes(p.collection));
   }
 
   // 3. Facets Calculation (based on current filtered set)
-  const calculateFacet = (key: keyof Product, label: string): Facet => {
+  const calculateFacet = (key: keyof Product | 'material', label: string): Facet => {
     const counts: Record<string, number> = {};
     results.forEach(p => {
-      const val = p[key];
+      let val: any;
+      if (key === 'material') {
+        val = p.specifications.material;
+      } else {
+        val = p[key as keyof Product];
+      }
+
       if (typeof val === 'string') {
         counts[val] = (counts[val] || 0) + 1;
       }
