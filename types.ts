@@ -136,6 +136,20 @@ export interface User {
   role: 'customer' | 'admin';
 }
 
+export interface UserProfile {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  profession: string;
+  city: string;
+  companyName?: string;
+  address: string;
+  createdAt: any;
+  role: 'customer' | 'admin';
+}
+
 export interface Appointment {
   id?: string;
   eventName: string;

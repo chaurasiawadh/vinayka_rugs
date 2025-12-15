@@ -3,12 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, User, Menu, X, Heart, ChevronRight, PenTool } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { useAuth } from '../context/AuthContext';
 import SearchBar from './Search/SearchBar';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { cartCount, setIsCartOpen, wishlist, openBespokeModal } = useShop();
+  const { user } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -87,7 +89,7 @@ const Header: React.FC = () => {
 
           {/* Icons */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <Link to="/account" className="p-2 text-text-body hover:text-terracotta transition-colors hidden sm:block">
+            <Link to={user ? "/account" : "/login"} className="p-2 text-text-body hover:text-terracotta transition-colors hidden sm:block">
               <User size={20} />
             </Link>
              
@@ -160,12 +162,12 @@ const Header: React.FC = () => {
 
                 <div className="mt-auto space-y-2 pt-6 border-t border-gray-100">
                     <Link 
-                        to="/account" 
+                        to={user ? "/account" : "/login"} 
                         onClick={() => setIsMobileMenuOpen(false)} 
                         className="flex items-center gap-3 text-text-muted hover:text-text-body p-3 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                         <User size={20} />
-                        <span className="font-medium">My Account</span>
+                        <span className="font-medium">{user ? "My Account" : "Login / Register"}</span>
                     </Link>
                     <Link 
                         to="/watchlist" 
