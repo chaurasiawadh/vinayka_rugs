@@ -41,11 +41,13 @@ const ProductManager: React.FC = () => {
                 } catch (uploadErr: any) {
                     console.error("Upload Error:", uploadErr);
                     // Check for common CORS or permissions issues
+                    let errorMsg = "Image upload failed.";
                     if (uploadErr.message?.includes('CORS') || uploadErr.code === 'storage/unauthorized' || uploadErr.code === 'storage/unknown') {
-                        alert("⚠️ Image upload failed due to Firebase Storage permissions or CORS.\n\nRecommended Fix: Use the 'Paste URL' tab to use an image link instead.\n\nTo fix upload: Configure CORS on your Firebase bucket.");
+                        errorMsg += "\n\nISSUE: Firebase Storage CORS/Permissions prevented the upload from localhost.\n\nWORKAROUND: Select the 'Paste URL' tab and paste a direct image link instead.";
                     } else {
-                        alert(`Upload failed: ${uploadErr.message}`);
+                        errorMsg += ` ${uploadErr.message}`;
                     }
+                    alert(errorMsg);
                     setLoading(false);
                     return; // Stop saving if image upload fails
                 }
