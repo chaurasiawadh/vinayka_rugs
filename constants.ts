@@ -38,12 +38,37 @@ export const MOCK_PRODUCTS: Product[] = [
     rating: 4.8,
     reviews: 12,
     specifications: {
-        material: 'Wool & Bamboo Silk',
         weaveType: 'Cut Pile',
         pileHeight: 'Medium',
-        itemWeight: '15 Kg',
         construction: 'Hand-knotted',
-        origin: 'India'
+        indoorOutdoor: 'Indoor',
+        stainResistant: 'No',
+        specialFeatures: 'Anti-static, Soft Touch',
+        roomType: 'Living Room',
+        waterResistance: 'No',
+        material: 'Wool & Bamboo Silk',
+        backMaterial: 'Cotton Canvas',
+        careInstructions: 'Professional Clean Only',
+        brand: 'Vinayka Rugs',
+        origin: 'India',
+        includedComponents: 'Rug',
+        itemHeight: '1 cm',
+        manufacturer: 'Vinayka Rugs Ltd',
+        manufacturerContact: 'contact@vinayka.com',
+        unitCount: '1',
+        warranty: '1 Year Manufacturing',
+        color: 'Grey/Blue',
+        theme: 'Abstract',
+        pattern: 'Abstract',
+        shape: 'Rectangular',
+        rugForm: 'Area Rug',
+        style: 'Modern',
+        occasion: 'Home Decor',
+        size: '8x10 Feet',
+        itemWeight: '15 Kg',
+        dimensionsLxW: '240 x 300 cm',
+        numberOfPieces: '1',
+        itemThickness: '12 mm'
     },
     aboutItems: ['Luxurious appearance', 'Handmade in India', 'Premium Wool'],
     reviewSummary: 'Customers love the soft texture.',
@@ -51,7 +76,6 @@ export const MOCK_PRODUCTS: Product[] = [
     reviewDistribution: { fiveStar: 80, fourStar: 10, threeStar: 5, twoStar: 0, oneStar: 5 },
     deliveryText: 'Tue, 25 Dec',
     returnPolicy: '30 Days',
-    warranty: '1 Year'
   }
 ];
 

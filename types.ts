@@ -2,7 +2,7 @@
 export interface Product {
   id: string;
   name: string;
-  brand: string; // New
+  brand: string;
   sku: string;
   description: string;
   shortDescription: string;
@@ -10,26 +10,60 @@ export interface Product {
   collection: string;
   
   // Pricing & Offers
-  price: number; // Current selling price
-  mrp: number; // New
-  discount: number; // New (calculated)
-  taxInclusive: boolean; // New
-  emiAvailable: boolean; // New
+  price: number; 
+  mrp: number;
+  discount: number;
+  taxInclusive: boolean;
+  emiAvailable: boolean;
   
   // Media & Variants
   images: string[];
   sizes: string[];
-  defaultSize?: string; // New
+  defaultSize?: string;
   colors: string[];
   
-  // Specifications
+  // Specifications (Expanded for Amazon-style layout)
   specifications: {
-    material: string;
+    // Features & Specs
     weaveType: string;
     pileHeight: string;
-    itemWeight: string;
     construction: string;
+    indoorOutdoor: string;
+    stainResistant: string; // 'Yes'/'No'
+    specialFeatures: string;
+    roomType: string;
+    waterResistance: string;
+    
+    // Materials & Care
+    material: string;
+    backMaterial: string;
+    careInstructions: string;
+
+    // Item Details
+    brand: string;
     origin: string;
+    includedComponents: string;
+    itemHeight: string;
+    manufacturer: string;
+    manufacturerContact: string;
+    unitCount: string;
+    warranty: string;
+
+    // Style
+    color: string;
+    theme: string;
+    pattern: string;
+    shape: string;
+    rugForm: string;
+    style: string;
+    occasion: string;
+
+    // Measurements
+    size: string; // Dimensions string
+    itemWeight: string;
+    dimensionsLxW: string;
+    numberOfPieces: string;
+    itemThickness: string;
   };
 
   // About This Item (Dynamic Bullets)
@@ -38,8 +72,8 @@ export interface Product {
   // Admin Controlled Review Data
   rating: number;
   reviews: number;
-  reviewSummary: string; // "Customers say..."
-  reviewTags: string[]; // ["Quality", "Softness"]
+  reviewSummary: string; 
+  reviewTags: string[]; 
   reviewDistribution: {
     fiveStar: number;
     fourStar: number;
@@ -53,8 +87,7 @@ export interface Product {
   stockCount?: number;
   deliveryText: string;
   returnPolicy: string;
-  warranty: string;
-
+  
   // Flags
   isNew?: boolean;
   isSale?: boolean;

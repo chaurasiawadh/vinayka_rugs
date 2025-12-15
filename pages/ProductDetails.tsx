@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   Star, MapPin, Lock, ChevronDown, Share2, 
-  ShieldCheck, ArrowRight, RotateCcw
+  ShieldCheck, ArrowRight, RotateCcw, ChevronRight
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import ImageSmart from '../components/ImageSmart';
@@ -30,16 +30,32 @@ const ProductDetails: React.FC = () => {
   if (!product) return <div className="p-20 text-center text-xl">Product not found</div>;
 
   const isWishlisted = isInWishlist(product.id);
+  const specs = product.specifications;
   
   // Ensure we have defaults if data is missing
   const dist = product.reviewDistribution || { fiveStar: 0, fourStar: 0, threeStar: 0, twoStar: 0, oneStar: 0 };
-  const totalReviews = product.reviews || 0;
+  
   const reviewTags = product.reviewTags || [];
 
   const handleAddToCart = () => addToCart(product, selectedSize, qty);
   const handleBuyNow = () => {
       addToCart(product, selectedSize, qty);
       window.location.hash = '#/cart';
+  };
+
+  // Helper for Product Info Table Rows
+  const InfoRow = ({ label, value }: { label: string, value?: string }) => {
+      if (!value) return null;
+      return (
+        <tr className="border-b border-gray-200 last:border-0">
+            <th className="bg-gray-100 text-[#565959] text-sm font-medium p-3 text-left w-1/3 border-r border-gray-200 align-top">
+                {label}
+            </th>
+            <td className="p-3 text-[#333] text-sm align-top">
+                {value}
+            </td>
+        </tr>
+      );
   };
 
   return (
@@ -145,14 +161,12 @@ const ProductDetails: React.FC = () => {
                   </div>
               </div>
 
-              {/* Specs Table */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 text-sm mt-4">
-                  {Object.entries(product.specifications || {}).map(([key, value]) => (
-                      <React.Fragment key={key}>
-                          <div className="font-bold text-[#0F1111] capitalize">{key.replace(/([A-Z])/g, ' $1')}</div>
-                          <div className="text-[#565959]">{value as string}</div>
-                      </React.Fragment>
-                  ))}
+              {/* Quick Specs Highlight (Keep simple, full info below) */}
+              <div className="grid grid-cols-2 gap-y-1 text-sm mt-4 text-[#333]">
+                  <div className="font-bold">Material</div><div>{specs.material}</div>
+                  <div className="font-bold">Weave Type</div><div>{specs.weaveType}</div>
+                  <div className="font-bold">Pile Height</div><div>{specs.pileHeight}</div>
+                  <div className="font-bold">Construction</div><div>{specs.construction}</div>
               </div>
 
               <div className="border-t border-gray-200 my-2"></div>
@@ -209,6 +223,91 @@ const ProductDetails: React.FC = () => {
           </div>
 
         </div>
+      </div>
+
+      <div className="border-t border-gray-200 my-8"></div>
+
+      {/* NEW PRODUCT INFORMATION SECTION (AMAZON STYLE) */}
+      <div className="max-w-[1500px] mx-auto px-4 py-4">
+          <h2 className="text-2xl font-bold text-[#0F1111] mb-4">Product information</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              
+              {/* Left Column of Tables */}
+              <div className="space-y-6">
+                  <div>
+                      <h3 className="font-bold text-lg mb-2">Features & Specs</h3>
+                      <table className="w-full border border-gray-200 text-sm">
+                          <tbody>
+                              <InfoRow label="Weave Type" value={specs.weaveType} />
+                              <InfoRow label="Pile Height" value={specs.pileHeight} />
+                              <InfoRow label="Construction Type" value={specs.construction} />
+                              <InfoRow label="Indoor/Outdoor" value={specs.indoorOutdoor} />
+                              <InfoRow label="Stain Resistant" value={specs.stainResistant} />
+                              <InfoRow label="Special Features" value={specs.specialFeatures} />
+                              <InfoRow label="Room Type" value={specs.roomType} />
+                              <InfoRow label="Water Resistance" value={specs.waterResistance} />
+                          </tbody>
+                      </table>
+                  </div>
+
+                  <div>
+                      <h3 className="font-bold text-lg mb-2">Materials & Care</h3>
+                      <table className="w-full border border-gray-200 text-sm">
+                          <tbody>
+                              <InfoRow label="Material" value={specs.material} />
+                              <InfoRow label="Back Material" value={specs.backMaterial} />
+                              <InfoRow label="Care Instructions" value={specs.careInstructions} />
+                          </tbody>
+                      </table>
+                  </div>
+
+                  <div>
+                      <h3 className="font-bold text-lg mb-2">Item Details</h3>
+                      <table className="w-full border border-gray-200 text-sm">
+                          <tbody>
+                              <InfoRow label="Brand Name" value={specs.brand} />
+                              <InfoRow label="Country of Origin" value={specs.origin} />
+                              <InfoRow label="Included Components" value={specs.includedComponents} />
+                              <InfoRow label="Item Height" value={specs.itemHeight} />
+                              <InfoRow label="Manufacturer" value={specs.manufacturer} />
+                              <InfoRow label="Unit Count" value={specs.unitCount} />
+                              <InfoRow label="Warranty" value={specs.warranty} />
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+
+              {/* Right Column of Tables */}
+              <div className="space-y-6">
+                  <div>
+                      <h3 className="font-bold text-lg mb-2">Style</h3>
+                      <table className="w-full border border-gray-200 text-sm">
+                          <tbody>
+                              <InfoRow label="Colour" value={specs.color} />
+                              <InfoRow label="Theme" value={specs.theme} />
+                              <InfoRow label="Pattern" value={specs.pattern} />
+                              <InfoRow label="Item Shape" value={specs.shape} />
+                              <InfoRow label="Rug Form Type" value={specs.rugForm} />
+                              <InfoRow label="Style" value={specs.style} />
+                              <InfoRow label="Occasion" value={specs.occasion} />
+                          </tbody>
+                      </table>
+                  </div>
+
+                  <div>
+                      <h3 className="font-bold text-lg mb-2">Measurements</h3>
+                      <table className="w-full border border-gray-200 text-sm">
+                          <tbody>
+                              <InfoRow label="Size" value={specs.size} />
+                              <InfoRow label="Item Weight" value={specs.itemWeight} />
+                              <InfoRow label="Dimensions (LxW)" value={specs.dimensionsLxW} />
+                              <InfoRow label="Number of Pieces" value={specs.numberOfPieces} />
+                              <InfoRow label="Item Thickness" value={specs.itemThickness} />
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
       </div>
 
       <div className="border-t border-gray-200 my-8"></div>

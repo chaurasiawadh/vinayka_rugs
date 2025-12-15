@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 import { 
   ShoppingBag, Calendar, Image as ImageIcon, 
   LogOut, Plus, Trash2, Edit2, Loader, Save, X, 
-  ChevronDown, ChevronUp, Layers, Tag, Truck, Star, Info
+  ChevronDown, ChevronUp, Layers, Tag, Truck, Star, Info, List
 } from 'lucide-react';
 import { db, storage } from '../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
@@ -34,12 +34,46 @@ const INITIAL_PRODUCT: Partial<Product> = {
     sizes: [],
     colors: [],
     specifications: {
-        material: 'Wool',
+        // Features
         weaveType: 'Flat Woven',
-        pileHeight: 'Low',
-        itemWeight: '10 Kg',
-        construction: 'Hand-knotted',
-        origin: 'India'
+        pileHeight: 'High Pile',
+        construction: 'Handmade',
+        indoorOutdoor: 'Indoor',
+        stainResistant: 'Yes',
+        specialFeatures: 'Fluffy',
+        roomType: 'Living Room',
+        waterResistance: 'Not Water Resistant',
+        
+        // Materials
+        material: 'MICRO SILK FIBER',
+        backMaterial: 'Cotton',
+        careInstructions: 'Hand Wash Only',
+
+        // Details
+        brand: 'Carpet Collection',
+        origin: 'India',
+        includedComponents: 'Carpet',
+        itemHeight: '5 cm',
+        manufacturer: 'Carpet Collection',
+        manufacturerContact: '',
+        unitCount: '1.0 Count',
+        warranty: '1 Year Warranty',
+
+        // Style
+        color: 'Multicolor',
+        theme: 'Modern',
+        pattern: 'Modern',
+        shape: 'Rectangular',
+        rugForm: 'Area Rug',
+        style: 'Casual',
+        occasion: 'Housewarming',
+
+        // Measurements
+        size: '',
+        itemWeight: '12 Kilograms',
+        dimensionsLxW: '',
+        numberOfPieces: '1',
+        itemThickness: '5 cm'
     },
     aboutItems: [],
     rating: 4.5,
@@ -50,7 +84,6 @@ const INITIAL_PRODUCT: Partial<Product> = {
     inStock: true,
     deliveryText: '7-10 Business Days',
     returnPolicy: '10 Days Return',
-    warranty: '1 Year Manufacturer Warranty',
     isTrending: false,
     isNew: true
 };
@@ -61,7 +94,6 @@ const ProductManager: React.FC = () => {
   const [formData, setFormData] = useState<Partial<Product>>(INITIAL_PRODUCT);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>('basic');
 
   // Helper to update nested state
   const updateField = (field: keyof Product, value: any) => {
@@ -104,6 +136,11 @@ const ProductManager: React.FC = () => {
 
   const handleImageUpload = async (fileOrUrl: File | string | null) => {
       if (!fileOrUrl) return;
+      if ((formData.images?.length || 0) >= 5) {
+          setUploadError("Maximum 5 images allowed.");
+          return;
+      }
+
       setLoading(true);
       try {
           let url = '';
@@ -163,11 +200,24 @@ const ProductManager: React.FC = () => {
       if(confirm('Delete product?')) await deleteDoc(doc(db, 'products', id));
   };
 
+  // Reusable Specs Input Component
+  const SpecInput = ({ label, field, placeholder = '' }: { label: string, field: string, placeholder?: string }) => (
+      <div>
+          <label className="text-xs font-bold uppercase text-gray-500 block mb-1">{label}</label>
+          <input 
+            className="w-full border border-gray-300 p-2 rounded text-sm focus:ring-terracotta focus:border-terracotta" 
+            value={(formData.specifications as any)?.[field] || ''} 
+            onChange={e => updateNestedField('specifications', field, e.target.value)} 
+            placeholder={placeholder}
+          />
+      </div>
+  );
+
   if (isEditing) {
       return (
           <form onSubmit={handleSave} className="bg-gray-50 min-h-screen p-6 pb-20">
               {/* Header */}
-              <div className="sticky top-0 z-10 bg-white shadow-sm p-4 rounded-lg flex justify-between items-center mb-6">
+              <div className="sticky top-0 z-20 bg-white shadow-sm p-4 rounded-lg flex justify-between items-center mb-6 border border-gray-200">
                   <div>
                       <h2 className="text-xl font-bold font-serif">{formData.id ? 'Edit Product' : 'New Product'}</h2>
                       <p className="text-xs text-text-muted">Fill in all details carefully</p>
@@ -184,8 +234,8 @@ const ProductManager: React.FC = () => {
                   <div className="lg:col-span-2 space-y-6">
                       
                       {/* Basic Info */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Info size={18} /> Basic Information</h3>
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg text-gray-800"><Info size={18} /> Basic Information</h3>
                           <div className="grid grid-cols-2 gap-4 mb-4">
                               <div className="col-span-2">
                                   <label className="text-xs font-bold uppercase text-gray-500">Product Name</label>
@@ -211,64 +261,113 @@ const ProductManager: React.FC = () => {
                       </section>
 
                       {/* Images */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><ImageIcon size={18} /> Media Gallery</h3>
-                          <div className="grid grid-cols-4 gap-4 mb-4">
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <div className="flex justify-between items-center mb-4">
+                              <h3 className="flex items-center gap-2 font-bold text-lg text-gray-800"><ImageIcon size={18} /> Media Gallery</h3>
+                              <span className="text-xs text-gray-500">{formData.images?.length || 0} / 5 Images</span>
+                          </div>
+                          
+                          <div className="grid grid-cols-5 gap-4 mb-4">
                               {formData.images?.map((img, i) => (
-                                  <div key={i} className="relative aspect-square rounded border overflow-hidden group">
+                                  <div key={i} className="relative aspect-[4/5] rounded border bg-gray-50 overflow-hidden group">
                                       <img src={img} className="w-full h-full object-cover" />
-                                      <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><X size={12} /></button>
+                                      <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white shadow-sm text-red-500 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><X size={14} /></button>
+                                      {i === 0 && <span className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] text-center py-1">Main</span>}
                                   </div>
                               ))}
-                              <div className="aspect-square bg-gray-50 border-2 border-dashed rounded flex flex-col items-center justify-center p-2">
-                                  <ImageInput onChange={handleImageUpload} label="" error={uploadError} />
+                              
+                              {(formData.images?.length || 0) < 5 && (
+                                  <div className="aspect-[4/5] bg-gray-50 border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center p-2 hover:bg-gray-100 transition-colors">
+                                      <ImageInput onChange={handleImageUpload} label="" error={uploadError} />
+                                  </div>
+                              )}
+                          </div>
+                      </section>
+
+                      {/* Product Information Sections (Amazon Style) */}
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <h3 className="flex items-center gap-2 font-bold mb-6 text-lg text-gray-800"><Layers size={18} /> Product Information</h3>
+                          
+                          <div className="space-y-8">
+                              {/* 1. Features & Specs */}
+                              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                  <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Features & Specs</h4>
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <SpecInput label="Weave Type" field="weaveType" />
+                                      <SpecInput label="Pile Height" field="pileHeight" />
+                                      <SpecInput label="Construction Type" field="construction" />
+                                      <SpecInput label="Indoor/Outdoor" field="indoorOutdoor" />
+                                      <SpecInput label="Stain Resistant?" field="stainResistant" />
+                                      <SpecInput label="Special Features" field="specialFeatures" />
+                                      <SpecInput label="Room Type" field="roomType" />
+                                      <SpecInput label="Water Resistance" field="waterResistance" />
+                                  </div>
+                              </div>
+
+                              {/* 2. Materials & Care */}
+                              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                  <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Materials & Care</h4>
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <SpecInput label="Material" field="material" />
+                                      <SpecInput label="Back Material" field="backMaterial" />
+                                      <SpecInput label="Care Instructions" field="careInstructions" />
+                                  </div>
+                              </div>
+
+                              {/* 3. Item Details */}
+                              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                  <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Item Details</h4>
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <SpecInput label="Brand Name" field="brand" />
+                                      <SpecInput label="Country of Origin" field="origin" />
+                                      <SpecInput label="Included Components" field="includedComponents" />
+                                      <SpecInput label="Manufacturer" field="manufacturer" />
+                                      <SpecInput label="Manufacturer Contact" field="manufacturerContact" />
+                                      <SpecInput label="Unit Count" field="unitCount" />
+                                      <SpecInput label="Warranty" field="warranty" />
+                                  </div>
+                              </div>
+
+                              {/* 4. Style */}
+                              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                  <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Style</h4>
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <SpecInput label="Colour" field="color" />
+                                      <SpecInput label="Theme" field="theme" />
+                                      <SpecInput label="Pattern" field="pattern" />
+                                      <SpecInput label="Item Shape" field="shape" />
+                                      <SpecInput label="Rug Form Type" field="rugForm" />
+                                      <SpecInput label="Style" field="style" />
+                                      <SpecInput label="Occasion" field="occasion" />
+                                  </div>
+                              </div>
+
+                              {/* 5. Measurements */}
+                              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                  <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Measurements</h4>
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <SpecInput label="Size (Text)" field="size" placeholder="e.g. 5x7 feet" />
+                                      <SpecInput label="Item Weight" field="itemWeight" />
+                                      <SpecInput label="Dimensions (LxW)" field="dimensionsLxW" placeholder="e.g. 2.13L x 1.52W Meters" />
+                                      <SpecInput label="Number of Pieces" field="numberOfPieces" />
+                                      <SpecInput label="Item Thickness/Height" field="itemThickness" />
+                                  </div>
                               </div>
                           </div>
                       </section>
 
-                      {/* Specs */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Layers size={18} /> Specifications</h3>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                              {Object.keys(formData.specifications || {}).map((key) => (
-                                  <div key={key}>
-                                      <label className="text-xs font-bold uppercase text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
-                                      {key === 'material' ? (
-                                           <select className="w-full border p-2 rounded" value={formData.specifications?.material} onChange={e => updateNestedField('specifications', 'material', e.target.value)}>
-                                               {MATERIALS.map(m => <option key={m} value={m}>{m}</option>)}
-                                           </select>
-                                      ) : key === 'weaveType' ? (
-                                            <select className="w-full border p-2 rounded" value={formData.specifications?.weaveType} onChange={e => updateNestedField('specifications', 'weaveType', e.target.value)}>
-                                                {WEAVE_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
-                                            </select>
-                                      ) : key === 'construction' ? (
-                                            <select className="w-full border p-2 rounded" value={formData.specifications?.construction} onChange={e => updateNestedField('specifications', 'construction', e.target.value)}>
-                                                {CONSTRUCTIONS.map(m => <option key={m} value={m}>{m}</option>)}
-                                            </select>
-                                      ) : (
-                                          <input 
-                                            className="w-full border p-2 rounded" 
-                                            value={(formData.specifications as any)[key]} 
-                                            onChange={e => updateNestedField('specifications', key, e.target.value)} 
-                                          />
-                                      )}
-                                  </div>
-                              ))}
-                          </div>
-                      </section>
-
                       {/* About Bullets */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg">About This Item (Bullet Points)</h3>
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg text-gray-800"><List size={18} /> About This Item (Bullet Points)</h3>
                           <div className="space-y-2 mb-4">
                               {formData.aboutItems?.map((item, i) => (
                                   <div key={i} className="flex gap-2">
-                                      <input className="flex-1 border p-2 rounded" value={item} onChange={(e) => {
+                                      <input className="flex-1 border p-2 rounded text-sm" value={item} onChange={(e) => {
                                           const newItems = [...(formData.aboutItems || [])];
                                           newItems[i] = e.target.value;
                                           updateField('aboutItems', newItems);
                                       }} />
-                                      <button type="button" onClick={() => handleArrayRemove('aboutItems', i)} className="text-red-500"><Trash2 size={18}/></button>
+                                      <button type="button" onClick={() => handleArrayRemove('aboutItems', i)} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 size={18}/></button>
                                   </div>
                               ))}
                           </div>
@@ -280,8 +379,8 @@ const ProductManager: React.FC = () => {
                   <div className="space-y-6">
                       
                       {/* Pricing */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Tag size={18} /> Pricing</h3>
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg text-gray-800"><Tag size={18} /> Pricing</h3>
                           <div className="space-y-4">
                               <div>
                                   <label className="text-xs font-bold uppercase text-gray-500">MRP (₹)</label>
@@ -307,8 +406,8 @@ const ProductManager: React.FC = () => {
                       </section>
 
                       {/* Categorization */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="font-bold mb-4 text-lg">Categorization</h3>
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <h3 className="font-bold mb-4 text-lg text-gray-800">Categorization</h3>
                           <div className="space-y-4">
                               <div>
                                   <label className="text-xs font-bold uppercase text-gray-500">Category</label>
@@ -332,8 +431,8 @@ const ProductManager: React.FC = () => {
                       </section>
 
                       {/* Sizes & Stock */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="font-bold mb-4 text-lg">Sizes & Stock</h3>
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <h3 className="font-bold mb-4 text-lg text-gray-800">Sizes & Stock</h3>
                           <div className="mb-4">
                               <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">Available Sizes</label>
                               <div className="flex flex-wrap gap-2">
@@ -345,7 +444,7 @@ const ProductManager: React.FC = () => {
                                             const current = formData.sizes || [];
                                             updateField('sizes', current.includes(size) ? current.filter(s => s !== size) : [...current, size]);
                                         }}
-                                        className={`px-3 py-1 rounded-full text-xs border ${formData.sizes?.includes(size) ? 'bg-terracotta text-white border-terracotta' : 'bg-white text-gray-600'}`}
+                                        className={`px-3 py-1 rounded-full text-xs border transition-colors ${formData.sizes?.includes(size) ? 'bg-terracotta text-white border-terracotta' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
                                       >
                                           {size}
                                       </button>
@@ -364,8 +463,8 @@ const ProductManager: React.FC = () => {
                       </section>
 
                       {/* Reviews (Admin Controlled) */}
-                      <section className="bg-white p-6 rounded-xl shadow-sm">
-                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg"><Star size={18} /> Reviews (Admin)</h3>
+                      <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                          <h3 className="flex items-center gap-2 font-bold mb-4 text-lg text-gray-800"><Star size={18} /> Reviews (Admin)</h3>
                           <div className="grid grid-cols-2 gap-4 mb-4">
                               <div>
                                   <label className="text-xs font-bold uppercase text-gray-500">Rating (0-5)</label>
@@ -391,7 +490,7 @@ const ProductManager: React.FC = () => {
                                             const current = formData.reviewTags || [];
                                             updateField('reviewTags', current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag]);
                                         }}
-                                        className={`px-2 py-1 rounded-sm text-xs border ${formData.reviewTags?.includes(tag) ? 'bg-green-100 border-green-200 text-green-800' : 'bg-white border-gray-200'}`}
+                                        className={`px-2 py-1 rounded-sm text-xs border transition-colors ${formData.reviewTags?.includes(tag) ? 'bg-green-100 border-green-200 text-green-800' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
                                       >
                                           {tag}
                                       </button>
@@ -406,7 +505,7 @@ const ProductManager: React.FC = () => {
       );
   }
 
-  // List View (Existing but cleaned up)
+  // List View
   return (
       <div className="space-y-6">
           <div className="flex justify-between items-center">
@@ -415,7 +514,7 @@ const ProductManager: React.FC = () => {
                   <Plus size={18} className="mr-2" /> Add Product
               </Button>
           </div>
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
               <table className="w-full text-left">
                   <thead className="bg-gray-50 text-text-muted text-sm uppercase">
                       <tr>
