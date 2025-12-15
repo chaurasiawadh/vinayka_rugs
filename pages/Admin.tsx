@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, ShoppingBag, Calendar, Image as ImageIcon, 
+  ShoppingBag, Calendar, Image as ImageIcon, 
   LogOut, Plus, Trash2, Edit2, Loader 
 } from 'lucide-react';
 import { db, storage } from '../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useProducts, useCollection } from '../hooks/useFirestore';
+import { useProducts } from '../hooks/useFirestore';
 import Button from '../components/Button';
+import ImageInput from '../components/ImageInput';
 import { CATEGORIES, MATERIALS } from '../constants';
 
 // --- SUB-COMPONENT: Product Manager ---
@@ -17,7 +18,7 @@ const ProductManager: React.FC = () => {
   const { products } = useProducts();
   const [isEditing, setIsEditing] = useState(false);
   const [currentProd, setCurrentProd] = useState<any>({});
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageInput, setImageInput] = useState<File | string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSave = async (e: React.FormEvent) => {
@@ -26,11 +27,29 @@ const ProductManager: React.FC = () => {
     try {
         let imageUrl = currentProd.images?.[0] || '';
 
-        // 1. Upload Image if exists
-        if (imageFile) {
-            const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
-            await uploadBytes(storageRef, imageFile);
-            imageUrl = await getDownloadURL(storageRef);
+        // Handle Image Input (File Upload or URL)
+        if (imageInput) {
+            if (typeof imageInput === 'string') {
+                // User provided a URL directly
+                imageUrl = imageInput;
+            } else if (imageInput instanceof File) {
+                // User provided a file, upload to Firebase
+                try {
+                    const storageRef = ref(storage, `products/${Date.now()}_${imageInput.name}`);
+                    await uploadBytes(storageRef, imageInput);
+                    imageUrl = await getDownloadURL(storageRef);
+                } catch (uploadErr: any) {
+                    console.error("Upload Error:", uploadErr);
+                    // Check for common CORS or permissions issues
+                    if (uploadErr.message?.includes('CORS') || uploadErr.code === 'storage/unauthorized' || uploadErr.code === 'storage/unknown') {
+                        alert("⚠️ Image upload failed due to Firebase Storage permissions or CORS.\n\nRecommended Fix: Use the 'Paste URL' tab to use an image link instead.\n\nTo fix upload: Configure CORS on your Firebase bucket.");
+                    } else {
+                        alert(`Upload failed: ${uploadErr.message}`);
+                    }
+                    setLoading(false);
+                    return; // Stop saving if image upload fails
+                }
+            }
         }
 
         const productData = {
@@ -50,10 +69,10 @@ const ProductManager: React.FC = () => {
         }
         setIsEditing(false);
         setCurrentProd({});
-        setImageFile(null);
+        setImageInput(null);
     } catch (error) {
         console.error("Error saving product", error);
-        alert("Error saving product. Check console.");
+        alert("Error saving product. Check console for details.");
     } finally {
         setLoading(false);
     }
@@ -63,6 +82,13 @@ const ProductManager: React.FC = () => {
     if(confirm('Are you sure you want to delete this product?')) {
         await deleteDoc(doc(db, 'products', id));
     }
+  };
+
+  const handleEditClick = (product: any) => {
+      setCurrentProd(product);
+      // Reset image input logic
+      setImageInput(null); 
+      setIsEditing(true);
   };
 
   if (isEditing) {
@@ -86,17 +112,15 @@ const ProductManager: React.FC = () => {
                   </div>
                   <textarea placeholder="Description" className="border p-2 rounded w-full" rows={3} value={currentProd.description || ''} onChange={e => setCurrentProd({...currentProd, description: e.target.value})} />
                   
-                  <div className="border p-4 rounded border-dashed">
-                      <label className="block mb-2 text-sm font-medium">Main Image</label>
-                      <input type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} />
-                      {currentProd.images?.[0] && !imageFile && (
-                          <img src={currentProd.images[0]} alt="Current" className="h-20 w-20 object-cover mt-2 rounded" />
-                      )}
-                  </div>
+                  <ImageInput 
+                    label="Product Image"
+                    initialValue={currentProd.images?.[0]}
+                    onChange={(val) => setImageInput(val)}
+                  />
 
                   <div className="flex items-center gap-2">
-                      <input type="checkbox" checked={currentProd.isTrending || false} onChange={e => setCurrentProd({...currentProd, isTrending: e.target.checked})} />
-                      <label>Mark as Trending / Best Seller</label>
+                      <input type="checkbox" id="isTrending" checked={currentProd.isTrending || false} onChange={e => setCurrentProd({...currentProd, isTrending: e.target.checked})} />
+                      <label htmlFor="isTrending">Mark as Trending / Best Seller</label>
                   </div>
 
                   <div className="flex gap-2">
@@ -112,7 +136,7 @@ const ProductManager: React.FC = () => {
       <div className="space-y-6">
           <div className="flex justify-between items-center">
               <h2 className="text-2xl font-serif">Product Inventory</h2>
-              <Button onClick={() => { setCurrentProd({}); setIsEditing(true); }}>
+              <Button onClick={() => { setCurrentProd({}); setImageInput(null); setIsEditing(true); }}>
                   <Plus size={18} className="mr-2" /> Add Product
               </Button>
           </div>
@@ -142,7 +166,7 @@ const ProductManager: React.FC = () => {
                                   {p.isTrending ? <span className="bg-amber/10 text-amber text-xs px-2 py-1 rounded-full">Trending</span> : '-'}
                               </td>
                               <td className="p-4 text-right space-x-2">
-                                  <button onClick={() => { setCurrentProd(p); setIsEditing(true); }} className="p-2 hover:bg-gray-200 rounded text-gray-600"><Edit2 size={16} /></button>
+                                  <button onClick={() => handleEditClick(p)} className="p-2 hover:bg-gray-200 rounded text-gray-600"><Edit2 size={16} /></button>
                                   <button onClick={() => handleDelete(p.id)} className="p-2 hover:bg-error/10 rounded text-error"><Trash2 size={16} /></button>
                               </td>
                           </tr>

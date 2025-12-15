@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, Check, ChevronRight } from 'lucide-react';
+import { X, Check, ChevronRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import Button from './Button';
+import ImageInput from './ImageInput';
 import { WHATSAPP_NUMBER } from '../constants';
 import { BespokeRequest } from '../types';
 
@@ -13,6 +14,7 @@ const BespokeModal: React.FC = () => {
   const { isBespokeOpen, closeBespokeModal, bespokeSource, notify, submitBespokeRequest } = useShop();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [inspirationImage, setInspirationImage] = useState<File | string | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -34,6 +36,7 @@ const BespokeModal: React.FC = () => {
     if (isBespokeOpen) {
       setStep(1);
       document.body.style.overflow = 'hidden';
+      setInspirationImage(null);
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -87,7 +90,17 @@ const BespokeModal: React.FC = () => {
     // 1. Submit to "Backend"
     submitBespokeRequest(request);
 
-    // 2. Generate WhatsApp Link
+    // 2. Determine Image Message
+    let imageMsg = 'None';
+    if (inspirationImage) {
+        if (typeof inspirationImage === 'string') {
+            imageMsg = `Image URL: ${inspirationImage}`;
+        } else {
+            imageMsg = `Image: [User will attach file in chat]`;
+        }
+    }
+
+    // 3. Generate WhatsApp Link
     const message = `*New Bespoke Design Request*
 Name: ${formData.name}
 Email: ${formData.email}
@@ -100,6 +113,7 @@ Material: ${formData.material}
 Size: ${formData.size}
 Budget: ${formData.budget}
 Colors: ${formData.colors}
+Inspiration: ${imageMsg}
 ----------------
 Message: ${formData.message || 'N/A'}
 Source: ${bespokeSource || 'Website Global'}`;
@@ -236,14 +250,10 @@ Source: ${bespokeSource || 'Website Global'}`;
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">Inspiration / Room Photos</label>
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer group">
-                                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-white group-hover:shadow-sm">
-                                    <Upload size={20} className="text-gray-400 group-hover:text-terracotta" />
-                                </div>
-                                <p className="text-sm font-medium text-gray-700">Click to upload images</p>
-                                <p className="text-xs text-gray-500 mt-1">JPG, PNG up to 5MB (Mock functionality)</p>
-                            </div>
+                            <ImageInput 
+                                label="Inspiration / Room Photos"
+                                onChange={(val) => setInspirationImage(val)}
+                            />
                         </div>
                     </div>
                 )}
