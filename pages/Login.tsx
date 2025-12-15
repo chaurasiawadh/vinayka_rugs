@@ -24,6 +24,36 @@ const PROFESSIONS = [
   'Other'
 ];
 
+// InputField moved outside to prevent re-mounting on state change
+const InputField = ({ 
+  label, name, type = 'text', value, onChange, error, placeholder, icon: Icon, showPassword, togglePassword 
+}: any) => (
+  <div className="mb-4">
+    <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">{label}</label>
+    <div className="relative">
+      <input 
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`w-full border rounded-lg py-3 pl-10 pr-4 text-sm outline-none transition-all bg-white text-text-body placeholder-gray-400 ${error ? 'border-error focus:border-error focus:ring-1 focus:ring-error' : 'border-gray-300 focus:border-terracotta focus:ring-1 focus:ring-terracotta'}`}
+      />
+      {Icon && <Icon size={18} className="absolute left-3 top-3 text-gray-400" />}
+      {name.toLowerCase().includes('password') && type !== 'hidden' && togglePassword && (
+         <button 
+           type="button" 
+           onClick={togglePassword}
+           className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+         >
+           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+         </button>
+      )}
+    </div>
+    {error && <span className="text-xs text-error mt-1 flex items-center gap-1"><AlertCircle size={12}/> {error}</span>}
+  </div>
+);
+
 const Login: React.FC = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -175,37 +205,6 @@ const Login: React.FC = () => {
     }
   };
 
-  // --- Render Components ---
-
-  const InputField = ({ 
-    label, name, type = 'text', value, onChange, error, placeholder, icon: Icon 
-  }: any) => (
-    <div className="mb-4">
-      <label className="block text-xs font-bold uppercase text-gray-500 mb-1.5">{label}</label>
-      <div className="relative">
-        <input 
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className={`w-full border rounded-lg py-3 pl-10 pr-4 text-sm outline-none transition-all bg-white text-text-body placeholder-gray-400 ${error ? 'border-error focus:border-error focus:ring-1 focus:ring-error' : 'border-gray-300 focus:border-terracotta focus:ring-1 focus:ring-terracotta'}`}
-        />
-        {Icon && <Icon size={18} className="absolute left-3 top-3 text-gray-400" />}
-        {name.toLowerCase().includes('password') && type !== 'hidden' && (
-           <button 
-             type="button" 
-             onClick={() => setShowPassword(!showPassword)}
-             className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-           >
-             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-           </button>
-        )}
-      </div>
-      {error && <span className="text-xs text-error mt-1 flex items-center gap-1"><AlertCircle size={12}/> {error}</span>}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row animate-fade-in">
       
@@ -301,6 +300,8 @@ const Login: React.FC = () => {
                     onChange={(e: any) => setLoginPassword(e.target.value)} 
                     icon={Lock}
                     placeholder="Enter your password"
+                    showPassword={showPassword}
+                    togglePassword={() => setShowPassword(!showPassword)}
                   />
                 </div>
 
@@ -390,10 +391,14 @@ const Login: React.FC = () => {
                     <InputField 
                       label="Password" name="password" type={showPassword ? 'text' : 'password'}
                       value={regData.password} onChange={handleRegChange} error={regErrors.password} icon={Lock}
+                      showPassword={showPassword}
+                      togglePassword={() => setShowPassword(!showPassword)}
                     />
                     <InputField 
                       label="Confirm Password" name="confirmPassword" type={showPassword ? 'text' : 'password'}
                       value={regData.confirmPassword} onChange={handleRegChange} error={regErrors.confirmPassword} icon={Lock}
+                      showPassword={showPassword}
+                      togglePassword={() => setShowPassword(!showPassword)}
                     />
                  </div>
                  
