@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, Menu, X, Heart } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, X, Heart } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import SearchBar from './Search/SearchBar';
 
@@ -26,18 +26,19 @@ const Header: React.FC = () => {
     { name: 'Shop', path: '/shop' },
     { name: 'Collections', path: '/shop?filter=collections' },
     { name: 'Events', path: '/events' },
-    { name: 'Bespoke', path: '/bespoke' },
+    { name: 'Bespoke', path: '/bespoke' }, 
   ];
 
   return (
-    <header
-      className={`sticky top-0 z-40 w-full transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur shadow-sm py-3' : 'bg-cream py-5'
-        }`}
+    <header 
+      className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        isScrolled ? 'bg-white/95 backdrop-blur shadow-sm py-3' : 'bg-cream py-5'
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
-
-          <button
+          
+          <button 
             className="lg:hidden p-2 -ml-2 text-text-body"
             onClick={() => setIsMobileMenuOpen(true)}
           >
@@ -53,26 +54,29 @@ const Header: React.FC = () => {
           {/* Desktop Nav & Search */}
           <div className="hidden lg:flex flex-1 items-center justify-between ml-8 gap-8">
             <nav className="flex items-center gap-6 xl:gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className="text-sm uppercase tracking-widest font-medium text-text-body hover:text-terracotta transition-colors relative group whitespace-nowrap"
+                {navLinks.map((link) => (
+                <Link 
+                    key={link.name} 
+                    to={link.path} 
+                    className="text-sm uppercase tracking-widest font-medium text-text-body hover:text-terracotta transition-colors relative group whitespace-nowrap"
                 >
-                  {link.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-terracotta transition-all group-hover:w-full"></span>
+                    {link.name}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-terracotta transition-all group-hover:w-full"></span>
                 </Link>
-              ))}
+                ))}
             </nav>
             {/* Global Search Bar */}
             <div className="flex-1 max-w-sm">
-              <SearchBar />
+                <SearchBar />
             </div>
           </div>
 
           {/* Icons */}
           <div className="flex items-center gap-2 sm:gap-4">
-
+            <Link to="/account" className="p-2 text-text-body hover:text-terracotta transition-colors hidden sm:block">
+              <User size={20} />
+            </Link>
+             
             <Link to="/watchlist" className="p-2 text-text-body hover:text-terracotta transition-colors relative">
               <Heart size={20} />
               {wishlist.length > 0 && (
@@ -80,7 +84,7 @@ const Header: React.FC = () => {
               )}
             </Link>
 
-            <button
+            <button 
               className="p-2 text-text-body hover:text-terracotta transition-colors relative"
               onClick={() => setIsCartOpen(true)}
             >
@@ -101,30 +105,33 @@ const Header: React.FC = () => {
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
           <div className="absolute inset-y-0 left-0 w-80 bg-white shadow-xl flex flex-col p-6 animate-fade-in">
             <div className="flex justify-between items-center mb-6">
-              <span className="font-serif text-xl font-bold">Menu</span>
-              <button onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
+               <span className="font-serif text-xl font-bold">Menu</span>
+               <button onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
             </div>
-
+            
             <div className="mb-6">
-              <SearchBar />
+                <SearchBar />
             </div>
 
             <nav className="flex flex-col gap-6">
               {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
+                <Link 
+                  key={link.name} 
+                  to={link.path} 
                   className="text-lg font-medium text-text-body border-b border-gray-100 pb-2"
                 >
                   {link.name}
                 </Link>
               ))}
               <div className="mt-4 pt-4 border-t border-gray-200 flex flex-col gap-4">
+                <Link to="/account" className="flex items-center gap-2 text-text-muted">
+                    <User size={18} /> My Account
+                </Link>
                 <Link to="/watchlist" className="flex items-center gap-2 text-text-muted">
-                  <Heart size={18} /> Watchlist ({wishlist.length})
+                    <Heart size={18} /> Watchlist ({wishlist.length})
                 </Link>
                 <button onClick={() => { setIsMobileMenuOpen(false); }} className="w-full text-left bg-terracotta text-white p-3 rounded-lg text-center mt-2">
-                  Request Bespoke Design
+                    Request Bespoke Design
                 </button>
               </div>
             </nav>
