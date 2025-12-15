@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, Link as LinkIcon, X } from 'lucide-react';
+import { Upload, Link as LinkIcon, X, AlertCircle } from 'lucide-react';
 
 interface ImageInputProps {
   label?: string;
   initialValue?: string;
   onChange: (value: File | string | null) => void;
   className?: string;
+  error?: string | null;
 }
 
 const ImageInput: React.FC<ImageInputProps> = ({ 
   label = "Image", 
   initialValue, 
   onChange,
-  className = "" 
+  className = "",
+  error
 }) => {
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
   const [preview, setPreview] = useState<string | null>(initialValue || null);
@@ -66,7 +68,7 @@ const ImageInput: React.FC<ImageInputProps> = ({
       <label className="block text-sm font-medium text-gray-700">{label}</label>
       
       {!preview ? (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+        <div className={`bg-gray-50 border rounded-lg p-3 ${error ? 'border-error/50 bg-error/5' : 'border-gray-200'}`}>
             <div className="flex gap-4 mb-4 border-b border-gray-200 px-1">
                 <button 
                     type="button"
@@ -85,7 +87,7 @@ const ImageInput: React.FC<ImageInputProps> = ({
             </div>
 
             {activeTab === 'upload' ? (
-                <div className="relative group bg-white rounded-lg border-2 border-dashed border-gray-300 hover:border-terracotta transition-colors">
+                <div className={`relative group bg-white rounded-lg border-2 border-dashed transition-colors ${error ? 'border-error' : 'border-gray-300 hover:border-terracotta'}`}>
                     <input 
                         type="file" 
                         accept="image/*"
@@ -93,8 +95,8 @@ const ImageInput: React.FC<ImageInputProps> = ({
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
                     <div className="p-8 text-center">
-                        <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-terracotta/10 transition-colors">
-                            <Upload size={18} className="text-gray-400 group-hover:text-terracotta" />
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 transition-colors ${error ? 'bg-error/10 text-error' : 'bg-gray-50 text-gray-400 group-hover:bg-terracotta/10 group-hover:text-terracotta'}`}>
+                            <Upload size={18} />
                         </div>
                         <p className="text-sm font-medium text-gray-700">Click to upload</p>
                         <p className="text-xs text-gray-400 mt-1">SVG, PNG, JPG or GIF</p>
@@ -109,7 +111,7 @@ const ImageInput: React.FC<ImageInputProps> = ({
                             placeholder="https://example.com/image.jpg" 
                             value={urlInput}
                             onChange={handleUrlChange}
-                            className="w-full border border-gray-300 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none bg-white"
+                            className={`w-full border rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-1 outline-none bg-white ${error ? 'border-error focus:ring-error focus:border-error' : 'border-gray-300 focus:ring-terracotta focus:border-terracotta'}`}
                         />
                      </div>
                 </div>
@@ -137,6 +139,13 @@ const ImageInput: React.FC<ImageInputProps> = ({
             <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white text-xs p-2 truncate">
                 {activeTab === 'upload' ? 'Local File Selected' : urlInput || 'Image URL'}
             </div>
+        </div>
+      )}
+      
+      {error && (
+        <div className="flex items-start gap-2 mt-1.5 text-xs text-error animate-fade-in bg-error/5 p-2 rounded border border-error/10">
+            <AlertCircle size={14} className="mt-0.5 shrink-0" />
+            <span>{error}</span>
         </div>
       )}
     </div>

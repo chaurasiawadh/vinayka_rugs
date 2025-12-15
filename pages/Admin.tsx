@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { 
   ShoppingBag, Calendar, Image as ImageIcon, 
-  LogOut, Plus, Trash2, Edit2, Loader 
+  LogOut, Plus, Trash2, Edit2, Loader, AlertTriangle
 } from 'lucide-react';
 import { db, storage } from '../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
@@ -20,10 +20,13 @@ const ProductManager: React.FC = () => {
   const [currentProd, setCurrentProd] = useState<any>({});
   const [imageInput, setImageInput] = useState<File | string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setUploadError(null);
+
     try {
         let imageUrl = currentProd.images?.[0] || '';
 
@@ -41,13 +44,13 @@ const ProductManager: React.FC = () => {
                 } catch (uploadErr: any) {
                     console.error("Upload Error:", uploadErr);
                     // Check for common CORS or permissions issues
-                    let errorMsg = "Image upload failed.";
+                    let errorMsg = "Upload failed.";
                     if (uploadErr.message?.includes('CORS') || uploadErr.code === 'storage/unauthorized' || uploadErr.code === 'storage/unknown') {
-                        errorMsg += "\n\nISSUE: Firebase Storage CORS/Permissions prevented the upload from localhost.\n\nWORKAROUND: Select the 'Paste URL' tab and paste a direct image link instead.";
+                        errorMsg = "CORS Policy Error: Cannot upload from localhost. Please switch to 'Paste URL' tab and use a direct image link.";
                     } else {
-                        errorMsg += ` ${uploadErr.message}`;
+                        errorMsg = `Upload failed: ${uploadErr.message}`;
                     }
-                    alert(errorMsg);
+                    setUploadError(errorMsg);
                     setLoading(false);
                     return; // Stop saving if image upload fails
                 }
@@ -89,14 +92,24 @@ const ProductManager: React.FC = () => {
   const handleEditClick = (product: any) => {
       setCurrentProd(product);
       // Reset image input logic
-      setImageInput(null); 
+      setImageInput(null);
+      setUploadError(null);
       setIsEditing(true);
   };
+
+  const handleCancel = () => {
+      setIsEditing(false);
+      setUploadError(null);
+  }
 
   if (isEditing) {
       return (
           <div className="bg-white p-6 rounded-xl shadow-sm animate-fade-in">
-              <h3 className="font-serif text-xl mb-4">{currentProd.id ? 'Edit Product' : 'Add New Product'}</h3>
+              <div className="flex justify-between items-start mb-6">
+                  <h3 className="font-serif text-xl">{currentProd.id ? 'Edit Product' : 'Add New Product'}</h3>
+                  <button onClick={handleCancel} className="text-gray-400 hover:text-gray-600"><Trash2 size={18} className="opacity-0" /></button>
+              </div>
+              
               <form onSubmit={handleSave} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                       <input placeholder="Name" className="border p-2 rounded" value={currentProd.name || ''} onChange={e => setCurrentProd({...currentProd, name: e.target.value})} required />
@@ -117,7 +130,11 @@ const ProductManager: React.FC = () => {
                   <ImageInput 
                     label="Product Image"
                     initialValue={currentProd.images?.[0]}
-                    onChange={(val) => setImageInput(val)}
+                    onChange={(val) => {
+                        setImageInput(val);
+                        if(uploadError) setUploadError(null); // Clear error on new selection
+                    }}
+                    error={uploadError}
                   />
 
                   <div className="flex items-center gap-2">
@@ -125,8 +142,8 @@ const ProductManager: React.FC = () => {
                       <label htmlFor="isTrending">Mark as Trending / Best Seller</label>
                   </div>
 
-                  <div className="flex gap-2">
-                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+                  <div className="flex gap-2 pt-2">
+                      <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
                       <Button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Product'}</Button>
                   </div>
               </form>
@@ -138,7 +155,7 @@ const ProductManager: React.FC = () => {
       <div className="space-y-6">
           <div className="flex justify-between items-center">
               <h2 className="text-2xl font-serif">Product Inventory</h2>
-              <Button onClick={() => { setCurrentProd({}); setImageInput(null); setIsEditing(true); }}>
+              <Button onClick={() => { setCurrentProd({}); setImageInput(null); setUploadError(null); setIsEditing(true); }}>
                   <Plus size={18} className="mr-2" /> Add Product
               </Button>
           </div>
