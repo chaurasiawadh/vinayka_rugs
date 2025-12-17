@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { 
-  ShoppingBag, Calendar, Image as ImageIcon, 
-  LogOut, Plus, Trash2, Edit2, Loader, Save, X, 
-  ChevronDown, ChevronUp, Layers, Tag, Truck, Star, Info, List
+  ShoppingBag, Image as ImageIcon, 
+  LogOut, Plus, Trash2, Edit2, Loader, X, 
+  Info, List, Tag, Star, Layers
 } from 'lucide-react';
 import { db, storage } from '../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
@@ -13,7 +13,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useProducts } from '../hooks/useFirestore';
 import Button from '../components/Button';
 import ImageInput from '../components/ImageInput';
-import { CATEGORIES, MATERIALS, CONSTRUCTIONS, WEAVE_TYPES, SIZES, REVIEW_TAGS, COLLECTIONS } from '../constants';
+import { CATEGORIES, COLLECTIONS, SIZES, REVIEW_TAGS } from '../constants';
 import { Product } from '../types';
 
 // Default State for New Product
@@ -560,7 +560,6 @@ const ProductManager: React.FC = () => {
 
 const Admin: React.FC = () => {
   const { user, loading, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'products' | 'events'>('products');
 
   if (loading) return <div className="h-screen flex items-center justify-center"><Loader className="animate-spin text-terracotta" /></div>;
   if (!user) return <Navigate to="/login" replace />;
@@ -572,17 +571,14 @@ const Admin: React.FC = () => {
           <h1 className="font-serif text-2xl font-bold">Admin<span className="text-terracotta">Panel</span></h1>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-            <button onClick={() => setActiveTab('products')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'products' ? 'bg-terracotta text-white' : 'hover:bg-gray-100'}`}>
+            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-terracotta text-white">
                 <ShoppingBag size={20} /> Products
-            </button>
-            <button onClick={() => setActiveTab('events')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'events' ? 'bg-terracotta text-white' : 'hover:bg-gray-100'}`}>
-                <Calendar size={20} /> Events
             </button>
         </nav>
         <div className="p-4 border-t"><button onClick={logout} className="flex items-center gap-2 text-error"><LogOut size={20} /> Sign Out</button></div>
       </aside>
       <main className="flex-1 p-8 overflow-y-auto">
-        {activeTab === 'products' ? <ProductManager /> : <div className="text-center p-20">Events Module Coming Soon</div>}
+        <ProductManager />
       </main>
     </div>
   );

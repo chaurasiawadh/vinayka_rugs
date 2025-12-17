@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -5,7 +6,6 @@ import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
-import Events from './pages/Events';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import SearchResults from './pages/SearchResults';
@@ -36,7 +36,6 @@ const App: React.FC = () => {
               <Route path="/shop" element={<Shop />} />
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/events" element={<Events />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/watchlist" element={<Watchlist />} />
               <Route path="/bespoke" element={<Bespoke />} />

@@ -1,8 +1,10 @@
+
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import CartDrawer from './CartDrawer';
 import BespokeModal from './BespokeModal';
+import LoginModal from './LoginModal';
 import { useShop } from '../context/ShopContext';
 
 interface LayoutProps {
@@ -17,6 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Header />
       <CartDrawer />
       <BespokeModal />
+      <LoginModal />
       
       {/* Toast Notification */}
       {notification && (

@@ -1,10 +1,14 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product, CartItem, Order, WatchlistItem, BespokeRequest } from '../types';
 import { FREE_SHIPPING_THRESHOLD } from '../constants';
 import { useProducts } from '../hooks/useFirestore';
+import { useAuth } from './AuthContext';
+import { db } from '../lib/firebase';
+import { doc, setDoc, deleteDoc, collection, onSnapshot, serverTimestamp } from 'firebase/firestore';
 
 interface ShopContextType {
-  products: Product[]; // Now dynamic
+  products: Product[]; 
   loading: boolean;
   cart: CartItem[];
   wishlist: WatchlistItem[]; 
@@ -15,7 +19,7 @@ interface ShopContextType {
   removeFromCart: (productId: string, selectedSize: string) => void;
   updateQuantity: (productId: string, selectedSize: string, quantity: number) => void;
   
-  toggleWishlist: (productId: string) => void;
+  toggleWishlist: (productId: string) => Promise<void>;
   isInWishlist: (productId: string) => boolean;
   updateWishlistPreferences: (productId: string, prefs: Partial<WatchlistItem['preferences']>) => void;
   
@@ -35,6 +39,10 @@ interface ShopContextType {
   closeBespokeModal: () => void;
   bespokeSource: string;
 
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
+
   notification: { message: string; type: 'success' | 'error' | 'info' } | null;
   notify: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
@@ -42,7 +50,8 @@ interface ShopContextType {
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { products, loading } = useProducts(); // Fetch from Firestore
+  const { products, loading } = useProducts(); 
+  const { user } = useAuth(); // Integrate Auth
   
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WatchlistItem[]>([]);
@@ -51,8 +60,30 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isBespokeOpen, setIsBespokeOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [bespokeSource, setBespokeSource] = useState('');
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  // Firestore Real-time Watchlist Listener
+  useEffect(() => {
+    if (!user) {
+      setWishlist([]); // Clear wishlist if logged out
+      return;
+    }
+
+    const watchlistRef = collection(db, 'users', user.uid, 'watchlist');
+    const unsubscribe = onSnapshot(watchlistRef, (snapshot) => {
+      const items = snapshot.docs.map(doc => ({
+        productId: doc.id,
+        ...doc.data()
+      })) as WatchlistItem[];
+      setWishlist(items);
+    }, (error) => {
+      console.error("Error fetching watchlist:", error);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   const addToCart = (product: Product, selectedSize: string, quantity: number) => {
     setCart((prev) => {
@@ -87,29 +118,51 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return wishlist.some(item => item.productId === productId);
   };
 
-  const toggleWishlist = (productId: string) => {
-    setWishlist((prev) => {
-      if (prev.some(item => item.productId === productId)) {
+  const toggleWishlist = async (productId: string) => {
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    const isAdded = isInWishlist(productId);
+    const itemRef = doc(db, 'users', user.uid, 'watchlist', productId);
+
+    try {
+      if (isAdded) {
+        await deleteDoc(itemRef);
         notify('Removed from watchlist', 'info');
-        return prev.filter((item) => item.productId !== productId);
+      } else {
+        await setDoc(itemRef, {
+          productId,
+          addedAt: serverTimestamp(),
+          preferences: { priceDrop: true, backInStock: true, onSale: true }
+        });
+        notify('Added to watchlist', 'success');
       }
-      notify('Added to watchlist', 'success');
-      return [...prev, {
-        productId,
-        addedAt: new Date().toISOString(),
-        preferences: { priceDrop: true, backInStock: true, onSale: true }
-      }];
-    });
+    } catch (error) {
+      console.error("Error updating watchlist:", error);
+      notify('Failed to update watchlist', 'error');
+    }
   };
 
-  const updateWishlistPreferences = (productId: string, prefs: Partial<WatchlistItem['preferences']>) => {
-    setWishlist(prev => prev.map(item => {
-      if (item.productId === productId) {
-        return { ...item, preferences: { ...item.preferences, ...prefs } };
+  const updateWishlistPreferences = async (productId: string, prefs: Partial<WatchlistItem['preferences']>) => {
+    if (!user) return;
+    try {
+      const itemRef = doc(db, 'users', user.uid, 'watchlist', productId);
+      // We need to merge, but setDoc with merge is safer if doc doesn't exist (though it should)
+      // Since we are updating specific fields inside a map 'preferences', we need dot notation for updateDoc
+      // But simplifying here by updating local state optimistic or waiting for snapshot. 
+      // Let's rely on setDoc merge.
+      const currentItem = wishlist.find(i => i.productId === productId);
+      if(currentItem) {
+          await setDoc(itemRef, {
+              preferences: { ...currentItem.preferences, ...prefs }
+          }, { merge: true });
+          notify('Alert preferences updated', 'success');
       }
-      return item;
-    }));
-    notify('Alert preferences updated', 'success');
+    } catch (error) {
+        notify('Could not update preferences', 'error');
+    }
   };
 
   const clearCart = () => setCart([]);
@@ -133,6 +186,9 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setBespokeSource('');
   };
 
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  const closeLoginModal = () => setIsLoginModalOpen(false);
+
   const notify = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
@@ -145,7 +201,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return (
     <ShopContext.Provider
       value={{
-        products, // EXPOSED HERE
+        products,
         loading,
         cart,
         wishlist,
@@ -169,6 +225,9 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         openBespokeModal,
         closeBespokeModal,
         bespokeSource,
+        isLoginModalOpen,
+        openLoginModal,
+        closeLoginModal,
         notify,
         notification,
       }}
