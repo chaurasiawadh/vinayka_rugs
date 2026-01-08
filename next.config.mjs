@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
+    // output: 'export',
     basePath: '/vinayka_rugs',
     images: {
         unoptimized: true,

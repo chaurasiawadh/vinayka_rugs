@@ -63,22 +63,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                 <div className="bg-white rounded-none p-6 md:p-12 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
                         {/* Left: Image Gallery */}
-                        <div className="flex flex-col-reverse md:flex-row gap-4">
-                            {/* Thumbnails */}
-                            <div className="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible scrollbar-hide">
-                                {product.images.map((img: string, idx: number) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setSelectedImage(idx)}
-                                        className={`w-20 h-20 bg-gray-50 flex-shrink-0 border transition-colors ${selectedImage === idx ? 'border-[#41354D]' : 'border-transparent hover:border-gray-200'}`}
-                                    >
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                    </button>
-                                ))}
-                            </div>
-
+                        <div className="flex flex-col gap-4">
+                            
                             {/* //! Main Image */}
-                            <div className="flex-1 relative z-20">
+                            <div className="w-full relative z-20">
                                 <div 
                                     ref={imageContainerRef}
                                     onMouseEnter={() => setShowZoom(true)}
@@ -128,6 +116,35 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                     >
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Thumbnails (Bottom) */}
+                            {/* Thumbnails (Bottom) */}
+                            <div className={`grid grid-cols-3 gap-4 py-2 ${product.images.length > 6 ? '' : ''}`}>
+                                {product.images.slice(0, 6).map((img: string, idx: number) => {
+                                    const isLast = idx === 5;
+                                    const remaining = product.images.length - 6;
+                                    
+                                    return (
+                                        <div key={idx} className="relative aspect-square">
+                                            <button
+                                                onClick={() => setSelectedImage(idx)}
+                                                className={`w-full h-full bg-gray-50 border transition-colors ${selectedImage === idx ? 'border-[#41354D]' : 'border-transparent hover:border-gray-200'}`}
+                                            >
+                                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                            </button>
+                                            
+                                            {isLast && remaining > 0 && (
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedImage(idx); /* Ideally toggle expand here, but for now just select */ }}
+                                                    className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center text-lg font-medium text-gray-800 border border-transparent hover:bg-white/70 transition-colors"
+                                                >
+                                                    {remaining}+
+                                                </button>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
