@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, MouseEvent } from 'react';
 import { Minus, Plus, Heart, Share2, Star, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import ProductCard from './ProductCard';
 
@@ -23,6 +23,39 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
         setOpenSection(openSection === section ? null : section);
     };
 
+    // Zoom Logic
+    const [showZoom, setShowZoom] = useState(false);
+    const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+    const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+    const [imgDimensions, setImgDimensions] = useState({ width: 0, height: 0 });
+    const imageContainerRef = useRef<HTMLDivElement>(null);
+
+    const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+        if (!imageContainerRef.current) return;
+
+        const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
+        const x = e.clientX - left;
+        const y = e.clientY - top;
+
+        // Store dimensions for lens constraints
+        setImgDimensions({ width, height });
+        setCursorPos({ x, y });
+
+        // Calculate position as percentage for background-position
+        // We ensure values stay within 0-100 bounds for safety
+        const xPercent = Math.max(0, Math.min(100, (x / width) * 100));
+        const yPercent = Math.max(0, Math.min(100, (y / height) * 100));
+
+        setZoomPosition({ x: xPercent, y: yPercent });
+    };
+
+    // Lens Size
+    const lensSize = 200; 
+
+    // Calculate constrained lens position
+    const lensX = Math.max(0, Math.min(cursorPos.x - lensSize / 2, imgDimensions.width - lensSize));
+    const lensY = Math.max(0, Math.min(cursorPos.y - lensSize / 2, imgDimensions.height - lensSize));
+
     return (
         <div className="bg-[#FAF8F6] min-h-screen pb-20">
 
@@ -44,20 +77,57 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                 ))}
                             </div>
 
-                            {/* Main Image */}
-                            <div className="flex-1 relative">
-                                <div className="aspect-[3/4] md:aspect-[4/5] w-full max-h-[600px] bg-[#FAFAFA] rounded-2xl overflow-hidden relative shadow-sm">
+                            {/* //! Main Image */}
+                            <div className="flex-1 relative z-20">
+                                <div 
+                                    ref={imageContainerRef}
+                                    onMouseEnter={() => setShowZoom(true)}
+                                    onMouseLeave={() => setShowZoom(false)}
+                                    onMouseMove={handleMouseMove}
+                                    className="aspect-[3/4] md:aspect-[4/5] w-full max-h-[600px] bg-[#FAFAFA] rounded-sm overflow-hidden relative shadow-sm cursor-crosshair border border-gray-100"
+                                >
                                     <img
                                         src={product.images[selectedImage]}
                                         alt={product.name}
-                                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700 ease-in-out"
+                                        className="w-full h-full object-cover"
                                     />
                                     {product.tags && (
-                                        <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm border border-gray-100 text-[10px] font-bold px-3 py-1.5 uppercase tracking-wider rounded-full shadow-sm text-gray-900">
+                                        <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm border border-gray-100 text-[10px] font-bold px-3 py-1.5 uppercase tracking-wider rounded-full shadow-sm text-gray-900 pointer-events-none">
                                             {product.tags[0]}
                                         </span>
                                     )}
+
+                                    {/* Lens Overlay */}
+                                    {showZoom && (
+                                        <div 
+                                            className="absolute pointer-events-none z-10 border border-blue-200 hidden lg:block"
+                                            style={{
+                                                left: lensX,
+                                                top: lensY,
+                                                width: lensSize,
+                                                height: lensSize,
+                                                // Specific pattern style matching request
+                                                backgroundImage: 'radial-gradient(circle, #93c5fd 1px, transparent 1px)',
+                                                backgroundSize: '4px 4px',
+                                                backgroundColor: 'rgba(147, 197, 253, 0.15)', // Lighter blue tint
+                                            }}
+                                        />
+                                    )}
                                 </div>
+
+                                {/* Zoom Window - Only visible on Desktop when hovering */}
+                                {showZoom && (
+                                    <div 
+                                        className="hidden lg:block absolute left-[105%] top-0 w-[700px] h-[700px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden"
+                                        style={{
+                                            backgroundImage: `url(${product.images[selectedImage]})`,
+                                            backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                            backgroundSize: '300%', // Zoom level
+                                            backgroundRepeat: 'no-repeat'
+                                        }}
+                                    >
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -76,10 +146,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                             </div>
 
                             <div className="flex items-center space-x-4 mb-8">
-                                <span className="text-xl font-medium text-[#111]">${product.price.toFixed(2)}</span>
+                                <span className="text-xl font-medium text-[#111]">₹{product.price.toLocaleString('en-IN')}</span>
                                 {product.originalPrice && (
                                     <>
-                                        <span className="text-lg text-gray-300 line-through">${product.originalPrice.toFixed(2)}</span>
+                                        <span className="text-lg text-gray-300 line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>
                                         <span className="bg-[#E5F0D0] text-[#5C7030] text-xs font-bold px-2 py-1 rounded-sm">
                                             {product.discount}
                                         </span>
@@ -140,29 +210,25 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                 </button>
                             </div>
 
-                            <div className="text-xs text-gray-400 flex items-center gap-2 mb-12">
-                                <span>Ships for free the week of February 14th.</span>
-                                <span>ⓘ</span>
-                            </div>
+
 
                             {/* Trust Badges */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 bg-gray-50 p-6 rounded-lg">
-                                {/* Icons would go here, using placeholders for now */}
                                 <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">⌬</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Safe &<br />Non-toxic</p>
+                                    <div className="mb-2 text-[#41354D] font-serif text-lg">◈</div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Hand<br />Knotted</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">⚕</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Dermatologist<br />Created</p>
+                                    <div className="mb-2 text-[#41354D] font-serif text-lg">☁</div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Pure<br />Wool</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">♻</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Biodegradable<br />Ingredients</p>
+                                    <div className="mb-2 text-[#41354D] font-serif text-lg">∞</div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Heirloom<br />Quality</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">✓</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Vegan &<br />Cruelty-free</p>
+                                    <div className="mb-2 text-[#41354D] font-serif text-lg">↺</div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Easy<br />Returns</p>
                                 </div>
                             </div>
 
@@ -173,54 +239,54 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                         onClick={() => toggleSection('detail')}
                                         className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
                                     >
-                                        Detail
+                                        Product Details
                                         {openSection === 'detail' ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                                     </button>
                                     {openSection === 'detail' && (
-                                        <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200">
+                                        <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200 whitespace-pre-line">
                                             {product.details}
                                         </div>
                                     )}
                                 </div>
                                 <div className="border-b border-gray-100 pb-4">
                                     <button
-                                        onClick={() => toggleSection('benefits')}
+                                        onClick={() => toggleSection('material')}
                                         className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
                                     >
-                                        Benefits
-                                        {openSection === 'benefits' ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                        Material
+                                        {openSection === 'material' ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                                     </button>
-                                    {openSection === 'benefits' && (
+                                    {openSection === 'material' && (
                                         <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200">
-                                            {product.benefits}
+                                            {product.material}
                                         </div>
                                     )}
                                 </div>
                                 <div className="border-b border-gray-100 pb-4">
                                     <button
-                                        onClick={() => toggleSection('usage')}
+                                        onClick={() => toggleSection('care')}
                                         className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
                                     >
-                                        How To Use
-                                        {openSection === 'usage' ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                        Care Instructions
+                                        {openSection === 'care' ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                                     </button>
-                                    {openSection === 'usage' && (
+                                    {openSection === 'care' && (
                                         <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200">
-                                            {product.howToUse}
+                                            {product.careInstructions}
                                         </div>
                                     )}
                                 </div>
                                 <div className="border-b border-gray-100 pb-4">
                                     <button
-                                        onClick={() => toggleSection('ingredients')}
+                                        onClick={() => toggleSection('shipping')}
                                         className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
                                     >
-                                        Ingredients
-                                        {openSection === 'ingredients' ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                        Shipping & Returns
+                                        {openSection === 'shipping' ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                                     </button>
-                                    {openSection === 'ingredients' && (
+                                    {openSection === 'shipping' && (
                                         <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200">
-                                            {product.ingredients}
+                                            {product.shipping}
                                         </div>
                                     )}
                                 </div>
