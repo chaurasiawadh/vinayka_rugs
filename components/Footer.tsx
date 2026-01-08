@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Instagram, Facebook, Twitter, MapPin, Mail, Phone } from 'lucide-react';
+import { MapPin, Mail, Phone } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -15,11 +15,6 @@ const Footer: React.FC = () => {
             <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
               Crafting legacy since 1982. We weave stories into every knot, bringing the timeless art of handmade luxury to your modern home.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Instagram size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Facebook size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Twitter size={20} /></a>
-            </div>
           </div>
 
           {/* Quick Links */}
@@ -51,27 +46,19 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm text-gray-400 mb-6">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="shrink-0 mt-0.5 text-terracotta" />
-                <span>Lanka BHU,<br />Varanasi, India</span>
+                <span>Chauri Bazar (Main Road),<br />Parsipur, Bhadohi-221 402,<br />(U.P.) INDIA</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-terracotta" />
-                <span>+91 9936169852</span>
+                <div className="flex flex-col">
+                  <span>+91-9580122122</span>
+                </div>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-terracotta" />
-                <span>info@vinaykarugs.com</span>
+                <span className="break-all">mailtoshyamaexports@gmail.com</span>
               </li>
             </ul>
-            <div className="relative">
-              <input
-                type="email"
-                placeholder="Join our newsletter"
-                className="w-full bg-white/10 border border-white/20 rounded px-4 py-2 text-sm text-white focus:outline-none focus:border-terracotta placeholder-gray-500"
-              />
-              <button className="absolute right-2 top-2 text-xs font-bold text-terracotta uppercase tracking-wider hover:text-white transition-colors">
-                Subscribe
-              </button>
-            </div>
           </div>
         </div>
 
