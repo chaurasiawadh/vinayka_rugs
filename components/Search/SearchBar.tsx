@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import { mockAutocomplete } from '../../utils/mockSearch';
 import { SearchSuggestion } from '../../types';
@@ -10,7 +10,7 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const navigate = useNavigate();
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Debounce Autocomplete
@@ -30,14 +30,14 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === '/' && document.activeElement !== inputRef.current) {
-            e.preventDefault();
-            inputRef.current?.focus();
-        }
-        if (e.key === 'Escape') {
-            inputRef.current?.blur();
-            setIsFocused(false);
-        }
+      if (e.key === '/' && document.activeElement !== inputRef.current) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+      if (e.key === 'Escape') {
+        inputRef.current?.blur();
+        setIsFocused(false);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -53,7 +53,7 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (activeIndex >= 0 && suggestions[activeIndex]) {
-        navigate(suggestions[activeIndex].url);
+        router.push(suggestions[activeIndex].url);
         setIsFocused(false);
         setQuery('');
       } else {
@@ -65,7 +65,7 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query)}`);
+      router.push(`/search?q=${encodeURIComponent(query)}`);
       setIsFocused(false);
       setQuery('');
     }
@@ -88,8 +88,8 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
           <Search size={18} />
         </button>
         {query && (
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => { setQuery(''); inputRef.current?.focus(); }}
             className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
           >
@@ -98,10 +98,10 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
         )}
       </form>
 
-      <SearchAutocomplete 
-        suggestions={suggestions} 
-        isOpen={isFocused && suggestions.length > 0} 
-        onClose={() => setIsFocused(false)} 
+      <SearchAutocomplete
+        suggestions={suggestions}
+        isOpen={isFocused && suggestions.length > 0}
+        onClose={() => setIsFocused(false)}
         activeIndex={activeIndex}
       />
     </div>
