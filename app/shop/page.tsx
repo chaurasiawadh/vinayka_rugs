@@ -25,7 +25,7 @@ const ShopContent: React.FC = () => {
     const filteredProducts = useMemo(() => {
         return products.filter(product => {
             const matchCat = selectedCategories.length === 0 || selectedCategories.includes(product.category);
-            const matchMat = selectedMaterials.length === 0 || selectedMaterials.includes(product.specifications.material);
+            const matchMat = selectedMaterials.length === 0 || (product.specifications?.material && selectedMaterials.includes(product.specifications.material));
             const matchCol = !initialCollection || product.collection === initialCollection;
             return matchCat && matchMat && matchCol;
         }).sort((a, b) => {
@@ -51,14 +51,6 @@ const ShopContent: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-200 pb-6">
-                    <div>
-                        <span className="text-sm text-text-muted uppercase tracking-wider">Shop</span>
-                        <h1 className="text-3xl md:text-4xl font-serif text-text-body mt-2">
-                            {initialCollection ? `${initialCollection} Collection` : 'All Rugs'}
-                        </h1>
-                        <p className="text-text-muted mt-2">{filteredProducts.length} results found</p>
-                    </div>
-
                     <div className="flex items-center gap-4 mt-4 md:mt-0">
                         <button
                             className="md:hidden flex items-center gap-2 font-medium"
@@ -148,22 +140,6 @@ const ShopContent: React.FC = () => {
                     {/* Product Grid */}
                     <div className="flex-1">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                            {/* Bespoke Promo Card */}
-                            <div className="sm:col-span-2 lg:col-span-3 bg-teal text-white rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2 text-amber font-medium">
-                                        <PenTool size={18} />
-                                        <span className="text-sm uppercase tracking-wide">Bespoke Services</span>
-                                    </div>
-                                    <h3 className="font-serif text-2xl mb-1">Can't find the perfect match?</h3>
-                                    <p className="text-white/80 text-sm">Customize colors, sizes, and designs to fit your space perfectly.</p>
-                                </div>
-                                <Button onClick={() => openBespokeModal('Shop Page Banner')} className="bg-white text-teal hover:bg-gray-100 border-none shrink-0">
-                                    Create Custom Rug
-                                </Button>
-                            </div>
-
                             {filteredProducts.length > 0 ? (
                                 filteredProducts.map(product => (
                                     <ProductCard key={product.id} product={product} />

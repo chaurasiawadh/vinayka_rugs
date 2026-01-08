@@ -251,7 +251,7 @@ const Cart: React.FC = () => {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="border-white text-white hover:bg-white hover:text-teal w-full"
+                                        className="border-white text-white !hover:bg-white !hover:text-teal w-full"
                                         onClick={() => openBespokeModal('Cart Sidebar')}
                                     >
                                         Start Custom Request

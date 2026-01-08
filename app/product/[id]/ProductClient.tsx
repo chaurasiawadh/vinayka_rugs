@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import ProductDetails from '@/components/product/ProductDetails';
-import { REVIEWS, FAQS } from '@/lib/product-data'; // Keeping Reviews/FAQs for layout demo unless requested to remove
+import { REVIEWS, FAQS } from '@/lib/product-data';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, collection, query, limit, getDocs } from 'firebase/firestore';
 
-export default function Page({ params }: { params: { id: string } }) {
+export default function ProductClient({ id }: { id: string }) {
     const [product, setProduct] = useState<any>(null);
     const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -14,11 +14,11 @@ export default function Page({ params }: { params: { id: string } }) {
 
     useEffect(() => {
         async function fetchData() {
-            if (!params.id) return;
+            if (!id) return;
 
             try {
                 // 1. Fetch Main Product
-                const docRef = doc(db, 'products', params.id);
+                const docRef = doc(db, 'products', id);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -49,7 +49,7 @@ export default function Page({ params }: { params: { id: string } }) {
                     const querySnapshot = await getDocs(q);
                     const related: any[] = [];
                     querySnapshot.forEach((d) => {
-                        if (d.id !== params.id) {
+                        if (d.id !== id) {
                             const dData = d.data();
                             related.push({
                                 id: d.id,
@@ -77,7 +77,7 @@ export default function Page({ params }: { params: { id: string } }) {
         }
 
         fetchData();
-    }, [params.id]);
+    }, [id]);
 
     if (loading) {
         return (
@@ -97,5 +97,16 @@ export default function Page({ params }: { params: { id: string } }) {
         );
     }
 
-    return <ProductClient id={params.id} />;
+    return (
+        <div className="bg-[#FAF8F6] min-h-screen font-sans">
+            <main className="pt-24">
+                <ProductDetails
+                    product={product}
+                    relatedProducts={relatedProducts}
+                    reviews={REVIEWS}
+                    faqs={FAQS}
+                />
+            </main>
+        </div>
+    );
 }

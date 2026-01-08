@@ -20,7 +20,7 @@ module.exports = {
             },
             fontFamily: {
                 serif: ['var(--font-playfair)', 'serif'],
-                sans: ['Outfit', 'sans-serif'],
+                sans: ['var(--font-outfit)', 'sans-serif'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

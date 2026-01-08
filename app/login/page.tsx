@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/Button';
 import ImageSmart from '@/components/ImageSmart';
 import { Lock, Mail, User as UserIcon, Eye, EyeOff, Briefcase, MapPin, Phone, Building, CheckCircle, AlertCircle } from 'lucide-react';
@@ -72,8 +72,11 @@ const Login: React.FC = () => {
     const [isRegister, setIsRegister] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+    const notificationState = useState<{ type: 'success' | 'error', message: string } | null>(null);
+    const [notification, setNotification] = notificationState;
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get('redirect') || '/account';
 
     // Login State
     const [loginEmail, setLoginEmail] = useState('');
@@ -138,11 +141,7 @@ const Login: React.FC = () => {
         try {
             await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
             // Determine redirect based on email or claim (simple check for now)
-            if (loginEmail.includes('admin') || loginEmail.includes('vinayka')) {
-                router.push('/admin');
-            } else {
-                router.push('/account'); // Default to account/dashboard
-            }
+            router.push(redirectUrl); // Redirect to originally requested page or account
         } catch (err: any) {
             let msg = 'Failed to login.';
             if (err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
@@ -186,7 +185,7 @@ const Login: React.FC = () => {
 
             showNotification('success', 'Account created successfully!');
             // Navigate to profile or home
-            router.push('/account');
+            router.push(redirectUrl);
 
         } catch (err: any) {
             let msg = 'Registration failed.';

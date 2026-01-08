@@ -560,13 +560,26 @@ const ProductManager: React.FC = () => {
 };
 
 const Admin: React.FC = () => {
-    const { user, loading, logout } = useAuth();
+    const { user, userProfile, loading, logout } = useAuth();
     const router = useRouter();
 
-    if (loading) return <div className="h-screen flex items-center justify-center"><Loader className="animate-spin text-terracotta" /></div>;
-    if (!user) {
-        router.replace('/login');
-        return null;
+    useEffect(() => {
+        if (!loading) {
+            if (!user) {
+                router.replace('/admin/login');
+            } else if (userProfile && userProfile.role !== 'admin') {
+                router.replace('/'); // Redirect non-admins to home
+            }
+        }
+    }, [user, userProfile, loading, router]);
+
+    if (loading || !user || (userProfile?.role !== 'admin')) {
+        return (
+            <div className="h-screen flex items-center justify-center flex-col gap-4">
+                <Loader className="animate-spin text-terracotta" size={40} />
+                <p className="text-sm text-gray-500 animate-pulse">Verifying privileges...</p>
+            </div>
+        );
     }
 
     return (
@@ -579,8 +592,18 @@ const Admin: React.FC = () => {
                     <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-terracotta text-white">
                         <ShoppingBag size={20} /> Products
                     </button>
+                    {/* Add more nav items here later (Orders, etc) */}
                 </nav>
-                <div className="p-4 border-t"><button onClick={logout} className="flex items-center gap-2 text-error"><LogOut size={20} /> Sign Out</button></div>
+                <div className="p-4 border-t">
+                    <div className="mb-4 px-2">
+                        <div className="text-xs font-bold text-gray-500 uppercase mb-1">Logged In As</div>
+                        <div className="text-sm font-medium truncate">{userProfile?.firstName} {userProfile?.lastName}</div>
+                        <div className="text-xs text-gray-400 truncate">{user.email}</div>
+                    </div>
+                    <button onClick={logout} className="flex items-center gap-2 text-error hover:bg-error/5 p-2 rounded w-full transition-colors">
+                        <LogOut size={20} /> Sign Out
+                    </button>
+                </div>
             </aside>
             <main className="flex-1 p-8 overflow-y-auto">
                 <ProductManager />
