@@ -8,7 +8,7 @@ import ProductCard from '@/components/ProductCard';
 import Button from '@/components/Button';
 import { useShop } from '@/context/ShopContext';
 
-const Shop: React.FC = () => {
+const ShopContent: React.FC = () => {
     const searchParams = useSearchParams();
     const initialCategory = searchParams.get('cat');
     const initialCollection = searchParams.get('collection');
@@ -188,4 +188,10 @@ const Shop: React.FC = () => {
     );
 };
 
-export default Shop;
+export default function Shop() {
+    return (
+        <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-terracotta border-t-transparent rounded-full animate-spin"></div></div>}>
+            <ShopContent />
+        </React.Suspense>
+    );
+}
