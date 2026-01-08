@@ -138,11 +138,7 @@ const Login: React.FC = () => {
         try {
             await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
             // Determine redirect based on email or claim (simple check for now)
-            if (loginEmail.includes('admin') || loginEmail.includes('vinayka')) {
-                router.push('/admin');
-            } else {
-                router.push('/account'); // Default to account/dashboard
-            }
+            router.push('/account'); // Redirect to account/dashboard
         } catch (err: any) {
             let msg = 'Failed to login.';
             if (err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
