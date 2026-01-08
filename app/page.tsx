@@ -38,7 +38,7 @@ const Home: React.FC = () => {
                                 <Button size="lg" className="min-w-[180px]">Shop Collection</Button>
                             </Link>
                             <Link href="/bespoke">
-                                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-black min-w-[180px]">
+                                <Button variant="outline" size="lg" className="border-white text-white !hover:bg-white !hover:text-black min-w-[180px]">
                                     Bespoke Services
                                 </Button>
                             </Link>

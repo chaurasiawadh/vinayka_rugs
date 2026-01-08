@@ -3,6 +3,7 @@
 import { useState, useRef, MouseEvent } from 'react';
 import { Minus, Plus, Heart, Share2, Star, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import ProductCard from './ProductCard';
+import { useShop } from '@/context/ShopContext';
 
 interface ProductDetailsProps {
     product: any;
@@ -12,6 +13,7 @@ interface ProductDetailsProps {
 }
 
 export default function ProductDetails({ product, relatedProducts, reviews, faqs }: ProductDetailsProps) {
+    const { addToCart } = useShop();
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : null);
@@ -50,7 +52,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
     };
 
     // Lens Size
-    const lensSize = 200; 
+    const lensSize = 200;
 
     // Calculate constrained lens position
     const lensX = Math.max(0, Math.min(cursorPos.x - lensSize / 2, imgDimensions.width - lensSize));
@@ -64,10 +66,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
                         {/* Left: Image Gallery */}
                         <div className="flex flex-col gap-4">
-                            
+
                             {/* //! Main Image */}
-                            <div className="w-full relative z-20">
-                                <div 
+                            <div className="flex-1 relative z-20">
+                                <div
                                     ref={imageContainerRef}
                                     onMouseEnter={() => setShowZoom(true)}
                                     onMouseLeave={() => setShowZoom(false)}
@@ -87,7 +89,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
 
                                     {/* Lens Overlay */}
                                     {showZoom && (
-                                        <div 
+                                        <div
                                             className="absolute pointer-events-none z-10 border border-blue-200 hidden lg:block"
                                             style={{
                                                 left: lensX,
@@ -105,7 +107,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
 
                                 {/* Zoom Window - Only visible on Desktop when hovering */}
                                 {showZoom && (
-                                    <div 
+                                    <div
                                         className="hidden lg:block absolute left-[105%] top-0 w-[700px] h-[700px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden"
                                         style={{
                                             backgroundImage: `url(${product.images[selectedImage]})`,
@@ -124,7 +126,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                 {product.images.slice(0, 6).map((img: string, idx: number) => {
                                     const isLast = idx === 5;
                                     const remaining = product.images.length - 6;
-                                    
+
                                     return (
                                         <div key={idx} className="relative aspect-square">
                                             <button
@@ -133,9 +135,9 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                             >
                                                 <img src={img} alt="" className="w-full h-full object-cover" />
                                             </button>
-                                            
+
                                             {isLast && remaining > 0 && (
-                                                <button 
+                                                <button
                                                     onClick={(e) => { e.stopPropagation(); setSelectedImage(idx); /* Ideally toggle expand here, but for now just select */ }}
                                                     className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center text-lg font-medium text-gray-800 border border-transparent hover:bg-white/70 transition-colors"
                                                 >
@@ -219,7 +221,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                         <Plus className="w-3 h-3" />
                                     </button>
                                 </div>
-                                <button className="flex-1 bg-[#41354D] text-white h-12 rounded-lg font-medium tracking-wide hover:bg-[#2D2435] transition-colors uppercase text-sm">
+                                <button
+                                    onClick={() => addToCart(product, selectedSize || 'Standard', quantity)}
+                                    className="flex-1 bg-[#41354D] text-white h-12 rounded-lg font-medium tracking-wide hover:bg-[#2D2435] transition-colors uppercase text-sm"
+                                >
                                     Add to Cart
                                 </button>
                                 <button className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-colors">

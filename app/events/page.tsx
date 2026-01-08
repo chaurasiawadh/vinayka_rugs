@@ -65,7 +65,7 @@ const Events: React.FC = () => {
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="text-white border-white hover:bg-white hover:text-black"
+                                className="text-white border-white !hover:bg-white !hover:text-black"
                                 onClick={() => document.getElementById('details')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 View Details

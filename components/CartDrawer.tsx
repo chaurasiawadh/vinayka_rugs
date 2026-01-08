@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Minus, Plus, Trash2, ArrowRight, PenTool } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { useShop } from '../context/ShopContext';
 import { useRouter } from 'next/navigation';
 import Button from './Button';
@@ -7,12 +8,19 @@ import { FREE_SHIPPING_THRESHOLD } from '../constants';
 
 const CartDrawer: React.FC = () => {
   const { isCartOpen, setIsCartOpen, cart, updateQuantity, removeFromCart, cartTotal, shippingDiff, openBespokeModal } = useShop();
+  const { user } = useAuth();
   const router = useRouter();
 
   if (!isCartOpen) return null;
 
   const handleCheckout = () => {
     setIsCartOpen(false);
+
+    if (!user) {
+      router.push('/login?redirect=/cart');
+      return;
+    }
+
     router.push('/cart'); // Navigate to full cart/checkout flow
   };
 
@@ -89,7 +97,7 @@ const CartDrawer: React.FC = () => {
                       <Trash2 size={16} />
                     </button>
                   </div>
-                  <p className="text-sm text-text-muted">{item.selectedSize} | {item.specifications.material}</p>
+                  <p className="text-sm text-text-muted">{item.selectedSize} | {item.material}</p>
                   <p className="text-sm font-medium mt-1">₹{item.price.toLocaleString('en-IN')}</p>
 
                   <div className="flex items-center gap-3 mt-3">
