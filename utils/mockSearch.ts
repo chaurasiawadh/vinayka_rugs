@@ -11,7 +11,7 @@ const searchIndex = [
     subtitle: `₹${p.price.toLocaleString('en-IN')}`,
     image: p.images[0],
     url: `/product/${p.id}`,
-    keywords: `${p.name} ${p.category} ${p.collection} ${p.specifications.material} ${p.colors?.join(' ')}`.toLowerCase(),
+    keywords: `${p.name} ${p.category} ${p.collection} ${p.specifications?.material || ''} ${p.colors?.join(' ')}`.toLowerCase(),
     obj: p
   }))
 ];
@@ -19,7 +19,7 @@ const searchIndex = [
 export const mockAutocomplete = (query: string): SearchSuggestion[] => {
   if (!query || query.length < 2) return [];
   const lowerQ = query.toLowerCase();
-  
+
   return searchIndex
     .filter(item => item.keywords.includes(lowerQ))
     .slice(0, 5)
@@ -27,7 +27,7 @@ export const mockAutocomplete = (query: string): SearchSuggestion[] => {
 };
 
 export const mockSearchProducts = (
-  query: string, 
+  query: string,
   filters: Record<string, string[]> = {},
   sort: string = 'relevance'
 ): SearchResult => {
@@ -36,11 +36,11 @@ export const mockSearchProducts = (
   // 1. Text Search
   if (query) {
     const lowerQ = query.toLowerCase();
-    results = results.filter(p => 
-      p.name.toLowerCase().includes(lowerQ) || 
+    results = results.filter(p =>
+      p.name.toLowerCase().includes(lowerQ) ||
       p.category.toLowerCase().includes(lowerQ) ||
       p.collection.toLowerCase().includes(lowerQ) ||
-      p.specifications.material.toLowerCase().includes(lowerQ)
+      (p.specifications?.material || '').toLowerCase().includes(lowerQ)
     );
   }
 
@@ -49,7 +49,7 @@ export const mockSearchProducts = (
     results = results.filter(p => filters.category.includes(p.category));
   }
   if (filters.material?.length) {
-    results = results.filter(p => filters.material.includes(p.specifications.material));
+    results = results.filter(p => p.specifications?.material && filters.material.includes(p.specifications.material));
   }
   if (filters.collection?.length) {
     results = results.filter(p => filters.collection.includes(p.collection));
@@ -61,7 +61,7 @@ export const mockSearchProducts = (
     results.forEach(p => {
       let val: any;
       if (key === 'material') {
-        val = p.specifications.material;
+        val = p.specifications?.material;
       } else {
         val = p[key as keyof Product];
       }
@@ -91,7 +91,7 @@ export const mockSearchProducts = (
   } else if (sort === 'newest') {
     results.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
   } else if (sort === 'popular') {
-     results.sort((a, b) => b.rating - a.rating);
+    results.sort((a, b) => b.rating - a.rating);
   }
 
   return {

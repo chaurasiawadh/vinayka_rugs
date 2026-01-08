@@ -8,22 +8,26 @@ export interface Product {
   shortDescription: string;
   category: string;
   collection: string;
-  
+
   // Pricing & Offers
-  price: number; 
+  price: number;
   mrp: number;
   discount: number;
   taxInclusive: boolean;
   emiAvailable: boolean;
-  
+
   // Media & Variants
   images: string[];
   sizes: string[];
   defaultSize?: string;
   colors: string[];
-  
+
+  // Basic Details available in current data
+  material?: string;
+  careInstructions?: string;
+
   // Specifications (Expanded for Amazon-style layout)
-  specifications: {
+  specifications?: {
     // Features & Specs
     weaveType: string;
     pileHeight: string;
@@ -33,7 +37,7 @@ export interface Product {
     specialFeatures: string;
     roomType: string;
     waterResistance: string;
-    
+
     // Materials & Care
     material: string;
     backMaterial: string;
@@ -67,13 +71,13 @@ export interface Product {
   };
 
   // About This Item (Dynamic Bullets)
-  aboutItems: string[]; 
+  aboutItems: string[];
 
   // Admin Controlled Review Data
   rating: number;
   reviews: number;
-  reviewSummary: string; 
-  reviewTags: string[]; 
+  reviewSummary: string;
+  reviewTags: string[];
   reviewDistribution: {
     fiveStar: number;
     fourStar: number;
@@ -87,13 +91,13 @@ export interface Product {
   stockCount?: number;
   deliveryText: string;
   returnPolicy: string;
-  
+
   // Flags
   isNew?: boolean;
   isSale?: boolean;
   isTrending?: boolean;
-  
-  createdAt?: any; 
+
+  createdAt?: any;
   updatedAt?: any;
 }
 
@@ -200,8 +204,8 @@ export interface SearchSuggestion {
 }
 
 export interface Facet {
-  id: string; 
-  label: string; 
+  id: string;
+  label: string;
   options: {
     value: string;
     label: string;
