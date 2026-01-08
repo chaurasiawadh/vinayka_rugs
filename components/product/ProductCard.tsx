@@ -53,9 +53,9 @@ export default function ProductCard({ id, name, brand, price, originalPrice, ima
                 </div>
 
                 <div className="flex items-center space-x-2 text-sm font-medium">
-                    <span>${price.toFixed(2)}</span>
+                    <span>₹{price.toLocaleString('en-IN')}</span>
                     {originalPrice && (
-                        <span className="text-gray-300 line-through text-xs">${originalPrice.toFixed(2)}</span>
+                        <span className="text-gray-300 line-through text-xs">₹{originalPrice.toLocaleString('en-IN')}</span>
                     )}
                 </div>
             </div>
