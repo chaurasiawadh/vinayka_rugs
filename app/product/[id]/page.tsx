@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import ProductDetails from '@/components/product/ProductDetails';
-import { REVIEWS, FAQS } from '@/lib/product-data'; // Keeping Reviews/FAQs for layout demo unless requested to remove
+import { PRODUCTS, REVIEWS, FAQS } from '@/lib/product-data'; // Keeping Reviews/FAQs for layout demo unless requested to remove
+
+export async function generateStaticParams() {
+    return PRODUCTS.map((product) => ({
+        id: product.id,
+    }));
+}
 import { db } from '@/lib/firebase';
 import { doc, getDoc, collection, query, limit, getDocs } from 'firebase/firestore';
 
