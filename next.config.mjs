@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig = {
-    output: 'export',
-    basePath: '/vinayka_rugs',
+    output: isProd ? 'export' : undefined,
+    basePath: isProd ? '/vinayka_rugs' : undefined,
     images: {
         unoptimized: true,
         remotePatterns: [
