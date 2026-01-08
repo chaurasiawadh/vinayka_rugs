@@ -148,22 +148,6 @@ const ShopContent: React.FC = () => {
                     {/* Product Grid */}
                     <div className="flex-1">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                            {/* Bespoke Promo Card */}
-                            <div className="sm:col-span-2 lg:col-span-3 bg-teal text-white rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2 text-amber font-medium">
-                                        <PenTool size={18} />
-                                        <span className="text-sm uppercase tracking-wide">Bespoke Services</span>
-                                    </div>
-                                    <h3 className="font-serif text-2xl mb-1">Can't find the perfect match?</h3>
-                                    <p className="text-white/80 text-sm">Customize colors, sizes, and designs to fit your space perfectly.</p>
-                                </div>
-                                <Button onClick={() => openBespokeModal('Shop Page Banner')} className="bg-white text-teal hover:bg-gray-100 border-none shrink-0">
-                                    Create Custom Rug
-                                </Button>
-                            </div>
-
                             {filteredProducts.length > 0 ? (
                                 filteredProducts.map(product => (
                                     <ProductCard key={product.id} product={product} />
