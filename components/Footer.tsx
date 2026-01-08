@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MapPin, Mail, Phone } from 'lucide-react';
+import { MapPin, Mail, Phone, FileText } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -57,6 +57,10 @@ const Footer: React.FC = () => {
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-terracotta" />
                 <span className="break-all">mailtoshyamaexports@gmail.com</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <FileText size={18} className="text-terracotta" />
+                <span>GSTIN: 09APJPJ3572L1ZE</span>
               </li>
             </ul>
           </div>
