@@ -137,8 +137,8 @@ const ProductManager: React.FC = () => {
 
     const handleImageUpload = async (fileOrUrl: File | string | null) => {
         if (!fileOrUrl) return;
-        if ((formData.images?.length || 0) >= 5) {
-            setUploadError("Maximum 5 images allowed.");
+        if ((formData.images?.length || 0) >= 10) {
+            setUploadError("Maximum 10 images allowed.");
             return;
         }
 
@@ -201,9 +201,9 @@ const ProductManager: React.FC = () => {
         if (confirm('Delete product?')) await deleteDoc(doc(db, 'products', id));
     };
 
-    // Reusable Specs Input Component
-    const SpecInput = ({ label, field, placeholder = '' }: { label: string, field: string, placeholder?: string }) => (
-        <div>
+    // Reusable Specs Input Helper (Fixed focus issue)
+    const renderSpecInput = (label: string, field: string, placeholder = '') => (
+        <div key={field}>
             <label className="text-xs font-bold uppercase text-gray-500 block mb-1">{label}</label>
             <input
                 className="w-full border border-gray-300 p-2 rounded text-sm focus:ring-terracotta focus:border-terracotta"
@@ -265,7 +265,7 @@ const ProductManager: React.FC = () => {
                         <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="flex items-center gap-2 font-bold text-lg text-gray-800"><ImageIcon size={18} /> Media Gallery</h3>
-                                <span className="text-xs text-gray-500">{formData.images?.length || 0} / 5 Images</span>
+                                <span className="text-xs text-gray-500">{formData.images?.length || 0} / 10 Images</span>
                             </div>
 
                             <div className="grid grid-cols-5 gap-4 mb-4">
@@ -277,9 +277,9 @@ const ProductManager: React.FC = () => {
                                     </div>
                                 ))}
 
-                                {(formData.images?.length || 0) < 5 && (
+                                {(formData.images?.length || 0) < 10 && (
                                     <div className="aspect-[4/5] bg-gray-50 border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center p-2 hover:bg-gray-100 transition-colors">
-                                        <ImageInput onChange={handleImageUpload} label="" error={uploadError} />
+                                        <ImageInput key={formData.images?.length} onChange={handleImageUpload} label="" error={uploadError} />
                                     </div>
                                 )}
                             </div>
@@ -294,14 +294,14 @@ const ProductManager: React.FC = () => {
                                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                                     <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Features & Specs</h4>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <SpecInput label="Weave Type" field="weaveType" />
-                                        <SpecInput label="Pile Height" field="pileHeight" />
-                                        <SpecInput label="Construction Type" field="construction" />
-                                        <SpecInput label="Indoor/Outdoor" field="indoorOutdoor" />
-                                        <SpecInput label="Stain Resistant?" field="stainResistant" />
-                                        <SpecInput label="Special Features" field="specialFeatures" />
-                                        <SpecInput label="Room Type" field="roomType" />
-                                        <SpecInput label="Water Resistance" field="waterResistance" />
+                                        {renderSpecInput("Weave Type", "weaveType")}
+                                        {renderSpecInput("Pile Height", "pileHeight")}
+                                        {renderSpecInput("Construction Type", "construction")}
+                                        {renderSpecInput("Indoor/Outdoor", "indoorOutdoor")}
+                                        {renderSpecInput("Stain Resistant?", "stainResistant")}
+                                        {renderSpecInput("Special Features", "specialFeatures")}
+                                        {renderSpecInput("Room Type", "roomType")}
+                                        {renderSpecInput("Water Resistance", "waterResistance")}
                                     </div>
                                 </div>
 
@@ -309,9 +309,9 @@ const ProductManager: React.FC = () => {
                                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                                     <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Materials & Care</h4>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <SpecInput label="Material" field="material" />
-                                        <SpecInput label="Back Material" field="backMaterial" />
-                                        <SpecInput label="Care Instructions" field="careInstructions" />
+                                        {renderSpecInput("Material", "material")}
+                                        {renderSpecInput("Back Material", "backMaterial")}
+                                        {renderSpecInput("Care Instructions", "careInstructions")}
                                     </div>
                                 </div>
 
@@ -319,13 +319,13 @@ const ProductManager: React.FC = () => {
                                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                                     <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Item Details</h4>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <SpecInput label="Brand Name" field="brand" />
-                                        <SpecInput label="Country of Origin" field="origin" />
-                                        <SpecInput label="Included Components" field="includedComponents" />
-                                        <SpecInput label="Manufacturer" field="manufacturer" />
-                                        <SpecInput label="Manufacturer Contact" field="manufacturerContact" />
-                                        <SpecInput label="Unit Count" field="unitCount" />
-                                        <SpecInput label="Warranty" field="warranty" />
+                                        {renderSpecInput("Brand Name", "brand")}
+                                        {renderSpecInput("Country of Origin", "origin")}
+                                        {renderSpecInput("Included Components", "includedComponents")}
+                                        {renderSpecInput("Manufacturer", "manufacturer")}
+                                        {renderSpecInput("Manufacturer Contact", "manufacturerContact")}
+                                        {renderSpecInput("Unit Count", "unitCount")}
+                                        {renderSpecInput("Warranty", "warranty")}
                                     </div>
                                 </div>
 
@@ -333,13 +333,13 @@ const ProductManager: React.FC = () => {
                                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                                     <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Style</h4>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <SpecInput label="Colour" field="color" />
-                                        <SpecInput label="Theme" field="theme" />
-                                        <SpecInput label="Pattern" field="pattern" />
-                                        <SpecInput label="Item Shape" field="shape" />
-                                        <SpecInput label="Rug Form Type" field="rugForm" />
-                                        <SpecInput label="Style" field="style" />
-                                        <SpecInput label="Occasion" field="occasion" />
+                                        {renderSpecInput("Colour", "color")}
+                                        {renderSpecInput("Theme", "theme")}
+                                        {renderSpecInput("Pattern", "pattern")}
+                                        {renderSpecInput("Item Shape", "shape")}
+                                        {renderSpecInput("Rug Form Type", "rugForm")}
+                                        {renderSpecInput("Style", "style")}
+                                        {renderSpecInput("Occasion", "occasion")}
                                     </div>
                                 </div>
 
@@ -347,11 +347,11 @@ const ProductManager: React.FC = () => {
                                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                                     <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Measurements</h4>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <SpecInput label="Size (Text)" field="size" placeholder="e.g. 5x7 feet" />
-                                        <SpecInput label="Item Weight" field="itemWeight" />
-                                        <SpecInput label="Dimensions (LxW)" field="dimensionsLxW" placeholder="e.g. 2.13L x 1.52W Meters" />
-                                        <SpecInput label="Number of Pieces" field="numberOfPieces" />
-                                        <SpecInput label="Item Thickness/Height" field="itemThickness" />
+                                        {renderSpecInput("Size (Text)", "size", "e.g. 5x7 feet")}
+                                        {renderSpecInput("Item Weight", "itemWeight")}
+                                        {renderSpecInput("Dimensions (LxW)", "dimensionsLxW", "e.g. 2.13L x 1.52W Meters")}
+                                        {renderSpecInput("Number of Pieces", "numberOfPieces")}
+                                        {renderSpecInput("Item Thickness/Height", "itemThickness")}
                                     </div>
                                 </div>
                             </div>
