@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { UserProfile } from '../types';
 
@@ -20,29 +20,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    let snapshotUnsubscribe: (() => void) | null = null;
+
+    const authUnsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      
+
+      // Clean up previous listener if it exists (e.g. switching users)
+      if (snapshotUnsubscribe) {
+        snapshotUnsubscribe();
+        snapshotUnsubscribe = null;
+      }
+
       if (currentUser) {
+        setLoading(true); // Set loading while we fetch/listen to profile
         try {
-          // Fetch user profile from Firestore
-          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-          if (userDoc.exists()) {
-            setUserProfile(userDoc.data() as UserProfile);
-          } else {
-            // Profile might not exist yet if just registered but firestore write failed/delayed
-            setUserProfile(null); 
-          }
+          // Listen to user profile in real-time
+          snapshotUnsubscribe = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
+            if (docSnap.exists()) {
+              setUserProfile(docSnap.data() as UserProfile);
+            } else {
+              setUserProfile(null);
+            }
+            setLoading(false); // Done loading initial data
+          }, (error) => {
+            console.error("Error listening to user profile:", error);
+            setLoading(false);
+          });
         } catch (error) {
-          console.error("Error fetching user profile:", error);
+          console.error("Error setting up profile listener:", error);
+          setLoading(false);
         }
       } else {
         setUserProfile(null);
+        setLoading(false);
       }
-      
-      setLoading(false);
     });
-    return () => unsubscribe();
+
+    return () => {
+      authUnsubscribe();
+      if (snapshotUnsubscribe) snapshotUnsubscribe();
+    };
   }, []);
 
   const logout = async () => {
