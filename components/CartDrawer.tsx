@@ -1,25 +1,25 @@
 import React from 'react';
 import { X, Minus, Plus, Trash2, ArrowRight, PenTool } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import Button from './Button';
 import { FREE_SHIPPING_THRESHOLD } from '../constants';
 
 const CartDrawer: React.FC = () => {
   const { isCartOpen, setIsCartOpen, cart, updateQuantity, removeFromCart, cartTotal, shippingDiff, openBespokeModal } = useShop();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   if (!isCartOpen) return null;
 
   const handleCheckout = () => {
     setIsCartOpen(false);
-    navigate('/cart'); // Navigate to full cart/checkout flow
+    router.push('/cart'); // Navigate to full cart/checkout flow
   };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={() => setIsCartOpen(false)}
       ></div>
@@ -35,21 +35,21 @@ const CartDrawer: React.FC = () => {
 
         {/* Free Shipping Meter */}
         <div className="p-4 bg-cream border-b border-gray-100">
-            {shippingDiff > 0 ? (
-                <p className="text-sm text-center text-text-muted">
-                    You are <span className="font-bold text-terracotta">₹{shippingDiff.toLocaleString('en-IN')}</span> away from free shipping.
-                </p>
-            ) : (
-                <p className="text-sm text-center text-success font-medium">
-                    You've unlocked free shipping!
-                </p>
-            )}
-            <div className="w-full bg-gray-200 h-1.5 mt-3 rounded-full overflow-hidden">
-                <div 
-                    className="h-full bg-terracotta transition-all duration-500"
-                    style={{ width: `${Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }}
-                ></div>
-            </div>
+          {shippingDiff > 0 ? (
+            <p className="text-sm text-center text-text-muted">
+              You are <span className="font-bold text-terracotta">₹{shippingDiff.toLocaleString('en-IN')}</span> away from free shipping.
+            </p>
+          ) : (
+            <p className="text-sm text-center text-success font-medium">
+              You've unlocked free shipping!
+            </p>
+          )}
+          <div className="w-full bg-gray-200 h-1.5 mt-3 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-terracotta transition-all duration-500"
+              style={{ width: `${Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }}
+            ></div>
+          </div>
         </div>
 
         {/* Items */}
@@ -58,11 +58,11 @@ const CartDrawer: React.FC = () => {
             <div className="flex flex-col items-center justify-center h-64 text-center">
               <ShoppingBagIcon className="w-12 h-12 text-gray-300 mb-3" />
               <p className="text-text-muted">Your bag is empty.</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="mt-4"
-                onClick={() => { setIsCartOpen(false); navigate('/shop'); }}
+                onClick={() => { setIsCartOpen(false); router.push('/shop'); }}
               >
                 Start Shopping
               </Button>
@@ -82,29 +82,29 @@ const CartDrawer: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <h3 className="font-medium text-text-body">{item.name}</h3>
-                    <button 
-                        onClick={() => removeFromCart(item.id, item.selectedSize)}
-                        className="text-gray-400 hover:text-error"
+                    <button
+                      onClick={() => removeFromCart(item.id, item.selectedSize)}
+                      className="text-gray-400 hover:text-error"
                     >
-                        <Trash2 size={16} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                   <p className="text-sm text-text-muted">{item.selectedSize} | {item.specifications.material}</p>
                   <p className="text-sm font-medium mt-1">₹{item.price.toLocaleString('en-IN')}</p>
-                  
+
                   <div className="flex items-center gap-3 mt-3">
-                    <button 
-                        onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity - 1)}
-                        className="p-1 rounded hover:bg-gray-100 border border-gray-200"
+                    <button
+                      onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity - 1)}
+                      className="p-1 rounded hover:bg-gray-100 border border-gray-200"
                     >
-                        <Minus size={14} />
+                      <Minus size={14} />
                     </button>
                     <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
-                    <button 
-                        onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)}
-                        className="p-1 rounded hover:bg-gray-100 border border-gray-200"
+                    <button
+                      onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)}
+                      className="p-1 rounded hover:bg-gray-100 border border-gray-200"
                     >
-                        <Plus size={14} />
+                      <Plus size={14} />
                     </button>
                   </div>
                 </div>
@@ -127,12 +127,12 @@ const CartDrawer: React.FC = () => {
             </Button>
 
             <div className="mt-4 pt-4 border-t border-gray-100">
-                <button
-                    onClick={() => { setIsCartOpen(false); openBespokeModal('Cart Drawer Footer'); }}
-                    className="w-full text-xs font-medium text-text-muted hover:text-terracotta flex items-center justify-center gap-2 py-2"
-                >
-                    <PenTool size={12} /> Need a custom size? Request Bespoke
-                </button>
+              <button
+                onClick={() => { setIsCartOpen(false); openBespokeModal('Cart Drawer Footer'); }}
+                className="w-full text-xs font-medium text-text-muted hover:text-terracotta flex items-center justify-center gap-2 py-2"
+              >
+                <PenTool size={12} /> Need a custom size? Request Bespoke
+              </button>
             </div>
           </div>
         )}
@@ -143,14 +143,14 @@ const CartDrawer: React.FC = () => {
 
 // Helper component for empty state icon
 const ShoppingBagIcon = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
