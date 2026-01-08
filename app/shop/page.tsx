@@ -51,14 +51,6 @@ const ShopContent: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-200 pb-6">
-                    <div>
-                        <span className="text-sm text-text-muted uppercase tracking-wider">Shop</span>
-                        <h1 className="text-3xl md:text-4xl font-serif text-text-body mt-2">
-                            {initialCollection ? `${initialCollection} Collection` : 'All Rugs'}
-                        </h1>
-                        <p className="text-text-muted mt-2">{filteredProducts.length} results found</p>
-                    </div>
-
                     <div className="flex items-center gap-4 mt-4 md:mt-0">
                         <button
                             className="md:hidden flex items-center gap-2 font-medium"
