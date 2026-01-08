@@ -123,7 +123,7 @@ const Home: React.FC = () => {
                                     From custom sizes to color matching and completely new designs, our master artisans bring your vision to life.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-4">
-                                    <Button onClick={() => openBespokeModal('Home Page Section')} className="bg-white text-text-body hover:bg-gray-100 border-none">
+                                    <Button variant="ghost" onClick={() => openBespokeModal('Home Page Section')} className="bg-white text-text-body hover:bg-gray-100">
                                         Start Custom Project
                                     </Button>
                                     <Link href="/bespoke">
@@ -135,7 +135,7 @@ const Home: React.FC = () => {
                             </div>
                             <div className="relative h-[400px] lg:h-auto">
                                 <img
-                                    src="https://images.unsplash.com/photo-1618221639257-285627f5264c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                                    src="https://images.unsplash.com/photo-1615529182904-14819c35db37?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
                                     className="absolute inset-0 w-full h-full object-cover"
                                     alt="Custom Rug Design"
                                 />
@@ -150,10 +150,10 @@ const Home: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div className="order-2 lg:order-1">
-                            <img src="https://images.unsplash.com/photo-1596238647038-d6c57f7243c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Artisan weaving" className="rounded-lg shadow-xl" />
+                            <img src="https://images.unsplash.com/photo-1599303000936-1cf21eac4456?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80" alt="Artisan weaving" className="rounded-lg shadow-xl object-cover" />
                         </div>
                         <div className="order-1 lg:order-2">
-                            <h2 className="text-3xl md:text-4xl font-serif mb-6">Hand-Knotted Heritage</h2>
+                            <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6">Hand-Knotted Heritage</h2>
                             <p className="text-text-muted mb-6 leading-relaxed">
                                 Every Vinayka rug is a testament to patience and precision. Our artisans in rural India spend months tying millions of knots by hand, translating visionary designs into heirloom-quality textiles.
                             </p>
