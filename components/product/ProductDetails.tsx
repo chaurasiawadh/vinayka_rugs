@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, MouseEvent } from 'react';
-import { Minus, Plus, Heart, Share2, Star, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { Minus, Plus, Heart, Share2, Star, ChevronDown, ChevronUp, Check, X, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { useShop } from '@/context/ShopContext';
 
@@ -23,6 +23,22 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
 
     const toggleSection = (section: string) => {
         setOpenSection(openSection === section ? null : section);
+    };
+
+    // FAQ State
+    const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+    // Lightbox Logic
+    const [showLightbox, setShowLightbox] = useState(false);
+
+    const nextImage = (e?: MouseEvent) => {
+        e?.stopPropagation();
+        setSelectedImage((prev) => (prev + 1) % product.images.length);
+    };
+
+    const prevImage = (e?: MouseEvent) => {
+        e?.stopPropagation();
+        setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length);
     };
 
     // Zoom Logic
@@ -66,10 +82,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
                         {/* Left: Image Gallery */}
                         <div className="flex flex-col gap-4">
-
+                            
                             {/* //! Main Image */}
-                            <div className="flex-1 relative z-20">
-                                <div
+                            <div className="w-full relative z-20">
+                                <div 
                                     ref={imageContainerRef}
                                     onMouseEnter={() => setShowZoom(true)}
                                     onMouseLeave={() => setShowZoom(false)}
@@ -126,7 +142,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                 {product.images.slice(0, 6).map((img: string, idx: number) => {
                                     const isLast = idx === 5;
                                     const remaining = product.images.length - 6;
-
+                                    
                                     return (
                                         <div key={idx} className="relative aspect-square">
                                             <button
@@ -135,10 +151,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                             >
                                                 <img src={img} alt="" className="w-full h-full object-cover" />
                                             </button>
-
+                                            
                                             {isLast && remaining > 0 && (
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); setSelectedImage(idx); /* Ideally toggle expand here, but for now just select */ }}
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); setShowLightbox(true); }}
                                                     className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center text-lg font-medium text-gray-800 border border-transparent hover:bg-white/70 transition-colors"
                                                 >
                                                     {remaining}+
@@ -348,55 +364,115 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                 <div className="mt-20">
                     <div className="flex flex-col md:flex-row gap-12 items-start">
                         <div className="flex-1">
-                            <h2 className="text-3xl font-serif text-[#111] mb-8">Customer Reviews</h2>
-                            <div className="flex items-end gap-4 mb-4">
-                                <span className="text-5xl font-serif text-[#111]">{product.rating}</span>
-                                <div className="pb-2">
-                                    <div className="flex text-[#D4C49D] mb-1">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-gray-200'}`} />
-                                        ))}
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-2xl font-bold text-[#212121]">Ratings & Reviews</h2>
+                                <button className="px-8 py-3 bg-white border border-gray-300 shadow-sm text-sm font-medium text-[#212121] rounded-sm hover:shadow-md transition-shadow">
+                                    Rate Product
+                                </button>
+                            </div>
+                            
+                            {/* Summary & Breakdown */}
+                            <div className="flex flex-col md:flex-row gap-12 mb-10 border-b border-gray-200 pb-10">
+                                <div className="flex-none flex flex-col items-center justify-center min-w-[150px]">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-4xl font-medium text-[#212121]">{product.rating}</span>
+                                        <Star className="w-6 h-6 fill-[#D4C49D] text-[#D4C49D]" />
                                     </div>
-                                    <span className="text-sm text-gray-500">Based on {product.reviewsCount} reviews</span>
+                                    <p className="text-sm text-gray-400 text-center font-medium">
+                                        {product.reviewsCount} Ratings &<br />
+                                        98 Reviews
+                                    </p>
+                                </div>
+                                
+                                {/* Rating Bars - EXACT STYLE */}
+                                <div className="flex-1 w-full max-w-md space-y-2.5">
+                                    {[
+                                        { star: 5, count: 2450, color: '#D4C49D' },
+                                        { star: 4, count: 850, color: '#D4C49D' },
+                                        { star: 3, count: 420, color: '#D4C49D' },
+                                        { star: 2, count: 120, color: '#D4C49D' },
+                                        { star: 1, count: 80, color: '#D4C49D' }
+                                    ].map((row) => (
+                                        <div key={row.star} className="flex items-center gap-4 text-xs font-medium">
+                                            <span className="w-3 text-[#212121]">{row.star} <div className="w-3 h-3 fill-[#D4C49D] text-[#D4C49D]">★</div></span>
+                                            <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                <div 
+                                                    className="h-full rounded-full" 
+                                                    style={{ 
+                                                        width: `${(row.count / 3000) * 100}%`,
+                                                        backgroundColor: row.color 
+                                                    }} 
+                                                />
+                                            </div>
+                                            <span className="w-8 text-right text-gray-400">{row.count}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
 
-                            {/* Review Categories - Mock UI */}
-                            <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-                                <button className="px-4 py-2 border border-black text-black rounded-full text-xs font-medium whitespace-nowrap">All reviews</button>
-                                <button className="px-4 py-2 border border-gray-200 text-gray-500 rounded-full text-xs font-medium whitespace-nowrap hover:border-gray-300">With images</button>
-                                <button className="px-4 py-2 border border-gray-200 text-gray-500 rounded-full text-xs font-medium whitespace-nowrap hover:border-gray-300">Most recent</button>
+                            {/* Customer Photos Strip */}
+                            <div className="mb-10">
+                                <h3 className="text-lg font-bold text-[#212121] mb-4">Customer Photos</h3>
+                                <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
+                                    {reviews.flatMap(r => r.images || []).slice(0, 8).map((img : string, idx: number) => (
+                                        <div key={idx} className="flex-none w-24 h-24 relative cursor-pointer hover:opacity-90 transition-opacity border border-gray-200 rounded-sm">
+                                            <img src={img} alt="" className="w-full h-full object-cover rounded-sm" />
+                                            {idx === 7 && (
+                                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-medium text-lg">
+                                                    +12
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
+                            {/* Reviews List */}
                             <div className="space-y-8">
                                 {reviews.map((review) => (
                                     <div key={review.id} className="border-b border-gray-100 pb-8 last:border-0">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex text-[#D4C49D] text-xs">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-current' : 'text-gray-200'}`} />
-                                                ))}
-                                            </div>
-                                            <span className="text-xs text-gray-400">{review.date}</span>
+                                        
+                                        <div className="flex items-start gap-3 mb-3">
+                                            <span className="px-2 py-0.5 text-xs font-bold text-white rounded-sm flex items-center gap-1 bg-[#D4C49D]">
+                                                {review.rating} <Star className="w-2.5 h-2.5 fill-current" />
+                                            </span>
+                                            <h4 className="font-medium text-[#212121] text-sm">Mind-blowing purchase</h4>
                                         </div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="font-semibold text-sm">{review.author}</span>
-                                            {review.verified && (
-                                                <span className="text-[10px] bg-gray-100 px-1 py-0.5 rounded text-gray-600 flex items-center gap-1">
-                                                    <Check className="w-3 h-3" /> Verified Buyer
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="text-sm text-gray-600 leading-relaxed mb-4">{review.content}</p>
+                                        
+                                        <p className="text-sm text-[#212121] leading-relaxed mb-4">{review.content} 👌😍</p>
+                                        
                                         {review.images && (
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 mb-4">
                                                 {review.images.map((img: string, i: number) => (
-                                                    <div key={i} className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
+                                                    <div key={i} className="w-16 h-16 border border-gray-200 p-0.5 rounded-sm">
                                                         <img src={img} alt="" className="w-full h-full object-cover" />
                                                     </div>
                                                 ))}
                                             </div>
                                         )}
+                                        
+                                        <div className="flex items-center justify-between text-xs text-gray-400 font-medium">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-gray-500">{review.author}</span>
+                                                {review.verified && (
+                                                    <span className="flex items-center gap-1 text-gray-400">
+                                                        <span className="w-3 h-3 bg-gray-400 rounded-full flex items-center justify-center"><Check className="w-2 h-2 text-white" /></span> Certified Buyer, Mumbai
+                                                    </span>
+                                                )}
+                                                <span>{review.date}</span>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-6">
+                                                <button className="flex items-center gap-1.5 hover:text-gray-600 transition-colors">
+                                                    <ThumbsUp className="w-4 h-4 text-gray-400" /> 
+                                                    <span className="text-gray-400 font-medium">60</span>
+                                                </button>
+                                                <button className="flex items-center gap-1.5 hover:text-gray-600 transition-colors">
+                                                    <ThumbsDown className="w-4 h-4 text-gray-400" />
+                                                    <span className="text-gray-400 font-medium">12</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -404,13 +480,38 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                         </div>
 
                         {/* FAQ */}
-                        <div className="flex-1 w-full bg-white p-8 rounded-xl shadow-sm">
-                            <h2 className="text-2xl font-serif text-[#111] mb-8">Frequently Asked Questions</h2>
+                        {/* FAQ */}
+                        <div className="flex-1 w-full bg-[#f9f9f9] p-8 rounded-xl shadow-sm border border-gray-100">
+                            <h2 className="text-2xl font-bold text-[#212121] mb-8">Frequently Asked Questions</h2>
                             <div className="space-y-4">
                                 {faqs.map((faq, idx) => (
-                                    <div key={idx} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                                        <h3 className="font-medium text-sm text-[#111] mb-2">{faq.question}</h3>
-                                        <p className="text-sm text-gray-500 leading-relaxed">{faq.answer}</p>
+                                    <div 
+                                        key={idx} 
+                                        className={`border border-gray-200 rounded-lg overflow-hidden bg-white transition-all duration-200 ${openFaq === idx ? 'shadow-md border-[#D4C49D]/30' : 'hover:border-gray-300'}`}
+                                    >
+                                        <button 
+                                            onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                                            className="w-full flex items-center justify-between p-5 text-left"
+                                        >
+                                            <span className={`font-semibold text-sm ${openFaq === idx ? 'text-[#212121]' : 'text-gray-700'}`}>
+                                                {faq.question}
+                                            </span>
+                                            <div className={`p-1 rounded-full border transition-colors ${openFaq === idx ? 'bg-[#D4C49D] border-[#D4C49D] text-white' : 'border-gray-300 text-gray-400'}`}>
+                                                {openFaq === idx ? (
+                                                    <Minus size={14} />
+                                                ) : (
+                                                    <Plus size={14} />
+                                                )}
+                                            </div>
+                                        </button>
+                                        
+                                        {openFaq === idx && (
+                                            <div className="px-5 pb-5 animate-in slide-in-from-top-2 duration-200">
+                                                <p className="text-sm text-gray-500 leading-relaxed pt-2 border-t border-gray-50">
+                                                    {faq.answer}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -419,6 +520,74 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                 </div>
 
             </div>
+
+            {/* Lightbox Overlay */}
+            {/* Lightbox Overlay */}
+            {showLightbox && (
+                <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
+                    <div className="bg-white w-full max-w-[90vw] h-[90vh] rounded-lg shadow-2xl flex flex-col relative overflow-hidden">
+                        
+                        {/* Header Tabs & Close */}
+                        <div className="flex items-center justify-between px-6 border-b border-gray-200">
+                            <div className="flex gap-8">
+                                <button className="py-4 text-sm font-bold text-[#41354D] border-b-2 border-[#41354D] uppercase tracking-wide">Images</button>
+                            </div>
+                            <button 
+                                onClick={() => setShowLightbox(false)}
+                                className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="flex flex-1 overflow-hidden">
+                            {/* Main Image Area */}
+                            <div className="flex-1 bg-white flex items-center justify-center p-8 relative group">
+                                <button 
+                                    onClick={prevImage}
+                                    className="absolute left-4 p-2 bg-white/80 hover:bg-white shadow-md rounded-full text-gray-700 opacity-0 group-hover:opacity-100 transition-all border border-gray-100"
+                                >
+                                    <ChevronLeft size={24} />
+                                </button>
+
+                                <img 
+                                    src={product.images[selectedImage]} 
+                                    alt={product.name} 
+                                    className="max-w-full max-h-full object-contain"
+                                />
+
+                                <button 
+                                    onClick={nextImage}
+                                    className="absolute right-4 p-2 bg-white/80 hover:bg-white shadow-md rounded-full text-gray-700 opacity-0 group-hover:opacity-100 transition-all border border-gray-100"
+                                >
+                                    <ChevronRight size={24} />
+                                </button>
+                            </div>
+
+                            {/* Sidebar Info */}
+                            <div className="w-[350px] bg-white border-l border-gray-100 p-6 flex flex-col gap-6 overflow-y-auto">
+                                <div>
+                                    <h2 className="font-serif text-xl text-[#111] mb-2 leading-tight">{product.name}</h2>
+                                    {product.size && <p className="text-xs text-gray-500 mb-1">Size: {product.size}</p>}
+                                    {product.color && <p className="text-xs text-gray-500">Color: {product.color}</p>}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    {product.images.map((img: string, idx: number) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedImage(idx)}
+                                            className={`relative aspect-square border-2 rounded-sm overflow-hidden transition-all ${selectedImage === idx ? 'border-[#41354D] ring-1 ring-[#41354D]/20' : 'border-transparent hover:border-gray-200'}`}
+                                        >
+                                            <img src={img} alt="" className="w-full h-full object-cover" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
