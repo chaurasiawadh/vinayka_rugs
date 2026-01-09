@@ -175,7 +175,7 @@ const CartDrawer: React.FC = () => {
           <div className="p-4 border-t border-gray-100 bg-white">
             <div className="flex justify-between items-center mb-4">
               <span className="text-text-muted">Subtotal</span>
-              <span className="font-serif text-xl font-medium">
+              <span className="text-xl font-medium">
                 ₹{cartTotal.toLocaleString('en-IN')}
               </span>
             </div>
