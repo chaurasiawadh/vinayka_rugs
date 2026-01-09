@@ -114,7 +114,7 @@ const ProductManager: React.FC = () => {
     // Pricing Calculator
     useEffect(() => {
         if (formData.price && formData.mrp && formData.mrp > formData.price) {
-            const discount = Math.round(((formData.mrp - formData.price) / formData.mrp) * 100);
+            const discount = Math.round(((Number(formData.mrp) - Number(formData.price)) / Number(formData.mrp)) * 100);
             updateField('discount', discount);
         }
     }, [formData.price, formData.mrp]);

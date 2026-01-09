@@ -353,7 +353,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const cartTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const cartTotal = cart.reduce((acc, item) => acc + Number(item.price) * item.quantity, 0);
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const shippingDiff = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal);
 

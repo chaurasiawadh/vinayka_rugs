@@ -96,7 +96,7 @@ const Cart: React.FC = () => {
                                                         <span className="w-8 text-center text-sm">{item.quantity}</span>
                                                         <button onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)} className="p-2 hover:bg-gray-50"><Plus size={14} /></button>
                                                     </div>
-                                                    <span className="font-medium">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                                                    <span className="font-medium">₹{(Number(item.price) * item.quantity).toLocaleString('en-IN')}</span>
                                                 </div>
                                             </div>
                                         </div>

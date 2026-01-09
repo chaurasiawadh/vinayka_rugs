@@ -29,8 +29,8 @@ const ShopContent: React.FC = () => {
             const matchCol = !initialCollection || product.collection === initialCollection;
             return matchCat && matchMat && matchCol;
         }).sort((a, b) => {
-            if (sortOption === 'price-low-high') return a.price - b.price;
-            if (sortOption === 'price-high-low') return b.price - a.price;
+            if (sortOption === 'price-low-high') return Number(a.price) - Number(b.price);
+            if (sortOption === 'price-high-low') return Number(b.price) - Number(a.price);
             if (sortOption === 'newest') return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
             return b.rating - a.rating; // Popular default
         });

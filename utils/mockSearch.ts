@@ -85,9 +85,9 @@ export const mockSearchProducts = (
 
   // 4. Sorting
   if (sort === 'price-low-high') {
-    results.sort((a, b) => a.price - b.price);
+    results.sort((a, b) => Number(a.price) - Number(b.price));
   } else if (sort === 'price-high-low') {
-    results.sort((a, b) => b.price - a.price);
+    results.sort((a, b) => Number(b.price) - Number(a.price));
   } else if (sort === 'newest') {
     results.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
   } else if (sort === 'popular') {
