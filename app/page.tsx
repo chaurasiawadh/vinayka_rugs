@@ -19,13 +19,14 @@ const Home: React.FC = () => {
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const { scrollLeft, clientWidth } = scrollContainerRef.current;
-      const scrollTo = direction === 'left'
-        ? scrollLeft - clientWidth / 2
-        : scrollLeft + clientWidth / 2;
+      const scrollTo =
+        direction === 'left'
+          ? scrollLeft - clientWidth / 2
+          : scrollLeft + clientWidth / 2;
 
       scrollContainerRef.current.scrollTo({
         left: scrollTo,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
@@ -97,14 +98,20 @@ const Home: React.FC = () => {
                   className="w-12 h-12 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-terracotta hover:border-terracotta hover:text-white transition-all duration-300 group shadow-sm"
                   aria-label="Previous"
                 >
-                  <ChevronLeft size={24} className="group-active:scale-90 transition-transform" />
+                  <ChevronLeft
+                    size={24}
+                    className="group-active:scale-90 transition-transform"
+                  />
                 </button>
                 <button
                   onClick={() => scroll('right')}
                   className="w-12 h-12 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-terracotta hover:border-terracotta hover:text-white transition-all duration-300 group shadow-sm"
                   aria-label="Next"
                 >
-                  <ChevronRight size={24} className="group-active:scale-90 transition-transform" />
+                  <ChevronRight
+                    size={24}
+                    className="group-active:scale-90 transition-transform"
+                  />
                 </button>
               </div>
             </div>
@@ -114,7 +121,7 @@ const Home: React.FC = () => {
               className="flex gap-8 overflow-x-auto pb-12 snap-x snap-mandatory no-scrollbar"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {galleryItems.map((item, index) => (
+              {galleryItems.map((item) => (
                 <motion.div
                   key={item.id}
                   whileHover={{ y: -10 }}
@@ -127,13 +134,16 @@ const Home: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                   <div className="absolute bottom-10 left-10 right-10 text-white">
-                    <h3 className="text-3xl font-serif mb-4 leading-tight">{item.title}</h3>
+                    <h3 className="text-3xl font-serif mb-4 leading-tight">
+                      {item.title}
+                    </h3>
                     {item.link ? (
                       <Link
                         href={item.link}
                         className="inline-flex items-center text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-terracotta pb-1 hover:text-terracotta transition-colors"
                       >
-                        Explore Collection <ArrowRight size={16} className="ml-3" />
+                        Explore Collection{' '}
+                        <ArrowRight size={16} className="ml-3" />
                       </Link>
                     ) : (
                       <span className="inline-flex items-center text-sm font-bold uppercase tracking-[0.2em] opacity-60">

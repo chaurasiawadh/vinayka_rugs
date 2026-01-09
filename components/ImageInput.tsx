@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link as LinkIcon, X, AlertCircle, Upload, Image as ImageIcon } from 'lucide-react';
+import {
+  Link as LinkIcon,
+  X,
+  AlertCircle,
+  Upload,
+  Image as ImageIcon,
+} from 'lucide-react';
 
 interface ImageInputProps {
   label?: string;
@@ -32,7 +38,7 @@ const ImageInput: React.FC<ImageInputProps> = ({
       setPreview(null);
       setUrlInput('');
     }
-  }, [initialValue]);
+  }, [initialValue, preview]);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
@@ -73,7 +79,11 @@ const ImageInput: React.FC<ImageInputProps> = ({
       </label>
 
       {/* Upload Methods Container */}
-      <div className={showFileUpload ? "grid grid-cols-1 md:grid-cols-2 gap-4" : "block"}>
+      <div
+        className={
+          showFileUpload ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'block'
+        }
+      >
         {/* File Upload Area */}
         {showFileUpload && (
           <div
@@ -91,14 +101,18 @@ const ImageInput: React.FC<ImageInputProps> = ({
               <Upload size={24} />
             </div>
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-700">Click to upload</p>
+              <p className="text-sm font-medium text-gray-700">
+                Click to upload
+              </p>
               <p className="text-xs text-gray-400">PNG, JPG or WebP</p>
             </div>
           </div>
         )}
 
         {/* URL Input Area */}
-        <div className={`flex flex-col justify-center gap-3 ${!showFileUpload ? 'max-w-md' : ''}`}>
+        <div
+          className={`flex flex-col justify-center gap-3 ${!showFileUpload ? 'max-w-md' : ''}`}
+        >
           <div className="relative group w-full">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-terracotta transition-colors">
               <LinkIcon size={18} />
@@ -108,10 +122,11 @@ const ImageInput: React.FC<ImageInputProps> = ({
               placeholder="Paste image URL..."
               value={urlInput}
               onChange={handleUrlChange}
-              className={`w-full border rounded-xl py-3 pl-10 pr-4 text-sm outline-none transition-all shadow-sm ${error
-                ? 'border-error focus:ring-1 focus:ring-error focus:border-error bg-error/5'
-                : 'border-gray-200 focus:ring-1 focus:ring-terracotta focus:border-terracotta bg-white hover:border-gray-300'
-                }`}
+              className={`w-full border rounded-xl py-3 pl-10 pr-4 text-sm outline-none transition-all shadow-sm ${
+                error
+                  ? 'border-error focus:ring-1 focus:ring-error focus:border-error bg-error/5'
+                  : 'border-gray-200 focus:ring-1 focus:ring-terracotta focus:border-terracotta bg-white hover:border-gray-300'
+              }`}
             />
           </div>
           <p className="text-[10px] text-gray-400 px-1 italic">
