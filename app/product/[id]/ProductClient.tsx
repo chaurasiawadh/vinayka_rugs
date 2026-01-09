@@ -33,6 +33,7 @@ export default function ProductClient({ id }: { id: string }) {
                         images: data.images || [],
                         sizes: data.sizes || [],
                         sizePrices: data.sizePrices || {},
+                        sizeOriginalPrices: data.sizeOriginalPrices || {},
                         rating: data.rating || 0,
                         reviewsCount: data.reviews || 0,
                         description: data.description,
