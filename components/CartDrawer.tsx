@@ -137,13 +137,17 @@ const CartDrawer: React.FC = () => {
 
                   <div className="flex items-center gap-3 mt-3">
                     <button
-                      onClick={() =>
-                        updateQuantity(
-                          item.id,
-                          item.selectedSize,
-                          item.quantity - 1
-                        )
-                      }
+                      onClick={() => {
+                        if (item.quantity === 1) {
+                          removeFromCart(item.id, item.selectedSize);
+                        } else {
+                          updateQuantity(
+                            item.id,
+                            item.selectedSize,
+                            item.quantity - 1
+                          );
+                        }
+                      }}
                       className="p-1 rounded hover:bg-gray-100 border border-gray-200"
                     >
                       <Minus size={14} />

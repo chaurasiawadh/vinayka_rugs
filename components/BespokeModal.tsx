@@ -353,6 +353,8 @@ Source: ${bespokeSource || 'Website Global'}`;
                       name="phone"
                       required
                       placeholder="+91"
+                      maxLength={15}
+                      pattern="[0-9+\s-]*"
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full border border-gray-300 rounded-lg p-3 focus:ring-terracotta outline-none"
