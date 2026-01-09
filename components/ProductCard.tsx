@@ -29,6 +29,46 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     toggleWishlist(product.id);
   };
 
+  // Helper to parse price
+  const parsePrice = (price: any): number => {
+    if (typeof price === 'number') return price;
+    if (typeof price === 'string') return parseFloat(price.replace(/,/g, ''));
+    return 0;
+  };
+
+  const getPriceData = () => {
+    let price = 0;
+    let mrp = 0;
+
+    // Try to find for the first size (matching default selection)
+    if (product.sizes?.length > 0) {
+      const firstSize = product.sizes[0];
+
+      // Calculate Price
+      if (product.sizePrices?.[firstSize]) {
+        price = parsePrice(product.sizePrices[firstSize]);
+      } else if (product.sizePrices) {
+        // Fallback to lowest price
+        const prices = Object.values(product.sizePrices).map(p => parsePrice(p)).filter(p => p > 0);
+        if (prices.length > 0) price = Math.min(...prices);
+      }
+
+      // Calculate MRP
+      if (product.sizeOriginalPrices?.[firstSize]) {
+        mrp = parsePrice(product.sizeOriginalPrices[firstSize]);
+      }
+    }
+
+    // Fallbacks if not found in sizes
+    if (price === 0) price = parsePrice(product.price);
+    if (mrp === 0) mrp = parsePrice(product.originalPrice || product.mrp);
+
+    return { price, mrp };
+  };
+
+  const { price: displayPrice, mrp: displayMrp } = getPriceData();
+  const discount = displayMrp > displayPrice ? Math.round(((displayMrp - displayPrice) / displayMrp) * 100) : 0;
+
   return (
     <div className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
       <Link href={`/product/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-100">
@@ -88,10 +128,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <h3 className="font-serif text-lg text-text-body group-hover:text-terracotta transition-colors">{product.name}</h3>
         </Link>
         <p className="text-sm text-text-muted mt-1 mb-2 line-clamp-1">{product.shortDescription}</p>
-        <div className="flex items-center justify-between">
-          <p className="font-medium text-text-body">₹{product.price?.toLocaleString('en-IN') || '0'}</p>
-          {product.sizes?.length > 0 && (
-            <span className="text-xs text-text-muted">{product.sizes.length} sizes</span>
+
+        <div className="flex items-center gap-2 mt-2">
+          <span className="font-medium text-text-body text-lg">₹{displayPrice.toLocaleString('en-IN')}</span>
+          {displayMrp > displayPrice && (
+            <>
+              <span className="text-sm text-gray-400 line-through">₹{displayMrp.toLocaleString('en-IN')}</span>
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-sm">
+                {discount}% OFF
+              </span>
+            </>
           )}
         </div>
       </div>
