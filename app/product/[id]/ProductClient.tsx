@@ -32,6 +32,7 @@ export default function ProductClient({ id }: { id: string }) {
                         discount: data.discount ? `Save ${data.discount}%` : null,
                         images: data.images || [],
                         sizes: data.sizes || [],
+                        sizePrices: data.sizePrices || {},
                         rating: data.rating || 0,
                         reviewsCount: data.reviews || 0,
                         description: data.description,
