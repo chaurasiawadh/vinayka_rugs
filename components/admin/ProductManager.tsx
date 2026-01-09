@@ -151,8 +151,9 @@ const ProductManager: React.FC = () => {
           Number(formData.mrp)) *
           100
       );
-      updateField('discount', discount);
+      setFormData((prev) => ({ ...prev, discount }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.price, formData.mrp]);
 
   // Handle Array Fields (About Bullets, Colors)
