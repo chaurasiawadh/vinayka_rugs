@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { Outfit, Playfair_Display } from 'next/font/google';
+import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-primary' });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 
 export const metadata: Metadata = {
     title: 'Vinayka Rugs | Luxury Hand-Knotted Carpets',
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className={`${outfit.variable} ${playfair.variable} font-sans`}>
+            <body className={`${inter.variable} ${spaceGrotesk.variable} font-primary`}>
                 <Providers>{children}</Providers>
             </body>
         </html>

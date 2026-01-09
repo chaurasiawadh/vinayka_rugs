@@ -19,8 +19,9 @@ module.exports = {
                 success: '#1E8F6E',
             },
             fontFamily: {
-                serif: ['var(--font-playfair)', 'serif'],
-                sans: ['var(--font-outfit)', 'sans-serif'],
+                primary: ['var(--font-primary)', 'Inter', 'system-ui', 'sans-serif'],
+                display: ['var(--font-display)', 'Space Grotesk', 'sans-serif'],
+                sans: ['var(--font-primary)', 'Inter', 'system-ui', 'sans-serif'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

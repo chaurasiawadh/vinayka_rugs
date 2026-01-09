@@ -82,10 +82,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
                         {/* Left: Image Gallery */}
                         <div className="flex flex-col gap-4">
-                            
+
                             {/* //! Main Image */}
                             <div className="w-full relative z-20">
-                                <div 
+                                <div
                                     ref={imageContainerRef}
                                     onMouseEnter={() => setShowZoom(true)}
                                     onMouseLeave={() => setShowZoom(false)}
@@ -142,7 +142,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                 {product.images.slice(0, 6).map((img: string, idx: number) => {
                                     const isLast = idx === 5;
                                     const remaining = product.images.length - 6;
-                                    
+
                                     return (
                                         <div key={idx} className="relative aspect-square">
                                             <button
@@ -151,9 +151,9 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                             >
                                                 <img src={img} alt="" className="w-full h-full object-cover" />
                                             </button>
-                                            
+
                                             {isLast && remaining > 0 && (
-                                                <button 
+                                                <button
                                                     onClick={(e) => { e.stopPropagation(); setShowLightbox(true); }}
                                                     className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center text-lg font-medium text-gray-800 border border-transparent hover:bg-white/70 transition-colors"
                                                 >
@@ -198,15 +198,15 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
 
                             {/* Size Selector */}
                             <div className="mb-8">
-                                <span className="text-sm font-medium text-gray-900 block mb-3">Size:</span>
-                                <div className="flex bg-[#F3F3F3] p-1 rounded-full w-full md:w-auto self-start">
+                                <h3 className="text-base font-semibold text-[#111] mb-3">Size</h3>
+                                <div className="flex flex-wrap gap-3">
                                     {product.sizes.map((size: string) => (
                                         <button
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
-                                            className={`flex-1 py-3 px-6 text-sm font-medium rounded-full transition-all ${selectedSize === size
-                                                ? 'bg-[#E5F0D0] text-black shadow-sm'
-                                                : 'text-gray-500 hover:text-gray-900'
+                                            className={`px-6 py-2.5 text-sm font-medium rounded-full transition-all border ${selectedSize === size
+                                                ? 'bg-[#111] text-white border-[#111] shadow-sm'
+                                                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400 hover:text-[#111]'
                                                 }`}
                                         >
                                             {size}
@@ -370,7 +370,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                     Rate Product
                                 </button>
                             </div>
-                            
+
                             {/* Summary & Breakdown */}
                             <div className="flex flex-col md:flex-row gap-12 mb-10 border-b border-gray-200 pb-10">
                                 <div className="flex-none flex flex-col items-center justify-center min-w-[150px]">
@@ -383,7 +383,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                         98 Reviews
                                     </p>
                                 </div>
-                                
+
                                 {/* Rating Bars - EXACT STYLE */}
                                 <div className="flex-1 w-full max-w-md space-y-2.5">
                                     {[
@@ -396,12 +396,12 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                         <div key={row.star} className="flex items-center gap-4 text-xs font-medium">
                                             <span className="w-3 text-[#212121]">{row.star} <div className="w-3 h-3 fill-[#D4C49D] text-[#D4C49D]">★</div></span>
                                             <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                                <div 
-                                                    className="h-full rounded-full" 
-                                                    style={{ 
+                                                <div
+                                                    className="h-full rounded-full"
+                                                    style={{
                                                         width: `${(row.count / 3000) * 100}%`,
-                                                        backgroundColor: row.color 
-                                                    }} 
+                                                        backgroundColor: row.color
+                                                    }}
                                                 />
                                             </div>
                                             <span className="w-8 text-right text-gray-400">{row.count}</span>
@@ -414,7 +414,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                             <div className="mb-10">
                                 <h3 className="text-lg font-bold text-[#212121] mb-4">Customer Photos</h3>
                                 <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-                                    {reviews.flatMap(r => r.images || []).slice(0, 8).map((img : string, idx: number) => (
+                                    {reviews.flatMap(r => r.images || []).slice(0, 8).map((img: string, idx: number) => (
                                         <div key={idx} className="flex-none w-24 h-24 relative cursor-pointer hover:opacity-90 transition-opacity border border-gray-200 rounded-sm">
                                             <img src={img} alt="" className="w-full h-full object-cover rounded-sm" />
                                             {idx === 7 && (
@@ -431,16 +431,16 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                             <div className="space-y-8">
                                 {reviews.map((review) => (
                                     <div key={review.id} className="border-b border-gray-100 pb-8 last:border-0">
-                                        
+
                                         <div className="flex items-start gap-3 mb-3">
                                             <span className="px-2 py-0.5 text-xs font-bold text-white rounded-sm flex items-center gap-1 bg-[#D4C49D]">
                                                 {review.rating} <Star className="w-2.5 h-2.5 fill-current" />
                                             </span>
                                             <h4 className="font-medium text-[#212121] text-sm">Mind-blowing purchase</h4>
                                         </div>
-                                        
+
                                         <p className="text-sm text-[#212121] leading-relaxed mb-4">{review.content} 👌😍</p>
-                                        
+
                                         {review.images && (
                                             <div className="flex gap-2 mb-4">
                                                 {review.images.map((img: string, i: number) => (
@@ -450,7 +450,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                                 ))}
                                             </div>
                                         )}
-                                        
+
                                         <div className="flex items-center justify-between text-xs text-gray-400 font-medium">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-gray-500">{review.author}</span>
@@ -461,10 +461,10 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                                 )}
                                                 <span>{review.date}</span>
                                             </div>
-                                            
+
                                             <div className="flex items-center gap-6">
                                                 <button className="flex items-center gap-1.5 hover:text-gray-600 transition-colors">
-                                                    <ThumbsUp className="w-4 h-4 text-gray-400" /> 
+                                                    <ThumbsUp className="w-4 h-4 text-gray-400" />
                                                     <span className="text-gray-400 font-medium">60</span>
                                                 </button>
                                                 <button className="flex items-center gap-1.5 hover:text-gray-600 transition-colors">
@@ -485,11 +485,11 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                             <h2 className="text-2xl font-bold text-[#212121] mb-8">Frequently Asked Questions</h2>
                             <div className="space-y-4">
                                 {faqs.map((faq, idx) => (
-                                    <div 
-                                        key={idx} 
+                                    <div
+                                        key={idx}
                                         className={`border border-gray-200 rounded-lg overflow-hidden bg-white transition-all duration-200 ${openFaq === idx ? 'shadow-md border-[#D4C49D]/30' : 'hover:border-gray-300'}`}
                                     >
-                                        <button 
+                                        <button
                                             onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                                             className="w-full flex items-center justify-between p-5 text-left"
                                         >
@@ -504,7 +504,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                                 )}
                                             </div>
                                         </button>
-                                        
+
                                         {openFaq === idx && (
                                             <div className="px-5 pb-5 animate-in slide-in-from-top-2 duration-200">
                                                 <p className="text-sm text-gray-500 leading-relaxed pt-2 border-t border-gray-50">
@@ -526,13 +526,13 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
             {showLightbox && (
                 <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
                     <div className="bg-white w-full max-w-[90vw] h-[90vh] rounded-lg shadow-2xl flex flex-col relative overflow-hidden">
-                        
+
                         {/* Header Tabs & Close */}
                         <div className="flex items-center justify-between px-6 border-b border-gray-200">
                             <div className="flex gap-8">
                                 <button className="py-4 text-sm font-bold text-[#41354D] border-b-2 border-[#41354D] uppercase tracking-wide">Images</button>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setShowLightbox(false)}
                                 className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
                             >
@@ -543,20 +543,20 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                         <div className="flex flex-1 overflow-hidden">
                             {/* Main Image Area */}
                             <div className="flex-1 bg-white flex items-center justify-center p-8 relative group">
-                                <button 
+                                <button
                                     onClick={prevImage}
                                     className="absolute left-4 p-2 bg-white/80 hover:bg-white shadow-md rounded-full text-gray-700 opacity-0 group-hover:opacity-100 transition-all border border-gray-100"
                                 >
                                     <ChevronLeft size={24} />
                                 </button>
 
-                                <img 
-                                    src={product.images[selectedImage]} 
-                                    alt={product.name} 
+                                <img
+                                    src={product.images[selectedImage]}
+                                    alt={product.name}
                                     className="max-w-full max-h-full object-contain"
                                 />
 
-                                <button 
+                                <button
                                     onClick={nextImage}
                                     className="absolute right-4 p-2 bg-white/80 hover:bg-white shadow-md rounded-full text-gray-700 opacity-0 group-hover:opacity-100 transition-all border border-gray-100"
                                 >
