@@ -277,12 +277,16 @@ const ProductManager: React.FC = () => {
                                     </div>
                                 ))}
 
-                                {(formData.images?.length || 0) < 10 && (
-                                    <div className="aspect-[4/5] bg-gray-50 border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center p-2 hover:bg-gray-100 transition-colors">
-                                        <ImageInput key={formData.images?.length} onChange={handleImageUpload} label="" error={uploadError} />
-                                    </div>
-                                )}
+
                             </div>
+
+                            {/* Add New Image */}
+                            {(formData.images?.length || 0) < 10 && (
+                                <div className="mt-4 p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50">
+                                    <h4 className="text-xs font-bold uppercase text-gray-500 mb-2">Add New Image</h4>
+                                    <ImageInput key={formData.images?.length} onChange={handleImageUpload} label="Paste Image URL" error={uploadError} />
+                                </div>
+                            )}
                         </section>
 
                         {/* Product Information Sections (Amazon Style) */}
