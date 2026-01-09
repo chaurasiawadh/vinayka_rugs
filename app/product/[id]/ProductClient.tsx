@@ -46,11 +46,17 @@ export default function ProductClient({ id }: { id: string }) {
             description: data.description,
             details: data.description,
             material: data.specifications?.material || 'Premium Wool',
+            roomType: data.specifications?.roomType || [],
+            shape: data.specifications?.shape || [],
+            specifications: data.specifications || {}, // Pass full specs
             careInstructions:
               data.specifications?.careInstructions ||
               'Professional clean only',
             shipping: data.deliveryText || 'Free shipping worldwide',
             tags: data.specifications?.style ? [data.specifications.style] : [],
+            category: data.category || 'Modern',
+            collection: data.collection || '-', // Default to dash if empty to ensure visibility if desired, or handle in UI
+            aboutItems: data.aboutItems || [],
           };
           setProduct(mappedProduct);
 

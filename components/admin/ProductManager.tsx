@@ -26,7 +26,15 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useProducts } from '@/hooks/useFirestore';
 import Button from '@/components/Button';
 import ImageInput from '@/components/ImageInput';
-import { CATEGORIES, COLLECTIONS, SIZES, REVIEW_TAGS } from '@/constants';
+import {
+  CATEGORIES,
+  COLLECTIONS,
+  SIZES,
+  REVIEW_TAGS,
+  MATERIALS,
+  ROOMS,
+  SHAPES,
+} from '@/constants';
 import { Product } from '@/types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 
@@ -442,7 +450,6 @@ const ProductManager: React.FC = () => {
                     {renderSpecInput('Indoor/Outdoor', 'indoorOutdoor')}
                     {renderSpecInput('Stain Resistant?', 'stainResistant')}
                     {renderSpecInput('Special Features', 'specialFeatures')}
-                    {renderSpecInput('Room Type', 'roomType')}
                     {renderSpecInput('Water Resistance', 'waterResistance')}
                   </div>
                 </div>
@@ -453,7 +460,6 @@ const ProductManager: React.FC = () => {
                     Materials & Care
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
-                    {renderSpecInput('Material', 'material')}
                     {renderSpecInput('Back Material', 'backMaterial')}
                     {renderSpecInput('Care Instructions', 'careInstructions')}
                   </div>
@@ -490,7 +496,7 @@ const ProductManager: React.FC = () => {
                     {renderSpecInput('Colour', 'color')}
                     {renderSpecInput('Theme', 'theme')}
                     {renderSpecInput('Pattern', 'pattern')}
-                    {renderSpecInput('Item Shape', 'shape')}
+
                     {renderSpecInput('Rug Form Type', 'rugForm')}
                     {renderSpecInput('Style', 'style')}
                     {renderSpecInput('Occasion', 'occasion')}
@@ -634,6 +640,176 @@ const ProductManager: React.FC = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">
+                    Material
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {MATERIALS.map((m) => {
+                      const current = (formData.specifications as any)
+                        ?.material;
+                      const isSelected = Array.isArray(current)
+                        ? current.includes(m)
+                        : current === m;
+                      return (
+                        <button
+                          type="button"
+                          key={m}
+                          onClick={() => {
+                            let currentArray = Array.isArray(current)
+                              ? current
+                              : current
+                                ? [current]
+                                : [];
+
+                            // Auto-heal fragmented strings
+                            const chars = currentArray.filter(
+                              (x: any) =>
+                                typeof x === 'string' && x.length === 1
+                            );
+                            if (chars.length > 0) {
+                              const merged = chars
+                                .join('')
+                                .replace(/,/g, '')
+                                .trim();
+                              const words = currentArray.filter(
+                                (x: any) =>
+                                  typeof x === 'string' && x.length > 1
+                              );
+                              if (merged) words.push(merged);
+                              currentArray = words;
+                            }
+
+                            const newValue = currentArray.includes(m)
+                              ? currentArray.filter((i: string) => i !== m)
+                              : [...currentArray, m];
+                            updateNestedField(
+                              'specifications',
+                              'material',
+                              newValue
+                            );
+                          }}
+                          className={`px-3 py-1 rounded-full text-xs border transition-colors ${isSelected ? 'bg-terracotta text-white border-terracotta' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                        >
+                          {m}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">
+                    Room
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {ROOMS.map((r) => {
+                      const current = (formData.specifications as any)
+                        ?.roomType;
+                      const isSelected = Array.isArray(current)
+                        ? current.includes(r)
+                        : current === r;
+                      return (
+                        <button
+                          type="button"
+                          key={r}
+                          onClick={() => {
+                            let currentArray = Array.isArray(current)
+                              ? current
+                              : current
+                                ? [current]
+                                : [];
+
+                            // Auto-heal fragmented strings
+                            const chars = currentArray.filter(
+                              (x: any) =>
+                                typeof x === 'string' && x.length === 1
+                            );
+                            if (chars.length > 0) {
+                              const merged = chars
+                                .join('')
+                                .replace(/,/g, '')
+                                .trim();
+                              const words = currentArray.filter(
+                                (x: any) =>
+                                  typeof x === 'string' && x.length > 1
+                              );
+                              if (merged) words.push(merged);
+                              currentArray = words;
+                            }
+
+                            const newValue = currentArray.includes(r)
+                              ? currentArray.filter((i: string) => i !== r)
+                              : [...currentArray, r];
+                            updateNestedField(
+                              'specifications',
+                              'roomType',
+                              newValue
+                            );
+                          }}
+                          className={`px-3 py-1 rounded-full text-xs border transition-colors ${isSelected ? 'bg-terracotta text-white border-terracotta' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                        >
+                          {r}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">
+                    Shape
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {SHAPES.map((s) => {
+                      const current = (formData.specifications as any)?.shape;
+                      const isSelected = Array.isArray(current)
+                        ? current.includes(s)
+                        : current === s;
+                      return (
+                        <button
+                          type="button"
+                          key={s}
+                          onClick={() => {
+                            let currentArray = Array.isArray(current)
+                              ? current
+                              : current
+                                ? [current]
+                                : [];
+
+                            // Auto-heal fragmented strings
+                            const chars = currentArray.filter(
+                              (x: any) =>
+                                typeof x === 'string' && x.length === 1
+                            );
+                            if (chars.length > 0) {
+                              const merged = chars
+                                .join('')
+                                .replace(/,/g, '')
+                                .trim();
+                              const words = currentArray.filter(
+                                (x: any) =>
+                                  typeof x === 'string' && x.length > 1
+                              );
+                              if (merged) words.push(merged);
+                              currentArray = words;
+                            }
+
+                            const newValue = currentArray.includes(s)
+                              ? currentArray.filter((i: string) => i !== s)
+                              : [...currentArray, s];
+                            updateNestedField(
+                              'specifications',
+                              'shape',
+                              newValue
+                            );
+                          }}
+                          className={`px-3 py-1 rounded-full text-xs border transition-colors ${isSelected ? 'bg-terracotta text-white border-terracotta' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                        >
+                          {s}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-4 pt-2">
                   <label className="flex items-center gap-2 text-sm">
