@@ -388,13 +388,8 @@ const ProductManager: React.FC = () => {
                         <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                             <h3 className="flex items-center gap-2 font-bold mb-4 text-lg text-gray-800"><Tag size={18} /> Pricing</h3>
                             <div className="space-y-4">
-                                <div>
-                                    <label className="text-xs font-bold uppercase text-gray-500">MRP (₹)</label>
-                                    <input type="number" className="w-full border p-2 rounded" value={formData.mrp} onChange={e => updateField('mrp', Number(e.target.value))} />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold uppercase text-gray-500">Selling Price (₹)</label>
-                                    <input type="number" className="w-full border p-2 rounded font-bold text-lg" value={formData.price} onChange={e => updateField('price', Number(e.target.value))} />
+                                <div className="p-3 bg-blue-50 text-blue-800 text-xs rounded border border-blue-100">
+                                    <strong>Note:</strong> Product Price and MRP are automatically set based on the <strong>first size</strong> entered below.
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Discount:</span>
@@ -460,24 +455,68 @@ const ProductManager: React.FC = () => {
                                     <div className="mt-4 border-t border-gray-100 pt-4">
                                         <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">Size Pricing (Optional Override)</label>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            {formData.sizes.map(size => (
-                                                <div key={size} className="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200">
-                                                    <span className="text-sm font-medium text-gray-700">{size}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-xs text-gray-500">₹</span>
-                                                        <input 
-                                                            type="number" 
-                                                            placeholder="Default"
-                                                            className="border p-1 rounded text-sm w-28 focus:ring-terracotta focus:border-terracotta"
-                                                            value={formData.sizePrices?.[size] || ''}
-                                                            onChange={(e) => {
-                                                                const val = e.target.value ? parseFloat(e.target.value) : undefined;
-                                                                const newPrices = { ...(formData.sizePrices || {}) };
-                                                                if (val !== undefined) newPrices[size] = val;
-                                                                else delete newPrices[size];
-                                                                updateField('sizePrices', newPrices);
-                                                            }}
-                                                        />
+                                            {formData.sizes.map((size, index) => (
+                                                <div key={size} className="flex flex-col bg-gray-50 p-3 rounded border border-gray-200 gap-3">
+                                                    {/* Row 1: Size Label & Default Badge */}
+                                                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
+                                                        <span className="font-bold text-gray-800">{size}</span>
+                                                        {index === 0 && (
+                                                            <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-wide font-semibold">
+                                                                Default Base
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Row 2: Selling Price */}
+                                                    <div className="flex flex-col gap-1 text-left">
+                                                        <label className="text-xs font-bold uppercase text-gray-500">Selling Price</label>
+                                                        <div className="flex items-center gap-2 w-full">
+                                                            <span className="text-xs text-gray-400 font-medium">₹</span>
+                                                            <input 
+                                                                type="number" 
+                                                                placeholder="0"
+                                                                className="flex-1 border border-gray-300 p-2 rounded text-sm focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none transition-all w-full"
+                                                                value={formData.sizePrices?.[size] || ''}
+                                                                onChange={(e) => {
+                                                                    const val = e.target.value ? parseFloat(e.target.value) : undefined;
+                                                                    const newPrices = { ...(formData.sizePrices || {}) };
+                                                                    if (val !== undefined) newPrices[size] = val;
+                                                                    else delete newPrices[size];
+                                                                    updateField('sizePrices', newPrices);
+                                                                    
+                                                                    // Auto-set base price if default (first index)
+                                                                    if (index === 0 && val !== undefined) {
+                                                                        updateField('price', val);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Row 3: MRP (Original) */}
+                                                    <div className="flex flex-col gap-1 text-left">
+                                                        <label className="text-xs font-bold uppercase text-gray-500">MRP (Original)</label>
+                                                        <div className="flex items-center gap-2 w-full">
+                                                            <span className="text-xs text-gray-400 font-medium">₹</span>
+                                                            <input 
+                                                                type="number" 
+                                                                placeholder="0"
+                                                                className="flex-1 border border-gray-300 p-2 rounded text-sm focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none transition-all w-full"
+                                                                value={formData.sizeOriginalPrices?.[size] || ''}
+                                                                onChange={(e) => {
+                                                                    const val = e.target.value ? parseFloat(e.target.value) : undefined;
+                                                                    const newOriginalPrices = { ...(formData.sizeOriginalPrices || {}) };
+                                                                    if (val !== undefined) newOriginalPrices[size] = val;
+                                                                    else delete newOriginalPrices[size];
+                                                                    updateField('sizeOriginalPrices', newOriginalPrices);
+
+                                                                    // Auto-set base MRP if default (first index)
+                                                                    if (index === 0 && val !== undefined) {
+                                                                        updateField('mrp', val);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ))}
