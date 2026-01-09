@@ -61,7 +61,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
     // Fallbacks if not found in sizes
     if (price === 0) price = parsePrice(product.price);
-    if (mrp === 0) mrp = parsePrice(product.originalPrice || product.mrp);
+    if (mrp === 0) mrp = parsePrice(product.mrp);
 
     return { price, mrp };
   };
