@@ -1,37 +1,32 @@
-
-import { MOCK_PRODUCTS } from '../constants';
 import { Product, SearchResult, SearchSuggestion, Facet } from '../types';
 
-// Simulate indexing fields
-const searchIndex = [
-  ...MOCK_PRODUCTS.map(p => ({
-    id: p.id,
-    title: p.name,
-    type: 'product' as const,
-    subtitle: `₹${p.price.toLocaleString('en-IN')}`,
-    image: p.images[0],
-    url: `/product/${p.id}`,
-    keywords: `${p.name} ${p.category} ${p.collection} ${p.specifications?.material || ''} ${p.colors?.join(' ')}`.toLowerCase(),
-    obj: p
-  }))
-];
-
-export const mockAutocomplete = (query: string): SearchSuggestion[] => {
+export const mockAutocomplete = (query: string, products: Product[]): SearchSuggestion[] => {
   if (!query || query.length < 2) return [];
   const lowerQ = query.toLowerCase();
 
-  return searchIndex
-    .filter(item => item.keywords.includes(lowerQ))
+  return products
+    .filter(p =>
+      p.name.toLowerCase().includes(lowerQ) ||
+      p.collection.toLowerCase().includes(lowerQ)
+    )
     .slice(0, 5)
-    .map(({ id, title, type, image, url, subtitle }) => ({ id, title, type, image, url, subtitle }));
+    .map(p => ({
+      id: p.id,
+      title: p.name,
+      type: 'product' as const,
+      subtitle: `₹${p.price.toLocaleString('en-IN')}`,
+      image: p.images[0],
+      url: `/product/${p.id}`
+    }));
 };
 
 export const mockSearchProducts = (
+  products: Product[],
   query: string,
   filters: Record<string, string[]> = {},
   sort: string = 'relevance'
 ): SearchResult => {
-  let results = MOCK_PRODUCTS;
+  let results = products;
 
   // 1. Text Search
   if (query) {

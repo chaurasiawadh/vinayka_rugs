@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
+import { useProducts } from '../../hooks/useFirestore';
 import { mockAutocomplete } from '../../utils/mockSearch';
 import { SearchSuggestion } from '../../types';
 import SearchAutocomplete from './SearchAutocomplete';
@@ -12,12 +13,13 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const [activeIndex, setActiveIndex] = useState(-1);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { products } = useProducts();
 
   // Debounce Autocomplete
   useEffect(() => {
     const timer = setTimeout(() => {
       if (query.length >= 2) {
-        setSuggestions(mockAutocomplete(query));
+        setSuggestions(mockAutocomplete(query, products));
       } else {
         setSuggestions([]);
       }

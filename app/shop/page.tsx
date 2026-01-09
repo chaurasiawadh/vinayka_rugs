@@ -24,15 +24,24 @@ const ShopContent: React.FC = () => {
     // Filter Logic
     const filteredProducts = useMemo(() => {
         return products.filter(product => {
-            const matchCat = selectedCategories.length === 0 || selectedCategories.includes(product.category);
-            const matchMat = selectedMaterials.length === 0 || (product.specifications?.material && selectedMaterials.includes(product.specifications.material));
-            const matchCol = !initialCollection || product.collection === initialCollection;
+            const productCategory = product.category || '';
+            const productCollection = product.collection || '';
+            const productMaterial = product.specifications?.material || '';
+
+            const matchCat = selectedCategories.length === 0 || selectedCategories.includes(productCategory);
+            const matchMat = selectedMaterials.length === 0 || (productMaterial && selectedMaterials.includes(productMaterial));
+            const matchCol = !initialCollection || productCollection === initialCollection;
             return matchCat && matchMat && matchCol;
         }).sort((a, b) => {
-            if (sortOption === 'price-low-high') return Number(a.price) - Number(b.price);
-            if (sortOption === 'price-high-low') return Number(b.price) - Number(a.price);
+            const priceA = Number(a.price || 0);
+            const priceB = Number(b.price || 0);
+            const ratingA = Number(a.rating || 0);
+            const ratingB = Number(b.rating || 0);
+
+            if (sortOption === 'price-low-high') return priceA - priceB;
+            if (sortOption === 'price-high-low') return priceB - priceA;
             if (sortOption === 'newest') return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
-            return b.rating - a.rating; // Popular default
+            return ratingB - ratingA; // Popular default
         });
     }, [selectedCategories, selectedMaterials, sortOption, initialCollection, products]);
 

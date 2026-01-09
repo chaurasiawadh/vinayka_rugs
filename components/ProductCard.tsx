@@ -5,6 +5,7 @@ import { Heart, ShoppingBag } from 'lucide-react';
 import { Product } from '../types';
 import { useShop } from '../context/ShopContext';
 import Button from './Button';
+import { PLACEHOLDER_IMAGE } from '../constants';
 
 interface ProductCardProps {
   product: Product;
@@ -17,7 +18,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (product.sizes.length > 0) {
+    if (product.sizes?.length > 0) {
       addToCart(product, product.sizes[0], 1);
     }
   };
@@ -32,11 +33,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
       <Link href={`/product/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-100">
         <img
-          src={product.images[0]}
+          src={product.images?.[0] || PLACEHOLDER_IMAGE}
           alt={product.name}
           className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
         />
-        {product.images[1] && (
+        {product.images?.[1] && (
           <img
             src={product.images[1]}
             alt={product.name}
@@ -88,8 +89,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Link>
         <p className="text-sm text-text-muted mt-1 mb-2 line-clamp-1">{product.shortDescription}</p>
         <div className="flex items-center justify-between">
-          <p className="font-medium text-text-body">₹{product.price.toLocaleString('en-IN')}</p>
-          {product.sizes.length > 0 && (
+          <p className="font-medium text-text-body">₹{product.price?.toLocaleString('en-IN') || '0'}</p>
+          {product.sizes?.length > 0 && (
             <span className="text-xs text-text-muted">{product.sizes.length} sizes</span>
           )}
         </div>

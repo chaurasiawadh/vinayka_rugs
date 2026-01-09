@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useProducts } from '@/hooks/useFirestore';
 import { mockSearchProducts } from '@/utils/mockSearch';
 import { SearchResult } from '@/types';
 import ProductCard from '@/components/ProductCard';
@@ -13,6 +14,7 @@ const SearchResults: React.FC = () => {
     const searchParams = useSearchParams();
     const q = searchParams.get('q') || '';
 
+    const { products, loading } = useProducts();
     const [results, setResults] = useState<SearchResult | null>(null);
     const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
     const [sort, setSort] = useState('relevance');
@@ -24,9 +26,11 @@ const SearchResults: React.FC = () => {
     }, [q]);
 
     useEffect(() => {
-        const data = mockSearchProducts(q, selectedFilters, sort);
-        setResults(data);
-    }, [q, selectedFilters, sort]);
+        if (!loading) {
+            const data = mockSearchProducts(products, q, selectedFilters, sort);
+            setResults(data);
+        }
+    }, [q, selectedFilters, sort, products, loading]);
 
     const handleFilterChange = (facetId: string, value: string) => {
         setSelectedFilters(prev => {
@@ -40,7 +44,7 @@ const SearchResults: React.FC = () => {
 
     const clearFilters = () => setSelectedFilters({});
 
-    if (!results) return <div className="p-20 text-center">Loading...</div>;
+    if (loading || !results) return <div className="p-20 text-center">Loading...</div>;
 
     return (
         <div className="bg-cream min-h-screen pb-20 pt-8">
