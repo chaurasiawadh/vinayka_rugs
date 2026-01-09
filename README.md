@@ -10,8 +10,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1q9Kxar2G2yGC94ece1hTXa
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
    `npm install`

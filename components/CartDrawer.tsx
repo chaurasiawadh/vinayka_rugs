@@ -7,7 +7,16 @@ import Button from './Button';
 import { FREE_SHIPPING_THRESHOLD } from '../constants';
 
 const CartDrawer: React.FC = () => {
-  const { isCartOpen, setIsCartOpen, cart, updateQuantity, removeFromCart, cartTotal, shippingDiff, openBespokeModal } = useShop();
+  const {
+    isCartOpen,
+    setIsCartOpen,
+    cart,
+    updateQuantity,
+    removeFromCart,
+    cartTotal,
+    shippingDiff,
+    openBespokeModal,
+  } = useShop();
   const { user } = useAuth();
   const router = useRouter();
 
@@ -36,7 +45,10 @@ const CartDrawer: React.FC = () => {
       <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-slide-up md:animate-none md:transition-transform">
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <h2 className="font-serif text-xl">Your Bag ({cart.length})</h2>
-          <button onClick={() => setIsCartOpen(false)} className="p-2 hover:bg-gray-100 rounded-full">
+          <button
+            onClick={() => setIsCartOpen(false)}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
             <X size={24} />
           </button>
         </div>
@@ -45,17 +57,23 @@ const CartDrawer: React.FC = () => {
         <div className="p-4 bg-cream border-b border-gray-100">
           {shippingDiff > 0 ? (
             <p className="text-sm text-center text-text-muted">
-              You are <span className="font-bold text-terracotta">₹{shippingDiff.toLocaleString('en-IN')}</span> away from free shipping.
+              You are{' '}
+              <span className="font-bold text-terracotta">
+                ₹{shippingDiff.toLocaleString('en-IN')}
+              </span>{' '}
+              away from free shipping.
             </p>
           ) : (
             <p className="text-sm text-center text-success font-medium">
-              You've unlocked free shipping!
+              You&apos;ve unlocked free shipping!
             </p>
           )}
           <div className="w-full bg-gray-200 h-1.5 mt-3 rounded-full overflow-hidden">
             <div
               className="h-full bg-terracotta transition-all duration-500"
-              style={{ width: `${Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100)}%` }}
+              style={{
+                width: `${Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100)}%`,
+              }}
             ></div>
           </div>
         </div>
@@ -70,12 +88,18 @@ const CartDrawer: React.FC = () => {
                 variant="outline"
                 size="sm"
                 className="mt-4"
-                onClick={() => { setIsCartOpen(false); router.push('/shop'); }}
+                onClick={() => {
+                  setIsCartOpen(false);
+                  router.push('/shop');
+                }}
               >
                 Start Shopping
               </Button>
               <button
-                onClick={() => { setIsCartOpen(false); openBespokeModal('Cart Drawer Empty'); }}
+                onClick={() => {
+                  setIsCartOpen(false);
+                  openBespokeModal('Cart Drawer Empty');
+                }}
                 className="mt-6 text-sm font-medium text-terracotta hover:underline flex items-center gap-2"
               >
                 <PenTool size={14} /> Create a Custom Rug
@@ -83,9 +107,16 @@ const CartDrawer: React.FC = () => {
             </div>
           ) : (
             cart.map((item) => (
-              <div key={`${item.id}-${item.selectedSize}`} className="flex gap-4">
+              <div
+                key={`${item.id}-${item.selectedSize}`}
+                className="flex gap-4"
+              >
                 <div className="w-20 h-24 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                  <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover" />
+                  <img
+                    src={item.images[0]}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
@@ -97,19 +128,37 @@ const CartDrawer: React.FC = () => {
                       <Trash2 size={16} />
                     </button>
                   </div>
-                  <p className="text-sm text-text-muted">{item.selectedSize} | {item.material}</p>
-                  <p className="text-sm font-medium mt-1">₹{item.price.toLocaleString('en-IN')}</p>
+                  <p className="text-sm text-text-muted">
+                    {item.selectedSize} | {item.material}
+                  </p>
+                  <p className="text-sm font-medium mt-1">
+                    ₹{item.price.toLocaleString('en-IN')}
+                  </p>
 
                   <div className="flex items-center gap-3 mt-3">
                     <button
-                      onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity - 1)}
+                      onClick={() =>
+                        updateQuantity(
+                          item.id,
+                          item.selectedSize,
+                          item.quantity - 1
+                        )
+                      }
                       className="p-1 rounded hover:bg-gray-100 border border-gray-200"
                     >
                       <Minus size={14} />
                     </button>
-                    <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
+                    <span className="text-sm font-medium w-4 text-center">
+                      {item.quantity}
+                    </span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)}
+                      onClick={() =>
+                        updateQuantity(
+                          item.id,
+                          item.selectedSize,
+                          item.quantity + 1
+                        )
+                      }
                       className="p-1 rounded hover:bg-gray-100 border border-gray-200"
                     >
                       <Plus size={14} />
@@ -126,17 +175,32 @@ const CartDrawer: React.FC = () => {
           <div className="p-4 border-t border-gray-100 bg-white">
             <div className="flex justify-between items-center mb-4">
               <span className="text-text-muted">Subtotal</span>
-              <span className="font-serif text-xl font-medium">₹{cartTotal.toLocaleString('en-IN')}</span>
+              <span className="font-serif text-xl font-medium">
+                ₹{cartTotal.toLocaleString('en-IN')}
+              </span>
             </div>
-            <p className="text-xs text-gray-500 mb-4 text-center">Shipping & taxes calculated at checkout.</p>
-            <Button onClick={handleCheckout} fullWidth size="lg" className="flex items-center justify-between group">
+            <p className="text-xs text-gray-500 mb-4 text-center">
+              Shipping & taxes calculated at checkout.
+            </p>
+            <Button
+              onClick={handleCheckout}
+              fullWidth
+              size="lg"
+              className="flex items-center justify-between group"
+            >
               <span>Checkout</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight
+                size={18}
+                className="group-hover:translate-x-1 transition-transform"
+              />
             </Button>
 
             <div className="mt-4 pt-4 border-t border-gray-100">
               <button
-                onClick={() => { setIsCartOpen(false); openBespokeModal('Cart Drawer Footer'); }}
+                onClick={() => {
+                  setIsCartOpen(false);
+                  openBespokeModal('Cart Drawer Footer');
+                }}
                 className="w-full text-xs font-medium text-text-muted hover:text-terracotta flex items-center justify-center gap-2 py-2"
               >
                 <PenTool size={12} /> Need a custom size? Request Bespoke

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Link from 'next/link';
 import { Heart, ShoppingBag } from 'lucide-react';
@@ -49,7 +48,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         price = parsePrice(product.sizePrices[firstSize]);
       } else if (product.sizePrices) {
         // Fallback to lowest price
-        const prices = Object.values(product.sizePrices).map(p => parsePrice(p)).filter(p => p > 0);
+        const prices = Object.values(product.sizePrices)
+          .map((p) => parsePrice(p))
+          .filter((p) => p > 0);
         if (prices.length > 0) price = Math.min(...prices);
       }
 
@@ -67,11 +68,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const { price: displayPrice, mrp: displayMrp } = getPriceData();
-  const discount = displayMrp > displayPrice ? Math.round(((displayMrp - displayPrice) / displayMrp) * 100) : 0;
+  const discount =
+    displayMrp > displayPrice
+      ? Math.round(((displayMrp - displayPrice) / displayMrp) * 100)
+      : 0;
 
   return (
     <div className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-      <Link href={`/product/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-100">
+      <Link
+        href={`/product/${product.id}`}
+        className="block relative aspect-[4/5] overflow-hidden bg-gray-100"
+      >
         <img
           src={product.images?.[0] || PLACEHOLDER_IMAGE}
           alt={product.name}
@@ -86,9 +93,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
 
         <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {product.isNew && <span className="bg-white/90 backdrop-blur text-xs font-semibold px-2 py-1 uppercase tracking-wider text-teal">New</span>}
-          {product.isSale && <span className="bg-amber text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">Sale</span>}
-          {!product.inStock && <span className="bg-gray-800 text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">Sold Out</span>}
+          {product.isNew && (
+            <span className="bg-white/90 backdrop-blur text-xs font-semibold px-2 py-1 uppercase tracking-wider text-teal">
+              New
+            </span>
+          )}
+          {product.isSale && (
+            <span className="bg-amber text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">
+              Sale
+            </span>
+          )}
+          {!product.inStock && (
+            <span className="bg-gray-800 text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">
+              Sold Out
+            </span>
+          )}
         </div>
 
         <div className="absolute right-3 top-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 flex flex-col gap-2">
@@ -98,7 +117,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           >
             <Heart
               size={18}
-              fill={isWishlisted ? "currentColor" : "none"}
+              fill={isWishlisted ? 'currentColor' : 'none'}
               className={`transition-transform duration-300 ${isWishlisted ? 'scale-110' : 'scale-100'}`}
             />
           </button>
@@ -116,7 +135,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <ShoppingBag size={16} className="mr-2" /> Quick Add
             </Button>
           ) : (
-            <Button variant="ghost" fullWidth size="sm" className="bg-white/90 cursor-not-allowed">
+            <Button
+              variant="ghost"
+              fullWidth
+              size="sm"
+              className="bg-white/90 cursor-not-allowed"
+            >
               Notify Me
             </Button>
           )}
@@ -125,15 +149,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       <div className="p-4">
         <Link href={`/product/${product.id}`}>
-          <h3 className="font-serif text-lg text-text-body group-hover:text-terracotta transition-colors">{product.name}</h3>
+          <h3 className="font-serif text-lg text-text-body group-hover:text-terracotta transition-colors">
+            {product.name}
+          </h3>
         </Link>
-        <p className="text-sm text-text-muted mt-1 mb-2 line-clamp-1">{product.shortDescription}</p>
+        <p className="text-sm text-text-muted mt-1 mb-2 line-clamp-1">
+          {product.shortDescription}
+        </p>
 
         <div className="flex items-center gap-2 mt-2">
-          <span className="font-medium text-text-body text-lg">₹{displayPrice.toLocaleString('en-IN')}</span>
+          <span className="font-medium text-text-body text-lg">
+            ₹{displayPrice.toLocaleString('en-IN')}
+          </span>
           {displayMrp > displayPrice && (
             <>
-              <span className="text-sm text-gray-400 line-through">₹{displayMrp.toLocaleString('en-IN')}</span>
+              <span className="text-sm text-gray-400 line-through">
+                ₹{displayMrp.toLocaleString('en-IN')}
+              </span>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-sm">
                 {discount}% OFF
               </span>

@@ -10,7 +10,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #FAF8F6;
+  background: #faf8f6;
   color: #222222;
 }
 
@@ -20,10 +20,10 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F3F1EF;
+  background: #f3f1ef;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #8B5E3C;
+  background: #8b5e3c;
   border-radius: 4px;
 }

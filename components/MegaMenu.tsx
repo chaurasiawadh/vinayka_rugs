@@ -1,9 +1,8 @@
-"use client";
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { COLLECTIONS, CATEGORIES, SIZES, MATERIALS } from '../constants';
-import { ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface MegaMenuProps {
@@ -12,13 +11,17 @@ interface MegaMenuProps {
   onMouseLeave: () => void;
 }
 
-const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave }) => {
+const MegaMenu: React.FC<MegaMenuProps> = ({
+  isOpen,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   // Mock collaborations for now as they aren't in constants
   const COLLABORATIONS = [
     'Vinayka x Designers',
     'Heritage Series',
     'Artist Spotlight',
-    'Custom Works'
+    'Custom Works',
   ];
 
   return (
@@ -28,7 +31,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2, ease: "linear" }}
+          transition={{ duration: 0.2, ease: 'linear' }}
           className="absolute top-full left-0 w-full bg-white shadow-xl z-50 border-t border-gray-100"
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
@@ -45,7 +48,10 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave 
                   />
                   <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
                 </div>
-                <Link href="/shop" className="text-[11px] uppercase tracking-[0.25em] font-medium text-gray-400 hover:text-terracotta transition-colors inline-flex items-center gap-2 ">
+                <Link
+                  href="/shop"
+                  className="text-[11px] uppercase tracking-[0.25em] font-medium text-gray-400 hover:text-terracotta transition-colors inline-flex items-center gap-2 "
+                >
                   Shop All
                 </Link>
               </div>
@@ -54,17 +60,25 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave 
               <div className="flex-1 grid grid-cols-5 gap-6">
                 {/* Column 1: Collections */}
                 <div className="space-y-6">
-                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Collection</h4>
+                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
+                    Collection
+                  </h4>
                   <ul className="space-y-3">
                     {COLLECTIONS.map((item) => (
                       <li key={item}>
-                        <Link href={`/shop?collection=${item}`} className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block">
+                        <Link
+                          href={`/shop?collection=${item}`}
+                          className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
+                        >
                           {item}
                         </Link>
                       </li>
                     ))}
                     <li>
-                      <Link href="/shop" className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2">
+                      <Link
+                        href="/shop"
+                        className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2"
+                      >
                         All Rugs
                       </Link>
                     </li>
@@ -73,25 +87,35 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave 
 
                 {/* Column 2: Sizes */}
                 <div className="space-y-6">
-                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Size</h4>
+                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
+                    Size
+                  </h4>
                   <ul className="space-y-3">
                     {SIZES.slice(0, 5).map((item) => {
                       // Mock conversion for display purposes to match the reference "5x8 ft / 150x240 cm" aesthetic
                       // This is a visual enhancement only
                       const feet = item.replace(' ft', '');
                       const [w, h] = feet.split('x').map(Number);
-                      const cmDisplay = w && h ? ` / ${w * 30}x${h * 30} cm` : '';
+                      const cmDisplay =
+                        w && h ? ` / ${w * 30}x${h * 30} cm` : '';
 
                       return (
                         <li key={item}>
-                          <Link href={`/shop?size=${item}`} className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block">
-                            {item}{cmDisplay}
+                          <Link
+                            href={`/shop?size=${item}`}
+                            className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
+                          >
+                            {item}
+                            {cmDisplay}
                           </Link>
                         </li>
-                      )
+                      );
                     })}
                     <li>
-                      <Link href="/shop" className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2">
+                      <Link
+                        href="/shop"
+                        className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2"
+                      >
                         All Rugs
                       </Link>
                     </li>
@@ -100,17 +124,25 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave 
 
                 {/* Column 3: Category */}
                 <div className="space-y-6">
-                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Category</h4>
+                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
+                    Category
+                  </h4>
                   <ul className="space-y-3">
                     {CATEGORIES.map((item) => (
                       <li key={item}>
-                        <Link href={`/shop?category=${item}`} className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block">
+                        <Link
+                          href={`/shop?category=${item}`}
+                          className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
+                        >
                           {item}
                         </Link>
                       </li>
                     ))}
                     <li>
-                      <Link href="/shop" className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2">
+                      <Link
+                        href="/shop"
+                        className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2"
+                      >
                         All Rugs
                       </Link>
                     </li>
@@ -119,17 +151,25 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave 
 
                 {/* Column 4: Material */}
                 <div className="space-y-6">
-                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Material</h4>
+                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
+                    Material
+                  </h4>
                   <ul className="space-y-3">
                     {MATERIALS.slice(0, 4).map((item) => (
                       <li key={item}>
-                        <Link href={`/shop?material=${item}`} className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block">
+                        <Link
+                          href={`/shop?material=${item}`}
+                          className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
+                        >
                           {item}
                         </Link>
                       </li>
                     ))}
                     <li>
-                      <Link href="/shop" className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2">
+                      <Link
+                        href="/shop"
+                        className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block mt-2"
+                      >
                         All Rugs
                       </Link>
                     </li>
@@ -138,11 +178,16 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMouseLeave 
 
                 {/* Column 5: Collaborations */}
                 <div className="space-y-6">
-                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Collaborations</h4>
+                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
+                    Collaborations
+                  </h4>
                   <ul className="space-y-3">
                     {COLLABORATIONS.map((item) => (
                       <li key={item}>
-                        <Link href={`/shop?collab=${item}`} className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block">
+                        <Link
+                          href={`/shop?collab=${item}`}
+                          className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
+                        >
                           {item}
                         </Link>
                       </li>

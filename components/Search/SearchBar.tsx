@@ -27,7 +27,7 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, products]);
 
   // Global Keyboard Shortcuts
   useEffect(() => {
@@ -48,10 +48,12 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+      setActiveIndex((prev) =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      );
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveIndex(prev => (prev > 0 ? prev - 1 : -1));
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : -1));
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (activeIndex >= 0 && suggestions[activeIndex]) {
@@ -86,13 +88,19 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
           onKeyDown={handleKeyDown}
           className="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-terracotta rounded-lg py-2 pl-10 pr-10 text-sm transition-all outline-none"
         />
-        <button type="submit" className="absolute left-3 top-2.5 text-gray-400 hover:text-terracotta">
+        <button
+          type="submit"
+          className="absolute left-3 top-2.5 text-gray-400 hover:text-terracotta"
+        >
           <Search size={18} />
         </button>
         {query && (
           <button
             type="button"
-            onClick={() => { setQuery(''); inputRef.current?.focus(); }}
+            onClick={() => {
+              setQuery('');
+              inputRef.current?.focus();
+            }}
             className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
           >
             <X size={16} />

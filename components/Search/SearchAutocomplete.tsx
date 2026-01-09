@@ -11,7 +11,12 @@ interface SearchAutocompleteProps {
   activeIndex: number;
 }
 
-const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ suggestions, isOpen, onClose, activeIndex }) => {
+const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
+  suggestions,
+  isOpen,
+  onClose,
+  activeIndex,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,7 +46,11 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ suggestions, is
           >
             {item.image ? (
               <div className="w-12 h-12 rounded overflow-hidden shrink-0">
-                <ImageSmart src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                <ImageSmart
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
             ) : (
               <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-400 shrink-0 text-xs uppercase font-bold">
@@ -51,20 +60,34 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ suggestions, is
 
             <div className="flex-1 min-w-0">
               <div className="flex justify-between items-center">
-                <h4 className="font-medium text-text-body truncate">{item.title}</h4>
-                <span className="text-xs text-text-muted capitalize border border-gray-200 px-1.5 rounded bg-gray-50">{item.type}</span>
+                <h4 className="font-medium text-text-body truncate">
+                  {item.title}
+                </h4>
+                <span className="text-xs text-text-muted capitalize border border-gray-200 px-1.5 rounded bg-gray-50">
+                  {item.type}
+                </span>
               </div>
-              {item.subtitle && <p className="text-sm text-text-muted truncate">{item.subtitle}</p>}
+              {item.subtitle && (
+                <p className="text-sm text-text-muted truncate">
+                  {item.subtitle}
+                </p>
+              )}
             </div>
 
             <div className="hidden sm:block">
-              {item.type === 'product' ? <ShoppingBag size={16} className="text-gray-300" /> : <ArrowRight size={16} className="text-gray-300" />}
+              {item.type === 'product' ? (
+                <ShoppingBag size={16} className="text-gray-300" />
+              ) : (
+                <ArrowRight size={16} className="text-gray-300" />
+              )}
             </div>
           </Link>
         ))}
       </div>
       <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
-        <button className="text-sm font-medium text-terracotta hover:underline">View all results</button>
+        <button className="text-sm font-medium text-terracotta hover:underline">
+          View all results
+        </button>
       </div>
     </div>
   );

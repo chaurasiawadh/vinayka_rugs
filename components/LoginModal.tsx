@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, Mail, Lock, Loader } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -51,8 +50,12 @@ const LoginModal: React.FC = () => {
         </button>
 
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-serif font-bold text-text-body mb-2">Sign In</h2>
-          <p className="text-text-muted text-sm">Login to save items to your watchlist.</p>
+          <h2 className="text-2xl font-serif font-bold text-text-body mb-2">
+            Sign In
+          </h2>
+          <p className="text-text-muted text-sm">
+            Login to save items to your watchlist.
+          </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -80,13 +83,20 @@ const LoginModal: React.FC = () => {
           </div>
 
           <Button fullWidth size="lg" disabled={loading} className="mt-2">
-            {loading ? <Loader className="animate-spin mr-2" size={18} /> : 'Login'}
+            {loading ? (
+              <Loader className="animate-spin mr-2" size={18} />
+            ) : (
+              'Login'
+            )}
           </Button>
         </form>
 
         <div className="mt-6 text-center text-sm text-text-muted">
-          <p>Don't have an account?</p>
-          <button onClick={navigateToFullLogin} className="text-terracotta font-medium hover:underline mt-1">
+          <p>Don&apos;t have an account?</p>
+          <button
+            onClick={navigateToFullLogin}
+            className="text-terracotta font-medium hover:underline mt-1"
+          >
             Create an account
           </button>
         </div>

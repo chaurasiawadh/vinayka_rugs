@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  // where,
+} from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Product } from '../types';
 
@@ -10,23 +16,29 @@ export const useProducts = () => {
   useEffect(() => {
     // Graceful fallback if keys aren't set yet
     if (process.env.NODE_ENV === 'development' && !db.app.options.apiKey) {
-      console.warn("Firebase not configured.");
+      // console.warn('Firebase not configured.');
       setProducts([]);
       setLoading(false);
       return;
     }
 
     const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-      setProducts(data);
-      setLoading(false);
-    }, (err) => {
-      console.error("Firestore Error:", err);
-      // Fallback on error
-      setProducts([]);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() }) as Product
+        );
+        setProducts(data);
+        setLoading(false);
+      },
+      (_err) => {
+        // console.error('Firestore Error:', err);
+        // Fallback on error
+        setProducts([]);
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
@@ -43,7 +55,7 @@ export const useCollection = (collectionName: string) => {
 
     const q = query(collection(db, collectionName));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setData(items);
     });
     return () => unsubscribe();

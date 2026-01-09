@@ -4,23 +4,28 @@ import './globals.css';
 import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-primary' });
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-display',
+});
 
 export const metadata: Metadata = {
-    title: 'Vinayka Rugs | Luxury Hand-Knotted Carpets',
-    description: 'Vinayka Rugs offers premium hand-knotted carpets.',
+  title: 'Vinayka Rugs | Luxury Hand-Knotted Carpets',
+  description: 'Vinayka Rugs offers premium hand-knotted carpets.',
 };
 
 export default function RootLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    return (
-        <html lang="en">
-            <body className={`${inter.variable} ${spaceGrotesk.variable} font-primary`}>
-                <Providers>{children}</Providers>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="en">
+      <body
+        className={`${inter.variable} ${spaceGrotesk.variable} font-primary`}
+      >
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
 }

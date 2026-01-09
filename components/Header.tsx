@@ -1,9 +1,18 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingBag, User, Menu, X, Heart, ChevronRight, PenTool } from 'lucide-react';
+import {
+  Search,
+  ShoppingBag,
+  User,
+  Menu,
+  X,
+  Heart,
+  ChevronRight,
+  PenTool,
+} from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import SearchBar from './Search/SearchBar';
@@ -56,14 +65,16 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur shadow-sm' : 'bg-white'
-        }`}
+      className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        isScrolled ? 'bg-white/95 backdrop-blur shadow-sm' : 'bg-white'
+      }`}
       onMouseLeave={() => setIsShopHovered(false)}
     >
-      <div className={`w-full transition-all duration-300 border-b border-transparent ${isScrolled ? 'py-4 border-gray-100' : 'py-6'}`}>
+      <div
+        className={`w-full transition-all duration-300 border-b border-transparent ${isScrolled ? 'py-4 border-gray-100' : 'py-6'}`}
+      >
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
           <div className="flex items-center justify-between">
-
             {/* Mobile Menu Button - Left on Mobile */}
             <div className="lg:hidden">
               <button
@@ -78,7 +89,9 @@ const Header: React.FC = () => {
             {/* Logo - Left aligned */}
             <div className="flex lg:w-1/4 justify-center lg:justify-start">
               <Link href="/" className="flex-shrink-0 flex items-center group">
-                <span className={`font-serif text-2xl font-medium tracking-tight text-black transition-colors`}>
+                <span
+                  className={`font-serif text-2xl font-medium tracking-tight text-black transition-colors`}
+                >
                   Vinayka<span className="font-light">Rugs</span>
                 </span>
               </Link>
@@ -108,19 +121,25 @@ const Header: React.FC = () => {
 
             {/* Icons - Right aligned */}
             <div className="flex items-center justify-end lg:w-1/4 gap-5">
-              <button 
+              <button
                 className="p-2 text-gray-500 hover:text-black transition-colors hidden sm:block"
                 aria-label="Search"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
               >
-                 <Search size={22} strokeWidth={1.5} />
+                <Search size={22} strokeWidth={1.5} />
               </button>
 
-              <Link href={user ? "/account" : "/login"} className="p-2 text-gray-500 hover:text-black transition-colors hidden sm:block">
+              <Link
+                href={user ? '/account' : '/login'}
+                className="p-2 text-gray-500 hover:text-black transition-colors hidden sm:block"
+              >
                 <User size={22} strokeWidth={1.5} />
               </Link>
 
-              <Link href="/watchlist" className="p-2 text-gray-500 hover:text-black transition-colors relative hidden sm:block">
+              <Link
+                href="/watchlist"
+                className="p-2 text-gray-500 hover:text-black transition-colors relative hidden sm:block"
+              >
                 <Heart size={22} strokeWidth={1.5} />
                 {wishlist.length > 0 && (
                   <span className="absolute top-1 right-1 w-2 h-2 bg-terracotta rounded-full ring-2 ring-white"></span>
@@ -162,11 +181,15 @@ const Header: React.FC = () => {
                   className="flex-1 text-lg font-light outline-none text-gray-500 placeholder:text-gray-300 bg-transparent font-serif"
                   autoFocus
                 />
-                <button 
+                <button
                   onClick={() => setIsSearchOpen(false)}
                   className="p-2 hover:bg-gray-50 rounded-full transition-colors"
                 >
-                  <X size={24} className="text-gray-400 hover:text-black" strokeWidth={1} />
+                  <X
+                    size={24}
+                    className="text-gray-400 hover:text-black"
+                    strokeWidth={1}
+                  />
                 </button>
               </div>
             </div>
@@ -175,8 +198,8 @@ const Header: React.FC = () => {
       </AnimatePresence>
 
       {/* Mega Menu */}
-      <MegaMenu 
-        isOpen={isShopHovered} 
+      <MegaMenu
+        isOpen={isShopHovered}
         onMouseEnter={() => setIsShopHovered(true)}
         onMouseLeave={() => setIsShopHovered(false)}
       />
@@ -195,8 +218,13 @@ const Header: React.FC = () => {
             {/* Drawer Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-cream flex-shrink-0">
               <div>
-                <span className="font-serif text-2xl font-bold text-text-body">Vinayka<span className="font-light text-terracotta">Rugs</span></span>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted mt-1">Luxury Hand-Knotted</p>
+                <span className="font-serif text-2xl font-bold text-text-body">
+                  Vinayka
+                  <span className="font-light text-terracotta">Rugs</span>
+                </span>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted mt-1">
+                  Luxury Hand-Knotted
+                </p>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -221,19 +249,24 @@ const Header: React.FC = () => {
                     className="flex items-center justify-between py-3 px-2 rounded-lg text-lg font-serif text-text-body hover:bg-gray-50 hover:text-terracotta transition-colors group"
                   >
                     {link.name}
-                    <ChevronRight size={16} className="text-gray-300 group-hover:text-terracotta transition-colors" />
+                    <ChevronRight
+                      size={16}
+                      className="text-gray-300 group-hover:text-terracotta transition-colors"
+                    />
                   </Link>
                 ))}
               </nav>
 
               <div className="mt-auto space-y-2 pt-6 border-t border-gray-100">
                 <Link
-                  href={user ? "/account" : "/login"}
+                  href={user ? '/account' : '/login'}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-3 text-text-muted hover:text-text-body p-3 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <User size={20} />
-                  <span className="font-medium">{user ? "My Account" : "Login / Register"}</span>
+                  <span className="font-medium">
+                    {user ? 'My Account' : 'Login / Register'}
+                  </span>
                 </Link>
                 <Link
                   href="/watchlist"
@@ -256,10 +289,14 @@ const Header: React.FC = () => {
             {/* Drawer Footer */}
             <div className="p-6 bg-gray-50 border-t border-gray-100 flex-shrink-0">
               <button
-                onClick={() => { setIsMobileMenuOpen(false); openBespokeModal('Mobile Menu'); }}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  openBespokeModal('Mobile Menu');
+                }}
                 className="w-full bg-text-body text-white py-3.5 rounded-lg font-medium shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 hover:bg-black"
               >
-                <PenTool size={18} className="text-terracotta" /> Request Bespoke Design
+                <PenTool size={18} className="text-terracotta" /> Request
+                Bespoke Design
               </button>
             </div>
           </div>

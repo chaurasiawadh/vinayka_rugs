@@ -10,11 +10,11 @@ interface ImageInputProps {
 }
 
 const ImageInput: React.FC<ImageInputProps> = ({
-  label = "Image URL",
+  label = 'Image URL',
   initialValue,
   onChange,
-  className = "",
-  error
+  className = '',
+  error,
 }) => {
   const [preview, setPreview] = useState<string | null>(initialValue || null);
   const [urlInput, setUrlInput] = useState<string>(initialValue || '');
@@ -62,10 +62,11 @@ const ImageInput: React.FC<ImageInputProps> = ({
           placeholder="https://example.com/image.jpg"
           value={urlInput}
           onChange={handleUrlChange}
-          className={`w-full border rounded-lg py-3 pl-10 pr-4 text-sm outline-none transition-all shadow-sm ${error
+          className={`w-full border rounded-lg py-3 pl-10 pr-4 text-sm outline-none transition-all shadow-sm ${
+            error
               ? 'border-error focus:ring-1 focus:ring-error focus:border-error bg-error/5'
               : 'border-gray-300 focus:ring-1 focus:ring-terracotta focus:border-terracotta bg-white hover:border-gray-400'
-            }`}
+          }`}
         />
       </div>
 
@@ -78,7 +79,8 @@ const ImageInput: React.FC<ImageInputProps> = ({
               alt="Preview"
               className="w-full h-full object-contain"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Invalid+Image';
+                (e.target as HTMLImageElement).src =
+                  'https://via.placeholder.com/400x300?text=Invalid+Image';
               }}
             />
           </div>

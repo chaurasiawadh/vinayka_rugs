@@ -1,7 +1,6 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { UserProfile } from '../types';
 
@@ -14,7 +13,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,19 +36,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(true); // Set loading while we fetch/listen to profile
         try {
           // Listen to user profile in real-time
-          snapshotUnsubscribe = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
-            if (docSnap.exists()) {
-              setUserProfile(docSnap.data() as UserProfile);
-            } else {
-              setUserProfile(null);
+          snapshotUnsubscribe = onSnapshot(
+            doc(db, 'users', currentUser.uid),
+            (docSnap) => {
+              if (docSnap.exists()) {
+                setUserProfile(docSnap.data() as UserProfile);
+              } else {
+                setUserProfile(null);
+              }
+              setLoading(false); // Done loading initial data
+            },
+            (_error) => {
+              // console.error('Error listening to user profile:', error);
+              setLoading(false);
             }
-            setLoading(false); // Done loading initial data
-          }, (error) => {
-            console.error("Error listening to user profile:", error);
-            setLoading(false);
-          });
+          );
         } catch (error) {
-          console.error("Error setting up profile listener:", error);
+          // console.error('Error setting up profile listener:', error);
           setLoading(false);
         }
       } else {
