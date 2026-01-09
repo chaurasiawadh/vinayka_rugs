@@ -63,5 +63,12 @@ export const PLACEHOLDER_IMAGE =
 export const FREE_SHIPPING_THRESHOLD = 50000;
 export const SHIPPING_COST = 2500;
 
-export const ROOMS = ['Living Room', 'Bedroom', 'Dining Room', 'Kitchen', 'Office', 'Outdoor'];
+export const ROOMS = [
+  'Living Room',
+  'Bedroom',
+  'Dining Room',
+  'Kitchen',
+  'Office',
+  'Outdoor',
+];
 export const SHAPES = ['Square', 'Runner', 'Round', 'Rectangle'];

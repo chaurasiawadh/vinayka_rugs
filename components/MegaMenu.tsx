@@ -17,7 +17,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
   onMouseLeave,
 }) => {
   // Mock collaborations for now as they aren't in constants
-  const COLLABORATIONS = [
+  const _COLLABORATIONS = [
     'Vinayka x Designers',
     'Heritage Series',
     'Artist Spotlight',
@@ -115,21 +115,21 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
 
                 {/* Column 3: Material */}
                 <div className="space-y-6">
-                    <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
-                      Material
-                    </h4>
-                    <ul className="space-y-3">
-                      {MATERIALS.map((item) => (
-                        <li key={item}>
-                          <Link
-                            href={`/shop?material=${item}`}
-                            className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
-                          >
-                            {item}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                  <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">
+                    Material
+                  </h4>
+                  <ul className="space-y-3">
+                    {MATERIALS.map((item) => (
+                      <li key={item}>
+                        <Link
+                          href={`/shop?material=${item}`}
+                          className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
+                        >
+                          {item}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
                 {/* Column 4: Rooms (was Collaborations) */}
@@ -160,7 +160,8 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
                     {SIZES.slice(0, 4).map((item) => {
                       const feet = item.replace(' ft', '');
                       const [w, h] = feet.split('x').map(Number);
-                      const cmDisplay = w && h ? ` / ${w * 30}x${h * 30} cm` : '';
+                      const cmDisplay =
+                        w && h ? ` / ${w * 30}x${h * 30} cm` : '';
 
                       return (
                         <li key={item}>
@@ -168,7 +169,8 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
                             href={`/shop?size=${item}`}
                             className="text-[13px] font-light text-gray-400 hover:text-terracotta transition-colors block"
                           >
-                            {item}{cmDisplay}
+                            {item}
+                            {cmDisplay}
                           </Link>
                         </li>
                       );
