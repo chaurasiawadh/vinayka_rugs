@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, MouseEvent } from 'react';
-import { Minus, Plus, Heart, Share2, Star, ChevronDown, ChevronUp, Check, X, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Minus, Plus, Heart, Share2, Star, ChevronDown, ChevronUp, Check, X, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, Diamond, Cloud, Infinity, RotateCcw } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { useShop } from '@/context/ShopContext';
 
@@ -192,7 +192,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                     const rawPrice = (selectedSize && product.sizePrices && product.sizePrices[selectedSize])
                                         ? product.sizePrices[selectedSize]
                                         : product.price;
-                                    
+
                                     const rawMrp = (selectedSize && product.sizeOriginalPrices && product.sizeOriginalPrices[selectedSize])
                                         ? product.sizeOriginalPrices[selectedSize]
                                         : product.originalPrice;
@@ -202,8 +202,8 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
 
                                     // Calculate discount dynamically
                                     const discount = (currentMrp > currentPrice)
-                                         ? `Save ${Math.round(((currentMrp - currentPrice) / currentMrp) * 100)}%`
-                                         : null;
+                                        ? `Save ${Math.round(((currentMrp - currentPrice) / currentMrp) * 100)}%`
+                                        : null;
 
                                     return (
                                         <>
@@ -255,7 +255,8 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                 <div className="flex items-center border border-gray-200 rounded-full h-12 w-full sm:w-32">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black"
+                                        disabled={quantity <= 1}
+                                        className={`w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors ${quantity <= 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
                                     >
                                         <Minus className="w-3 h-3" />
                                     </button>
@@ -266,8 +267,9 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                                         className="flex-1 w-full text-center text-sm font-medium focus:outline-none"
                                     />
                                     <button
-                                        onClick={() => setQuantity(quantity + 1)}
-                                        className="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black"
+                                        onClick={() => setQuantity(Math.min(5, quantity + 1))}
+                                        disabled={quantity >= 5}
+                                        className={`w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors ${quantity >= 5 ? 'opacity-30 cursor-not-allowed' : ''}`}
                                     >
                                         <Plus className="w-3 h-3" />
                                     </button>
@@ -287,21 +289,29 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
 
                             {/* Trust Badges */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 bg-gray-50 p-6 rounded-lg">
-                                <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">◈</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Hand<br />Knotted</p>
+                                <div className="text-center flex flex-col items-center">
+                                    <div className="mb-3 p-3 bg-amber-50 rounded-full">
+                                        <Diamond size={32} className="text-amber-700 fill-amber-100" />
+                                    </div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase tracking-wider">Hand<br />Knotted</p>
                                 </div>
-                                <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">☁</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Pure<br />Wool</p>
+                                <div className="text-center flex flex-col items-center">
+                                    <div className="mb-3 p-3 bg-blue-50 rounded-full">
+                                        <Cloud size={32} className="text-blue-600 fill-blue-50" />
+                                    </div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase tracking-wider">Pure<br />Wool</p>
                                 </div>
-                                <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">∞</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Heirloom<br />Quality</p>
+                                <div className="text-center flex flex-col items-center">
+                                    <div className="mb-3 p-3 bg-indigo-50 rounded-full">
+                                        <Infinity size={32} className="text-indigo-600" />
+                                    </div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase tracking-wider">Heirloom<br />Quality</p>
                                 </div>
-                                <div className="text-center">
-                                    <div className="mb-2 text-[#41354D] font-serif text-lg">↺</div>
-                                    <p className="text-[10px] font-medium text-gray-600 uppercase">Easy<br />Returns</p>
+                                <div className="text-center flex flex-col items-center">
+                                    <div className="mb-3 p-3 bg-emerald-50 rounded-full">
+                                        <RotateCcw size={32} className="text-emerald-600" />
+                                    </div>
+                                    <p className="text-[10px] font-medium text-gray-600 uppercase tracking-wider">Easy<br />Returns</p>
                                 </div>
                             </div>
 
