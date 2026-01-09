@@ -109,24 +109,6 @@ const Bespoke: React.FC = () => {
                     ))}
                 </div>
             </section>
-
-            {/* Final CTA */}
-            <section className="bg-teal text-white py-24 text-center px-4">
-                <div className="max-w-2xl mx-auto">
-                    <h2 className="text-4xl font-serif mb-6">Ready to Create?</h2>
-                    <p className="text-lg text-white/80 mb-8">
-                        Whether you have a fully formed idea or just a spark of inspiration, our team is here to guide you.
-                    </p>
-                    <Button
-                        size="lg"
-                        className="bg-white text-teal hover:bg-gray-100 border-none"
-                        onClick={() => openBespokeModal('Bespoke Footer CTA')}
-                    >
-                        Start Your Project
-                    </Button>
-                </div>
-            </section>
-
         </div>
     );
 };
