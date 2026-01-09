@@ -54,11 +54,12 @@ export const mockSearchProducts = (
     results = results.filter((p) => filters.category.includes(p.category));
   }
   if (filters.material?.length) {
-    results = results.filter(
-      (p) =>
-        p.specifications?.material &&
-        filters.material.includes(p.specifications.material)
-    );
+    results = results.filter((p) => {
+      const material = p.specifications?.material;
+      if (!material) return false;
+      const materials = Array.isArray(material) ? material : [material];
+      return materials.some((m) => filters.material.includes(m));
+    });
   }
   if (filters.collection?.length) {
     results = results.filter((p) => filters.collection.includes(p.collection));
