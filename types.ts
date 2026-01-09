@@ -10,8 +10,8 @@ export interface Product {
   collection: string;
 
   // Pricing & Offers
-  price: number;
-  mrp: number;
+  price: number | string;
+  mrp: number | string;
   discount: number;
   taxInclusive: boolean;
   emiAvailable: boolean;
