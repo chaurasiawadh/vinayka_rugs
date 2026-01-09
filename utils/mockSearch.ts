@@ -35,13 +35,18 @@ export const mockSearchProducts = (
   // 1. Text Search
   if (query) {
     const lowerQ = query.toLowerCase();
-    results = results.filter(
-      (p) =>
+    results = results.filter((p) => {
+      const material = p.specifications?.material || '';
+      const materialStr = Array.isArray(material)
+        ? material.join(' ')
+        : material;
+      return (
         p.name.toLowerCase().includes(lowerQ) ||
         p.category.toLowerCase().includes(lowerQ) ||
         p.collection.toLowerCase().includes(lowerQ) ||
-        (p.specifications?.material || '').toLowerCase().includes(lowerQ)
-    );
+        materialStr.toLowerCase().includes(lowerQ)
+      );
+    });
   }
 
   // 2. Filters
