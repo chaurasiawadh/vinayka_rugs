@@ -20,6 +20,7 @@ export interface Product {
   images: string[];
   sizes: string[];
   sizePrices?: { [key: string]: number };
+  sizeOriginalPrices?: { [key: string]: number };
   defaultSize?: string;
   colors: string[];
 

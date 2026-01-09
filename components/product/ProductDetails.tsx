@@ -181,17 +181,50 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                             </div>
 
                             <div className="flex items-center space-x-4 mb-8">
-                                <span className="text-xl font-medium text-[#111]">
-                                    ₹{((selectedSize && product.sizePrices && product.sizePrices[selectedSize]) ? product.sizePrices[selectedSize] : product.price).toLocaleString('en-IN')}
-                                </span>
-                                {product.originalPrice && (
-                                    <>
-                                        <span className="text-lg text-gray-300 line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>
-                                        <span className="bg-[#E5F0D0] text-[#5C7030] text-xs font-bold px-2 py-1 rounded-sm">
-                                            {product.discount}
-                                        </span>
-                                    </>
-                                )}
+                                {(() => {
+                                    // Helper to parse price safely
+                                    const parsePrice = (price: any): number => {
+                                        if (typeof price === 'number') return price;
+                                        if (typeof price === 'string') return parseFloat(price.replace(/,/g, ''));
+                                        return 0;
+                                    };
+
+                                    const rawPrice = (selectedSize && product.sizePrices && product.sizePrices[selectedSize])
+                                        ? product.sizePrices[selectedSize]
+                                        : product.price;
+                                    
+                                    const rawMrp = (selectedSize && product.sizeOriginalPrices && product.sizeOriginalPrices[selectedSize])
+                                        ? product.sizeOriginalPrices[selectedSize]
+                                        : product.originalPrice;
+
+                                    const currentPrice = parsePrice(rawPrice);
+                                    const currentMrp = parsePrice(rawMrp);
+
+                                    // Calculate discount dynamically
+                                    const discount = (currentMrp > currentPrice)
+                                         ? `Save ${Math.round(((currentMrp - currentPrice) / currentMrp) * 100)}%`
+                                         : null;
+
+                                    return (
+                                        <>
+                                            <span className="text-xl font-medium text-[#111]">
+                                                ₹{currentPrice.toLocaleString('en-IN')}
+                                            </span>
+                                            {currentMrp > 0 && currentMrp > currentPrice && (
+                                                <>
+                                                    <span className="text-lg text-gray-300 line-through">
+                                                        ₹{currentMrp.toLocaleString('en-IN')}
+                                                    </span>
+                                                    {discount && (
+                                                        <span className="bg-[#E5F0D0] text-[#5C7030] text-xs font-bold px-2 py-1 rounded-sm">
+                                                            {discount}
+                                                        </span>
+                                                    )}
+                                                </>
+                                            )}
+                                        </>
+                                    );
+                                })()}
                             </div>
 
                             <p className="text-gray-600 leading-relaxed mb-8 text-sm">
