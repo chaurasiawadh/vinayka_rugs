@@ -181,7 +181,9 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
                             </div>
 
                             <div className="flex items-center space-x-4 mb-8">
-                                <span className="text-xl font-medium text-[#111]">₹{product.price.toLocaleString('en-IN')}</span>
+                                <span className="text-xl font-medium text-[#111]">
+                                    ₹{((selectedSize && product.sizePrices && product.sizePrices[selectedSize]) ? product.sizePrices[selectedSize] : product.price).toLocaleString('en-IN')}
+                                </span>
                                 {product.originalPrice && (
                                     <>
                                         <span className="text-lg text-gray-300 line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>

@@ -33,6 +33,7 @@ const INITIAL_PRODUCT: Partial<Product> = {
     emiAvailable: true,
     images: [],
     sizes: [],
+    sizePrices: {},
     colors: [],
     specifications: {
         // Features
@@ -455,6 +456,34 @@ const ProductManager: React.FC = () => {
                                         </button>
                                     ))}
                                 </div>
+                                {(formData.sizes && formData.sizes.length > 0) && (
+                                    <div className="mt-4 border-t border-gray-100 pt-4">
+                                        <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">Size Pricing (Optional Override)</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            {formData.sizes.map(size => (
+                                                <div key={size} className="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200">
+                                                    <span className="text-sm font-medium text-gray-700">{size}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-xs text-gray-500">₹</span>
+                                                        <input 
+                                                            type="number" 
+                                                            placeholder="Default"
+                                                            className="border p-1 rounded text-sm w-28 focus:ring-terracotta focus:border-terracotta"
+                                                            value={formData.sizePrices?.[size] || ''}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value ? parseFloat(e.target.value) : undefined;
+                                                                const newPrices = { ...(formData.sizePrices || {}) };
+                                                                if (val !== undefined) newPrices[size] = val;
+                                                                else delete newPrices[size];
+                                                                updateField('sizePrices', newPrices);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>

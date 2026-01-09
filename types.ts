@@ -19,6 +19,7 @@ export interface Product {
   // Media & Variants
   images: string[];
   sizes: string[];
+  sizePrices?: { [key: string]: number };
   defaultSize?: string;
   colors: string[];
 
