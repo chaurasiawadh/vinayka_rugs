@@ -66,28 +66,6 @@ const Contact: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Bespoke Promo */}
-                        <div className="bg-teal text-white rounded-xl p-8 relative overflow-hidden shadow-lg">
-                            <div className="relative z-10">
-                                <div className="flex items-center gap-2 mb-4 text-amber">
-                                    <PenTool size={20} />
-                                    <span className="uppercase tracking-widest text-xs font-bold">Bespoke Commissions</span>
-                                </div>
-                                <h3 className="font-serif text-2xl mb-4">Have a specific vision?</h3>
-                                <p className="text-white/80 mb-6 leading-relaxed">
-                                    Skip the general inquiry queue. If you are looking to create a custom rug, connect directly with our design team.
-                                </p>
-                                <Button
-                                    onClick={() => openBespokeModal('Contact Page Card')}
-                                    className="bg-white text-teal hover:bg-gray-100 border-none w-full sm:w-auto"
-                                >
-                                    Start Bespoke Request
-                                </Button>
-                            </div>
-                            {/* Background Pattern */}
-                            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
-                        </div>
                     </div>
 
                     {/* Contact Form */}
