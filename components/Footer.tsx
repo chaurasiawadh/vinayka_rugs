@@ -51,6 +51,7 @@ const Footer: React.FC = () => {
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-terracotta" />
                 <div className="flex flex-col">
+                  <span>+91-9250491858</span>
                   <span>+91-9580122122</span>
                 </div>
               </li>
