@@ -2,14 +2,34 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 // import { COLLECTIONS } from '../constants';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
 import { useShop } from '../context/ShopContext';
+import { useCollection } from '@/hooks/useFirestore';
+import { GalleryItem } from '@/types';
+import { motion } from 'framer-motion';
 
 const Home: React.FC = () => {
   const { products, openBespokeModal } = useShop();
+  const galleryItems = useCollection('gallery') as GalleryItem[];
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, clientWidth } = scrollContainerRef.current;
+      const scrollTo = direction === 'left'
+        ? scrollLeft - clientWidth / 2
+        : scrollLeft + clientWidth / 2;
+
+      scrollContainerRef.current.scrollTo({
+        left: scrollTo,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Filter for trending products, or fall back to first 4
   const featuredProducts = products.filter((p) => p.isTrending).slice(0, 4);
   const displayProducts =
@@ -58,71 +78,75 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Collections Grid */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif text-text-body mb-4">
-              Curated Collections
-            </h2>
-            <div className="w-16 h-0.5 bg-terracotta mx-auto"></div>
-          </div>
+      {/* Collections Carousel */}
+      {galleryItems.length > 0 && (
+        <section className="py-24 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+              <div className="text-center md:text-left">
+                <h2 className="text-4xl md:text-5xl font-serif text-text-body mb-4">
+                  Curated Collections
+                </h2>
+                <div className="w-20 h-1 bg-terracotta mx-auto md:mx-0"></div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="group relative h-[400px] overflow-hidden rounded-lg cursor-pointer">
-              <img
-                src="https://picsum.photos/id/103/800/1000"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                alt="Modern"
-              />
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
-              <div className="absolute bottom-8 left-8 text-white">
-                <h3 className="text-2xl font-serif mb-2">Modern</h3>
-                <Link
-                  href="/shop?cat=Modern"
-                  className="inline-flex items-center text-sm uppercase tracking-wider hover:underline"
+              {/* Carousel Controls */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => scroll('left')}
+                  className="w-12 h-12 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-terracotta hover:border-terracotta hover:text-white transition-all duration-300 group shadow-sm"
+                  aria-label="Previous"
                 >
-                  Explore <ArrowRight size={14} className="ml-2" />
-                </Link>
+                  <ChevronLeft size={24} className="group-active:scale-90 transition-transform" />
+                </button>
+                <button
+                  onClick={() => scroll('right')}
+                  className="w-12 h-12 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-terracotta hover:border-terracotta hover:text-white transition-all duration-300 group shadow-sm"
+                  aria-label="Next"
+                >
+                  <ChevronRight size={24} className="group-active:scale-90 transition-transform" />
+                </button>
               </div>
             </div>
-            <div className="group relative h-[400px] overflow-hidden rounded-lg cursor-pointer md:-mt-8">
-              <img
-                src="https://picsum.photos/id/238/800/1000"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                alt="Traditional"
-              />
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
-              <div className="absolute bottom-8 left-8 text-white">
-                <h3 className="text-2xl font-serif mb-2">Viraasat</h3>
-                <Link
-                  href="/shop?collection=Viraasat"
-                  className="inline-flex items-center text-sm uppercase tracking-wider hover:underline"
+
+            <div
+              ref={scrollContainerRef}
+              className="flex gap-8 overflow-x-auto pb-12 snap-x snap-mandatory no-scrollbar"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {galleryItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  whileHover={{ y: -10 }}
+                  className="min-w-[280px] md:min-w-[400px] h-[500px] relative rounded-2xl overflow-hidden snap-start cursor-pointer group shadow-lg"
                 >
-                  Explore <ArrowRight size={14} className="ml-2" />
-                </Link>
-              </div>
-            </div>
-            <div className="group relative h-[400px] overflow-hidden rounded-lg cursor-pointer">
-              <img
-                src="https://picsum.photos/id/60/800/1000"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                alt="Silk"
-              />
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
-              <div className="absolute bottom-8 left-8 text-white">
-                <h3 className="text-2xl font-serif mb-2">Silk Route</h3>
-                <Link
-                  href="/shop?collection=Silk Route"
-                  className="inline-flex items-center text-sm uppercase tracking-wider hover:underline"
-                >
-                  Explore <ArrowRight size={14} className="ml-2" />
-                </Link>
-              </div>
+                  <img
+                    src={item.image}
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                    alt={item.title}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-10 left-10 right-10 text-white">
+                    <h3 className="text-3xl font-serif mb-4 leading-tight">{item.title}</h3>
+                    {item.link ? (
+                      <Link
+                        href={item.link}
+                        className="inline-flex items-center text-sm font-bold uppercase tracking-[0.2em] border-b-2 border-terracotta pb-1 hover:text-terracotta transition-colors"
+                      >
+                        Explore Collection <ArrowRight size={16} className="ml-3" />
+                      </Link>
+                    ) : (
+                      <span className="inline-flex items-center text-sm font-bold uppercase tracking-[0.2em] opacity-60">
+                        Available Soon
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Featured Products */}
       <section className="py-20 bg-cream">

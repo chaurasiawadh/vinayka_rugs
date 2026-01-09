@@ -102,6 +102,16 @@ export interface Product {
   updatedAt?: any;
 }
 
+export interface GalleryItem {
+  id: string;
+  title: string;
+  image: string;
+  link?: string;
+  description?: string;
+  createdAt?: any;
+  updatedAt?: any;
+}
+
 export interface CartItem extends Product {
   selectedSize: string;
   quantity: number;
@@ -125,6 +135,7 @@ export interface Order {
 }
 
 export interface Address {
+  id: string;
   fullName: string;
   line1: string;
   line2?: string;
@@ -132,6 +143,7 @@ export interface Address {
   state: string;
   pincode: string;
   phone: string;
+  isDefault?: boolean;
 }
 
 export interface User {
@@ -151,6 +163,8 @@ export interface UserProfile {
   city: string;
   companyName?: string;
   address: string;
+  addresses?: Address[];
+  lastUsedAddressId?: string;
   createdAt: any;
   role: 'customer' | 'admin';
 }
