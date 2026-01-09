@@ -16,6 +16,7 @@ const nextConfig = {
 
 if (isProd) {
     nextConfig.output = 'export';
+    nextConfig.basePath = '/vinayka_rugs';
 }
 
 export default nextConfig;
