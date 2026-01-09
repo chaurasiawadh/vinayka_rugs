@@ -100,7 +100,7 @@ export default function ProductClient({ id }: { id: string }) {
 
     return (
         <div className="bg-[#FAF8F6] min-h-screen font-sans">
-            <main className="pt-24">
+            <main className="pt-8">
                 <ProductDetails
                     product={product}
                     relatedProducts={relatedProducts}

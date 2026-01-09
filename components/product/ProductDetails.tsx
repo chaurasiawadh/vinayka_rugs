@@ -77,7 +77,7 @@ export default function ProductDetails({ product, relatedProducts, reviews, faqs
     return (
         <div className="bg-[#FAF8F6] min-h-screen pb-20">
 
-            <div className="container mx-auto px-4">
+            <div className="w-full pl-8 pr-8">
                 <div className="bg-white rounded-none p-6 md:p-12 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
                         {/* Left: Image Gallery */}
