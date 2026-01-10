@@ -679,8 +679,7 @@ export default function ProductDetails({
                     <Star className="w-6 h-6 fill-[#D4C49D] text-[#D4C49D]" />
                   </div>
                   <p className="text-sm text-gray-400 text-center font-medium">
-                    {product.reviewsCount} Ratings &<br />
-                    98 Reviews
+                    {product.reviewsCount} Verified Ratings
                   </p>
                 </div>
 
@@ -719,6 +718,33 @@ export default function ProductDetails({
                   ))}
                 </div>
               </div>
+
+              {/* Customers Say Summary */}
+              {(product.reviewSummary ||
+                (product.reviewTags && product.reviewTags.length > 0)) && (
+                <div className="mb-10 p-6 bg-gray-50 rounded-lg border border-gray-100">
+                  <h3 className="font-bold text-[#212121] mb-2 font-serif text-lg">
+                    Customers Say
+                  </h3>
+                  {product.reviewSummary && (
+                    <p className="text-gray-600 text-sm mb-4 leading-relaxed italic">
+                      &quot;{product.reviewSummary}&quot;
+                    </p>
+                  )}
+                  {product.reviewTags && product.reviewTags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {product.reviewTags.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="bg-white border border-gray-200 px-3 py-1 rounded-sm text-xs font-medium text-gray-700 shadow-sm"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Customer Photos Strip */}
               <div className="mb-10">

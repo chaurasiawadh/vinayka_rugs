@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag, Star } from 'lucide-react';
 import { Product } from '../types';
 import { useShop } from '../context/ShopContext';
 import Button from './Button';
@@ -153,6 +153,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {product.name}
           </h3>
         </Link>
+        {product.rating > 0 && (
+          <div className="flex items-center gap-1 mt-1">
+            <Star size={14} className="fill-[#D4C49D] text-[#D4C49D]" />
+            <span className="text-xs font-medium text-gray-600">
+              {product.rating || 0}
+            </span>
+            <span className="text-xs text-gray-400">
+              ({product.reviews || 0})
+            </span>
+          </div>
+        )}
         <p className="text-sm text-text-muted mt-1 mb-2 line-clamp-1">
           {product.shortDescription}
         </p>
