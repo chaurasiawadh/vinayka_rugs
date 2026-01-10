@@ -36,11 +36,11 @@ export interface Product {
     indoorOutdoor: string;
     stainResistant: string; // 'Yes'/'No'
     specialFeatures: string;
-    roomType: string;
+    roomType: string | string[];
     waterResistance: string;
 
     // Materials & Care
-    material: string;
+    material: string | string[];
     backMaterial: string;
     careInstructions: string;
 
@@ -58,7 +58,7 @@ export interface Product {
     color: string;
     theme: string;
     pattern: string;
-    shape: string;
+    shape: string | string[];
     rugForm: string;
     style: string;
     occasion: string;

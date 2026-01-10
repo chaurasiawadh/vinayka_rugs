@@ -10,6 +10,8 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   ThumbsUp,
   ThumbsDown,
   Diamond,
@@ -42,6 +44,9 @@ export default function ProductDetails({
 
   // Accordion states
   const [openSection, setOpenSection] = useState<string | null>('detail');
+
+  // Specs Expansion State
+  const [isSpecsExpanded, setIsSpecsExpanded] = useState(false);
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
@@ -287,7 +292,7 @@ export default function ProductDetails({
               </p>
 
               {/* Size Selector */}
-              <div className="mb-8">
+              <div className="mb-6">
                 <h3 className="text-base font-semibold text-[#111] mb-3">
                   Size
                 </h3>
@@ -307,6 +312,153 @@ export default function ProductDetails({
                   ))}
                 </div>
               </div>
+
+              {/* Product Specifications Table */}
+              <div className="mb-8 border-t border-gray-100 pt-6">
+                <div className="grid grid-cols-1 gap-y-2 text-sm">
+                  {(() => {
+                    const allSpecs = [
+                      { label: 'Brand', value: product.brand },
+                      { label: 'Category', value: product.category },
+                      { label: 'Collection', value: product.collection },
+                      {
+                        label: 'Size',
+                        value: selectedSize || product.sizes?.[0] || '-',
+                      },
+                      {
+                        label: 'Material',
+                        value: product.specifications?.material,
+                      },
+                      {
+                        label: 'Room',
+                        value: product.specifications?.roomType,
+                      },
+                      {
+                        label: 'Shape',
+                        value: product.specifications?.shape,
+                      },
+                      {
+                        label: 'Weave Type',
+                        value: product.specifications?.weaveType,
+                      },
+                      {
+                        label: 'Item Weight',
+                        value: product.specifications?.itemWeight,
+                      },
+                      {
+                        label: 'Pile Height',
+                        value: product.specifications?.pileHeight,
+                      },
+                      {
+                        label: 'Construction',
+                        value: product.specifications?.construction,
+                      },
+                      {
+                        label: 'Back Material',
+                        value: product.specifications?.backMaterial,
+                      },
+                      {
+                        label: 'Color',
+                        value: product.specifications?.color,
+                      },
+                      {
+                        label: 'Usage',
+                        value: product.specifications?.indoorOutdoor,
+                      },
+                    ].filter((row) => row.value);
+
+                    const visibleSpecs = isSpecsExpanded
+                      ? allSpecs
+                      : allSpecs.slice(0, 4);
+
+                    return (
+                      <>
+                        {visibleSpecs.map((row, i) => (
+                          <div
+                            key={i}
+                            className="grid grid-cols-[140px_1fr] gap-4"
+                          >
+                            <span className="font-bold text-[#111]">
+                              {row.label}
+                            </span>
+                            <span className="text-gray-600">
+                              {(() => {
+                                const val = row.value;
+                                if (Array.isArray(val)) {
+                                  // Robust cleaning for corrupted data (e.g. ['L','i','v',...])
+                                  const singleChars = val.filter(
+                                    (v: any) =>
+                                      typeof v === 'string' && v.length === 1
+                                  );
+                                  const words = val.filter(
+                                    (v: any) =>
+                                      typeof v === 'string' && v.length > 1
+                                  );
+
+                                  // If we have single chars, they are likely a fragmented string
+                                  if (singleChars.length > 0) {
+                                    const reconstructed = singleChars
+                                      .join('')
+                                      .replace(/^,/, '') // Remove leading comma
+                                      .replace(/,$/, ''); // Remove trailing comma
+
+                                    // Heuristic: If the reconstructed string contains commas, split it?
+                                    // For now, just add it as a word if it's substantial
+                                    if (reconstructed.trim().length > 0) {
+                                      words.push(reconstructed);
+                                    }
+                                  }
+
+                                  // Deduplicate and Join
+                                  return Array.from(new Set(words))
+                                    .map((w: any) =>
+                                      w.toString().replace(/^]/, '').trim()
+                                    ) // Cleanup artifact like ]Wool
+                                    .filter((w) => w.length > 0)
+                                    .join(', ');
+                                }
+                                return val;
+                              })()}
+                            </span>
+                          </div>
+                        ))}
+                        {allSpecs.length > 4 && (
+                          <button
+                            onClick={() => setIsSpecsExpanded(!isSpecsExpanded)}
+                            className="flex items-center gap-1 text-terracotta font-semibold text-sm mt-2 hover:text-black transition-colors text-left w-fit"
+                          >
+                            {isSpecsExpanded ? (
+                              <>
+                                <ChevronUp size={16} /> See Less
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown size={16} /> See More
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* About This Item */}
+              {product.aboutItems && product.aboutItems.length > 0 && (
+                <div className="mb-8 pt-4 border-t border-gray-100">
+                  <h3 className="text-xl font-bold text-[#111] mb-4 font-serif">
+                    About this item
+                  </h3>
+                  <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700 leading-relaxed marker:text-gray-400">
+                    {product.aboutItems.map((item: string, idx: number) => (
+                      <li key={idx} className="pl-1">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-4 mb-8 pb-8 border-b border-gray-100">
