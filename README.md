@@ -345,8 +345,8 @@ graph TD
     
     subgraph "Firebase Backend"
         Products[(products)]
-        Cart[(users/{uid}/cart)]
-        WatchlistDB[(users/{uid}/watchlist)]
+        Cart[("users/(uid)/cart")]
+        WatchlistDB[("users/(uid)/watchlist")]
         Gallery[(gallery)]
         Users[(users)]
     end
