@@ -2,7 +2,9 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Filter, ChevronDown, Check } from 'lucide-react';
+import { Filter, ChevronDown, Check, X } from 'lucide-react';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 import {
   CATEGORIES,
   MATERIALS,
@@ -28,6 +30,16 @@ const ShopContent: React.FC = () => {
   const initialSize = searchParams.get('size');
 
   const { products, loading } = useShop();
+
+  // Calculate dynamic price range based on products
+  const { minPrice, maxPrice } = useMemo(() => {
+    if (products.length === 0) return { minPrice: 0, maxPrice: 100000 };
+    const prices = products.map((p) => Number(p.price || 0));
+    return {
+      minPrice: Math.min(...prices),
+      maxPrice: Math.max(...prices),
+    };
+  }, [products]);
 
   const [selectedCollections, setSelectedCollections] = useState<string[]>(
     initialCollection ? [initialCollection] : []
@@ -166,6 +178,61 @@ const ShopContent: React.FC = () => {
     }
   };
 
+  const activeFilters = useMemo(() => {
+    const filters: { type: string; value: string; label: string }[] = [];
+    selectedCollections.forEach((f) =>
+      filters.push({ type: 'collection', value: f, label: f })
+    );
+    selectedStyles.forEach((f) =>
+      filters.push({ type: 'cat', value: f, label: f })
+    );
+    selectedMaterials.forEach((f) =>
+      filters.push({ type: 'material', value: f, label: f })
+    );
+    selectedRooms.forEach((f) =>
+      filters.push({ type: 'room', value: f, label: f })
+    );
+    selectedShapes.forEach((f) =>
+      filters.push({ type: 'shape', value: f, label: f })
+    );
+    selectedSizes.forEach((f) =>
+      filters.push({ type: 'size', value: f, label: f })
+    );
+    return filters;
+  }, [
+    selectedCollections,
+    selectedStyles,
+    selectedMaterials,
+    selectedRooms,
+    selectedShapes,
+    selectedSizes,
+  ]);
+
+  const removeFilter = (filter: { type: string; value: string }) => {
+    switch (filter.type) {
+      case 'collection':
+        setSelectedCollections((prev) =>
+          prev.filter((i) => i !== filter.value)
+        );
+        break;
+      case 'cat':
+        setSelectedStyles((prev) => prev.filter((i) => i !== filter.value));
+        break;
+      case 'material':
+        setSelectedMaterials((prev) => prev.filter((i) => i !== filter.value));
+        break;
+      case 'room':
+        setSelectedRooms((prev) => prev.filter((i) => i !== filter.value));
+        break;
+      case 'shape':
+        setSelectedShapes((prev) => prev.filter((i) => i !== filter.value));
+        break;
+      case 'size':
+        setSelectedSizes((prev) => prev.filter((i) => i !== filter.value));
+        break;
+    }
+  };
+
   const renderFilterSection = (
     title: string,
     items: string[],
@@ -225,21 +292,65 @@ const ShopContent: React.FC = () => {
               <Filter size={18} /> Filters
             </button>
 
-            <div className="relative group">
-              <button className="flex items-center gap-2 text-sm font-medium hover:text-terracotta">
+            {/* Size Filter Dropdown */}
+            <div className="relative group z-30">
+              <button className="flex items-center gap-2 text-sm font-medium hover:text-terracotta py-2">
+                Size
+                {selectedSizes.length > 0 && (
+                  <span className="bg-terracotta text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                    {selectedSizes.length}
+                  </span>
+                )}
+                <ChevronDown size={14} />
+              </button>
+              <div className="absolute left-0 top-full mt-1 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all border border-gray-100 p-2 transform origin-top-left">
+                <div className="space-y-1 max-h-64 overflow-y-auto custom-scrollbar">
+                  {SIZES.map((size) => (
+                    <label
+                      key={size}
+                      className="flex items-center gap-3 cursor-pointer hover:bg-cream/50 p-2 rounded-md transition-colors"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded flex-shrink-0 flex items-center justify-center transition-colors border ${selectedSizes.includes(size) ? 'bg-terracotta border-terracotta' : 'border-gray-300'}`}
+                      >
+                        {selectedSizes.includes(size) && (
+                          <Check size={10} className="text-white" />
+                        )}
+                      </div>
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={selectedSizes.includes(size)}
+                        onChange={() =>
+                          toggleFilter(size, selectedSizes, setSelectedSizes)
+                        }
+                      />
+                      <span
+                        className={`text-sm ${selectedSizes.includes(size) ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
+                      >
+                        {size}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="relative group z-20">
+              <button className="flex items-center gap-2 text-sm font-medium hover:text-terracotta py-2">
                 Sort by:{' '}
                 <span className="text-gray-900">
                   {sortOption.replace('-', ' ')}
                 </span>{' '}
                 <ChevronDown size={14} />
               </button>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
+              <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all border border-gray-100 py-1 transform origin-top-left">
                 {['popular', 'newest', 'price-low-high', 'price-high-low'].map(
                   (opt) => (
                     <button
                       key={opt}
                       onClick={() => setSortOption(opt)}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 capitalize"
+                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-cream/50 transition-colors capitalize ${sortOption === opt ? 'text-terracotta font-medium bg-cream/30' : 'text-gray-700'}`}
                     >
                       {opt.replace(/-/g, ' ')}
                     </button>
@@ -276,36 +387,64 @@ const ShopContent: React.FC = () => {
 
             <div className="space-y-8">
               {/* Price Range */}
-              <div>
-                <h3 className="font-bold text-sm uppercase tracking-wider mb-3 text-gray-800">
-                  Price Range
-                </h3>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={priceRange.min}
-                    onChange={(e) =>
-                      setPriceRange((prev) => ({
-                        ...prev,
-                        min: e.target.value,
-                      }))
-                    }
-                    className="w-full border border-gray-300 rounded p-2 text-sm focus:ring-1 focus:ring-terracotta outline-none"
+              {/* Price Range */}
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold text-sm uppercase tracking-wider text-gray-800">
+                    Price Range
+                  </h3>
+                  {(priceRange.min || priceRange.max) && (
+                    <button
+                      onClick={() => setPriceRange({ min: '', max: '' })}
+                      className="text-xs text-terracotta hover:underline font-medium"
+                    >
+                      Reset Price
+                    </button>
+                  )}
+                </div>
+                <div className="px-2">
+                  <Slider
+                    range
+                    min={minPrice}
+                    max={maxPrice}
+                    defaultValue={[minPrice, maxPrice]}
+                    value={[
+                      priceRange.min ? Number(priceRange.min) : minPrice,
+                      priceRange.max ? Number(priceRange.max) : maxPrice,
+                    ]}
+                    onChange={(val) => {
+                      if (Array.isArray(val)) {
+                        setPriceRange({
+                          min: val[0].toString(),
+                          max: val[1].toString(),
+                        });
+                      }
+                    }}
+                    trackStyle={[{ backgroundColor: '#8B5E3C' }]}
+                    handleStyle={[
+                      {
+                        borderColor: '#8B5E3C',
+                        backgroundColor: '#fff',
+                        opacity: 1,
+                        boxShadow: '0 0 0 2px rgba(139, 94, 60, 0.2)',
+                      },
+                      {
+                        borderColor: '#8B5E3C',
+                        backgroundColor: '#fff',
+                        opacity: 1,
+                        boxShadow: '0 0 0 2px rgba(139, 94, 60, 0.2)',
+                      },
+                    ]}
+                    railStyle={{ backgroundColor: '#E5E7EB' }}
                   />
-                  <span className="text-gray-400">-</span>
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={priceRange.max}
-                    onChange={(e) =>
-                      setPriceRange((prev) => ({
-                        ...prev,
-                        max: e.target.value,
-                      }))
-                    }
-                    className="w-full border border-gray-300 rounded p-2 text-sm focus:ring-1 focus:ring-terracotta outline-none"
-                  />
+                  <div className="flex justify-between items-center mt-4 text-sm font-medium text-gray-700">
+                    <span>
+                      ₹{Number(priceRange.min || minPrice).toLocaleString()}
+                    </span>
+                    <span>
+                      ₹{Number(priceRange.max || maxPrice).toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -339,12 +478,6 @@ const ShopContent: React.FC = () => {
                 selectedShapes,
                 setSelectedShapes
               )}
-              {renderFilterSection(
-                'Size',
-                SIZES,
-                selectedSizes,
-                setSelectedSizes
-              )}
             </div>
 
             {isMobileFilterOpen && (
@@ -358,6 +491,36 @@ const ShopContent: React.FC = () => {
 
           {/* Product Grid */}
           <div className="flex-1">
+            {/* Active Filters Display */}
+            {activeFilters.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                {activeFilters.map((filter, idx) => (
+                  <button
+                    key={`${filter.type}-${filter.value}-${idx}`}
+                    onClick={() => removeFilter(filter)}
+                    className="flex items-center gap-2 bg-white border border-gray-200 hover:border-terracotta px-3 py-1.5 rounded-full text-sm text-gray-700 transition-all group shadow-sm"
+                  >
+                    <X
+                      size={14}
+                      className="text-gray-400 group-hover:text-terracotta transition-colors"
+                    />
+                    <span className="group-hover:text-terracotta transition-colors">
+                      {filter.label}
+                    </span>
+                  </button>
+                ))}
+
+                {activeFilters.length > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm text-gray-500 hover:text-terracotta underline ml-2 font-medium transition-colors"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
