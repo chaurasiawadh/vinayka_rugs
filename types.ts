@@ -100,6 +100,14 @@ export interface Product {
 
   createdAt?: any;
   updatedAt?: any;
+
+  // AR Assets
+  arAssets?: {
+    glbUrl: string;
+    usdzUrl: string;
+    placement: 'floor' | 'wall';
+    scale?: string;
+  };
 }
 
 export interface GalleryItem {

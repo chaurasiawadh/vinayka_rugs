@@ -20,6 +20,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import ProductCard from './ProductCard';
+import ARButton from './ARButton';
 import { useShop } from '@/context/ShopContext';
 
 interface ProductDetailsProps {
@@ -496,6 +497,9 @@ export default function ProductDetails({
                   <Heart className="w-5 h-5 text-gray-400" />
                 </button>
               </div>
+
+              {/* AR Live View Button */}
+              <ARButton product={product} />
 
               {/* Trust Badges */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 bg-gray-50 p-6 rounded-lg">
