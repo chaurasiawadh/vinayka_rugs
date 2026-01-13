@@ -12,6 +12,7 @@ import {
   Star,
   Layers,
   Image as ImageIcon,
+  Smartphone,
 } from 'lucide-react';
 import { db, storage } from '@/lib/firebase';
 import {
@@ -116,6 +117,11 @@ const INITIAL_PRODUCT: Partial<Product> = {
   returnPolicy: '10 Days Return',
   isTrending: false,
   isNew: true,
+  arAssets: {
+    glbUrl: '',
+    usdzUrl: '',
+    placement: 'floor',
+  },
 };
 
 const ProductManager: React.FC = () => {
@@ -178,6 +184,37 @@ const ProductManager: React.FC = () => {
       ...prev,
       [field]: (prev[field] || []).filter((_, i) => i !== index),
     }));
+  };
+
+  const handleARFileUpload = async (
+    file: File | null,
+    type: 'glbUrl' | 'usdzUrl'
+  ) => {
+    if (!file) return;
+
+    setLoading(true);
+    try {
+      const storageRef = ref(storage, `ar-assets/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      setFormData((prev) => ({
+        ...prev,
+        arAssets: {
+          ...(prev.arAssets || {
+            glbUrl: '',
+            usdzUrl: '',
+            placement: 'floor',
+          }),
+          [type]: url,
+        },
+      }));
+      setUploadError(null);
+    } catch (err: any) {
+      setUploadError('AR Upload Failed: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleImageUpload = async (fileOrUrl: File | string | null) => {
@@ -519,6 +556,111 @@ const ProductManager: React.FC = () => {
                     {renderSpecInput('Number of Pieces', 'numberOfPieces')}
                     {renderSpecInput('Item Thickness/Height', 'itemThickness')}
                   </div>
+                </div>
+              </div>
+            </section>
+
+            {/* AR / Live View Assets */}
+            <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <h3 className="flex items-center gap-2 font-bold mb-4 text-lg text-gray-800">
+                <Smartphone size={18} /> AR / Live View 3D Models
+              </h3>
+              <div className="space-y-4">
+                {/* GLB Upload */}
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 mb-1 block">
+                    Android Model (.glb)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      className="flex-1 border p-2 rounded text-xs"
+                      value={formData.arAssets?.glbUrl || ''}
+                      placeholder="https://.../model.glb"
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          arAssets: {
+                            ...(prev.arAssets as any),
+                            glbUrl: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                    <label className="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-3 flex items-center justify-center cursor-pointer text-xs font-medium transition-colors">
+                      Upload
+                      <input
+                        type="file"
+                        accept=".glb"
+                        className="hidden"
+                        onChange={(e) =>
+                          handleARFileUpload(
+                            e.target.files ? e.target.files[0] : null,
+                            'glbUrl'
+                          )
+                        }
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* USDZ Upload */}
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 mb-1 block">
+                    iOS Model (.usdz)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      className="flex-1 border p-2 rounded text-xs"
+                      value={formData.arAssets?.usdzUrl || ''}
+                      placeholder="https://.../model.usdz"
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          arAssets: {
+                            ...(prev.arAssets as any),
+                            usdzUrl: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                    <label className="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-3 flex items-center justify-center cursor-pointer text-xs font-medium transition-colors">
+                      Upload
+                      <input
+                        type="file"
+                        accept=".usdz"
+                        className="hidden"
+                        onChange={(e) =>
+                          handleARFileUpload(
+                            e.target.files ? e.target.files[0] : null,
+                            'usdzUrl'
+                          )
+                        }
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Placement */}
+                <div>
+                  <label className="text-xs font-bold uppercase text-gray-500 mb-1 block">
+                    Placement Type
+                  </label>
+                  <select
+                    className="w-full border p-2 rounded text-sm"
+                    value={formData.arAssets?.placement || 'floor'}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        arAssets: {
+                          ...(prev.arAssets as any),
+                          placement: e.target.value as 'floor' | 'wall',
+                        },
+                      }))
+                    }
+                  >
+                    <option value="floor">Floor (Rugs, Tables)</option>
+                    <option value="wall">Wall (Art, Curtains)</option>
+                  </select>
                 </div>
               </div>
             </section>
@@ -1111,10 +1253,13 @@ const ProductManager: React.FC = () => {
                     className="h-10 w-10 rounded object-cover"
                     alt={p.name}
                   />
-                  <div>
+                  <button
+                    onClick={() => handleEdit(p)}
+                    className="text-left hover:opacity-70 transition-opacity"
+                  >
                     <div className="font-medium">{p.name}</div>
                     <div className="text-xs text-text-muted">{p.category}</div>
-                  </div>
+                  </button>
                 </td>
                 <td className="p-4">
                   <div>₹{p.price.toLocaleString()}</div>

@@ -59,6 +59,7 @@ export default function ProductClient({ id }: { id: string }) {
             category: data.category || 'Modern',
             collection: data.collection || '-', // Default to dash if empty to ensure visibility if desired, or handle in UI
             aboutItems: data.aboutItems || [],
+            arAssets: data.arAssets || null,
           };
           setProduct(mappedProduct);
 
