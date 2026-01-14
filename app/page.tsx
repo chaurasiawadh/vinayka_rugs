@@ -10,6 +10,7 @@ import { useShop } from '../context/ShopContext';
 import { useCollection } from '@/hooks/useFirestore';
 import { GalleryItem } from '@/types';
 import { motion } from 'framer-motion';
+import UploadPrompt from '../components/visualizer/UploadPrompt';
 
 const Home: React.FC = () => {
   const { products, openBespokeModal } = useShop();
@@ -79,7 +80,42 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Collections Carousel */}
+      {/* NEW: Room Visualizer Section */}
+      <section className="py-16 bg-[#FAF8F6]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              <div className="p-8 lg:p-12 flex flex-col justify-center">
+                <span className="text-terracotta uppercase tracking-widest text-xs font-bold mb-4">
+                  Try Before You Buy
+                </span>
+                <h2 className="text-3xl md:text-4xl font-serif mb-4 text-gray-900 leading-tight">
+                  Visualize Our Rugs in <br />
+                  <span className="italic text-terracotta">Your Own Room</span>
+                </h2>
+                <p className="text-gray-500 mb-8 max-w-md">
+                  Unsure about the size or color? Upload a photo of your space
+                  and virtually place our rugs to find the perfect match.
+                </p>
+                <div className="w-full max-w-md">
+                  <UploadPrompt />
+                </div>
+              </div>
+              <div className="relative h-[300px] lg:h-auto bg-gray-100">
+                <img
+                  src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  alt="Room Visualizer Demo"
+                />
+                <div className="absolute inset-0 bg-gradient-to-l from-black/20 to-transparent pointer-events-none"></div>
+                <div className="absolute bottom-6 right-6 bg-white/90 backdrop-blur px-4 py-2 rounded-lg text-xs font-bold shadow-sm">
+                  Interactive Demo
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       {galleryItems.length > 0 && (
         <section className="py-24 bg-white overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
