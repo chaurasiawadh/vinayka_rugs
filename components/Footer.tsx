@@ -1,12 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
-import { MapPin, Mail, Phone, FileText } from 'lucide-react';
+import { MapPin, Mail } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#1C1C1C] text-white pt-16 pb-8">
+    <footer className="bg-[#1C1C1C] text-white pt-8 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="space-y-6">
             <h2 className="font-serif text-2xl font-bold text-white">
@@ -46,14 +46,6 @@ const Footer: React.FC = () => {
                   Traditional & Vintage
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/lookbook"
-                  className="hover:text-terracotta transition-colors"
-                >
-                  Lookbook
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -77,22 +69,7 @@ const Footer: React.FC = () => {
                   Shipping & Returns
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/care"
-                  className="hover:text-terracotta transition-colors"
-                >
-                  Rug Care Guide
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/trade"
-                  className="hover:text-terracotta transition-colors"
-                >
-                  Trade Program
-                </Link>
-              </li>
+
               <li>
                 <Link
                   href="/admin"
@@ -111,11 +88,7 @@ const Footer: React.FC = () => {
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="shrink-0 mt-0.5 text-terracotta" />
                 <span>
-                  Chauri Bazar (Main Road),
-                  <br />
-                  Parsipur, Bhadohi-221 402,
-                  <br />
-                  (U.P.) INDIA
+                  Chauri Bazar, Parsipur, Bhadohi- (221402), U.P. INDIA
                 </span>
               </li>
               <li className="flex flex-col gap-3">
@@ -131,18 +104,10 @@ const Footer: React.FC = () => {
                   </svg>
                   <span>+91-9250491858</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Phone size={18} className="text-terracotta" />
-                  <span>+91-9580122122</span>
-                </div>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-terracotta" />
                 <span className="break-all">mailtoshyamaexports@gmail.com</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <FileText size={18} className="text-terracotta" />
-                <span>GSTIN: 09APJPJ3572L1ZE</span>
               </li>
             </ul>
           </div>

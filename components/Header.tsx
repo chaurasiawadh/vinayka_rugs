@@ -67,7 +67,9 @@ const Header: React.FC = () => {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-300 ${
-          isScrolled ? 'bg-white/95 backdrop-blur shadow-sm' : 'bg-white'
+          isScrolled
+            ? 'bg-[#faf8f6]/95 backdrop-blur shadow-sm'
+            : 'bg-[#faf8f6]'
         }`}
         onMouseLeave={() => setIsShopHovered(false)}
       >
