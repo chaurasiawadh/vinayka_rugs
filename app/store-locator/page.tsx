@@ -22,14 +22,14 @@ interface StoreLocation {
 const LOCATIONS: StoreLocation[] = [
   {
     id: '1',
-    type: 'Vinayka Gallery',
+    type: 'Vinayka Rugs',
     city: 'Bhadohi | Varanasi',
-    name: 'Vinayka Gallery',
+    name: 'Vinayka Rugs',
     address: ['Bhadohi , Varanasi', 'Uttar Pradesh'],
     hours: 'Mon - Sun : 10am - 8pm',
     phone: '+91 9250491858',
     whatsapp: '9250491858',
-    image: 'https://placehold.co/800x600?text=Vinayka+Gallery+Bhadohi',
+    image: '/images/vinayka-rugs-store.png',
     mapLink: 'https://maps.google.com/?q=Vinayka+Gallery+Bhadohi',
   },
   {
@@ -45,7 +45,7 @@ const LOCATIONS: StoreLocation[] = [
     phone: '+91-9580122122',
     email: 'mailtoshyamaexports@gmail.com',
     gstin: '09APJPJ3572L1ZE',
-    image: 'https://placehold.co/800x600?text=Shyama+Exports',
+    image: '/images/shyama-exports-facility.png',
     mapLink: 'https://maps.google.com/?q=Shyama+Exports+Bhadohi',
   },
 ];
