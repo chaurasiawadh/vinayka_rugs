@@ -1,14 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useShop } from '@/context/ShopContext';
-import Button from '@/components/Button';
 import ImageSmart from '@/components/ImageSmart';
-import { ArrowRight } from 'lucide-react';
 
 const About: React.FC = () => {
-  const { openBespokeModal } = useShop();
-
   return (
     <div className="bg-white min-h-screen animate-fade-in">
       {/* Hero */}
@@ -120,33 +115,6 @@ const About: React.FC = () => {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Bespoke CTA Section */}
-      <section className="py-24 bg-gray-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <ImageSmart
-            src="https://images.unsplash.com/photo-1507646227500-4d389b0012be?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-serif mb-6">
-            Commission Your Own Legacy
-          </h2>
-          <p className="text-xl text-gray-300 mb-10 font-light leading-relaxed">
-            While our collections tell our story, a bespoke rug tells yours.
-            Collaborate with our artisans to create a masterpiece tailored to
-            your exact specifications.
-          </p>
-          <Button
-            size="lg"
-            className="bg-white text-gray-900 hover:bg-gray-100 border-none"
-            onClick={() => openBespokeModal('About Page CTA')}
-          >
-            Start Your Bespoke Journey <ArrowRight size={18} className="ml-2" />
-          </Button>
         </div>
       </section>
     </div>
