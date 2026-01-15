@@ -42,8 +42,8 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
               <div className="w-1/4 flex flex-col gap-6 items-center">
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm group cursor-pointer">
                   <img
-                    src="https://placehold.co/800x600?text=Vinayka+Gallery" // Artisan weaving
-                    alt="Shop All"
+                    src="/images/rugs-gallery-showcase.png"
+                    alt="Luxury Rugs Gallery Showcase"
                     className="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
