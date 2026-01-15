@@ -56,7 +56,7 @@ const StoreLocator = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Simple Header */}
-      <div className="bg-cream py-12 md:py-20 text-center px-4">
+      <div className="bg-cream py-8 md:py-10 text-center px-4">
         <h1 className="text-4xl md:text-5xl font-serif text-text-body mb-4">
           Visit Our Stores
         </h1>
@@ -74,7 +74,7 @@ const StoreLocator = () => {
           >
             {/* Image Side */}
             <div
-              className={`w-full md:w-1/2 h-[400px] md:h-[600px] relative overflow-hidden ${index % 2 !== 0 ? 'md:order-2' : ''}`}
+              className={`w-full md:w-1/2 h-[400px] md:h-[600px] relative overflow-hidden rounded-[10px] mx-4 my-4 shadow-lg ${index % 2 !== 0 ? 'md:order-2' : ''}`}
             >
               <img
                 src={location.image}
@@ -85,11 +85,9 @@ const StoreLocator = () => {
 
             {/* Content Side */}
             <div
-              className={`w-full md:w-1/2 p-12 md:p-20 flex flex-col justify-center ${index % 2 !== 0 ? 'md:order-1 items-end text-right' : 'items-start text-left'}`}
+              className={`w-full md:w-1/2 p-12 md:p-20 flex flex-col justify-center items-start text-left ${index % 2 !== 0 ? 'md:order-1' : ''}`}
             >
-              <div
-                className={`max-w-md ${index % 2 !== 0 ? 'mr-auto md:mr-0 md:ml-auto' : ''}`}
-              >
+              <div className="max-w-md">
                 <span className="text-xs font-bold tracking-[0.2em] text-text-muted uppercase mb-4 block">
                   {location.type}
                 </span>
@@ -108,20 +106,14 @@ const StoreLocator = () => {
                     ))}
                   </div>
 
-                  <div
-                    className={`flex items-center gap-3 ${index % 2 !== 0 ? 'flex-row-reverse md:flex-row-reverse' : ''}`}
-                  >
+                  <div className={`flex items-center gap-3`}>
                     <Clock size={18} className="text-terracotta shrink-0" />
                     <p>{location.hours}</p>
                   </div>
 
-                  <div
-                    className={`flex items-center gap-3 ${index % 2 !== 0 ? 'flex-row-reverse md:flex-row-reverse' : ''}`}
-                  >
+                  <div className={`flex items-center gap-3`}>
                     <Phone size={18} className="text-terracotta shrink-0" />
-                    <div
-                      className={`flex flex-col ${index % 2 !== 0 ? 'items-end' : 'items-start'}`}
-                    >
+                    <div className={`flex flex-col`}>
                       {location.phone.split(',').map((p, i) => (
                         <a
                           key={i}
@@ -135,9 +127,7 @@ const StoreLocator = () => {
                   </div>
 
                   {location.whatsapp && (
-                    <div
-                      className={`flex items-center gap-3 ${index % 2 !== 0 ? 'flex-row-reverse md:flex-row-reverse' : ''}`}
-                    >
+                    <div className={`flex items-center gap-3`}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="18"
@@ -160,9 +150,7 @@ const StoreLocator = () => {
                   )}
 
                   {location.email && (
-                    <div
-                      className={`flex items-center gap-3 ${index % 2 !== 0 ? 'flex-row-reverse md:flex-row-reverse' : ''}`}
-                    >
+                    <div className={`flex items-center gap-3`}>
                       <Mail size={18} className="text-terracotta shrink-0" />
                       <a
                         href={`mailto:${location.email}`}
@@ -174,9 +162,7 @@ const StoreLocator = () => {
                   )}
 
                   {location.gstin && (
-                    <div
-                      className={`flex items-center gap-3 ${index % 2 !== 0 ? 'flex-row-reverse md:flex-row-reverse' : ''}`}
-                    >
+                    <div className={`flex items-center gap-3`}>
                       <FileText
                         size={18}
                         className="text-terracotta shrink-0"
