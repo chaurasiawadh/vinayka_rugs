@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Smartphone } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import { X, ScanLine, Smartphone } from 'lucide-react';
 import '@google/model-viewer';
 import { Product } from '@/types';
 
@@ -37,10 +38,26 @@ interface ARButtonProps {
 
 const ARButton: React.FC<ARButtonProps> = ({ product }) => {
   const modelViewerRef = React.useRef<any>(null);
+  const [showQR, setShowQR] = React.useState(false);
+  const [currentUrl, setCurrentUrl] = React.useState('');
 
-  const activateAR = () => {
-    if (modelViewerRef.current) {
-      modelViewerRef.current.activateAR();
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
+
+  const handleARClick = () => {
+    // Determine if mobile (simple width check or user agent)
+    // We use a simple breakpoint check here for simplicity
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      if (modelViewerRef.current) {
+        modelViewerRef.current.activateAR();
+      }
+    } else {
+      setShowQR(true);
     }
   };
 
@@ -49,9 +66,8 @@ const ARButton: React.FC<ARButtonProps> = ({ product }) => {
   return (
     <div className="w-full mt-4">
       {/* 
-        Hidden Model Viewer (Engine)
-        Must be 'visible' in DOM for activateAR to work, so we use opacity 0 and absolute positioning
-        instead of display: none.
+        Hidden Model Viewer (Engine).
+        We keep it mounted so mobile users get AR instantly.
       */}
       <model-viewer
         ref={modelViewerRef}
@@ -76,7 +92,7 @@ const ARButton: React.FC<ARButtonProps> = ({ product }) => {
       />
 
       <button
-        onClick={activateAR}
+        onClick={handleARClick}
         className="w-full bg-white border-2 border-terracotta text-terracotta hover:bg-terracotta hover:text-white transition-all duration-300 py-3 rounded-full flex items-center justify-center gap-2 font-medium text-sm sm:text-base mb-4 group"
       >
         <Smartphone
@@ -88,8 +104,42 @@ const ARButton: React.FC<ARButtonProps> = ({ product }) => {
 
       {/* Fallback/Explanation for Desktop Users */}
       <div className="text-center text-xs text-text-muted mt-1 hidden md:block">
-        Scan QR code or click on mobile to view in your room
+        Click to scan QR code
       </div>
+
+      {/* QR Code Modal for Desktop */}
+      {showQR && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full relative shadow-2xl text-center">
+            <button
+              onClick={() => setShowQR(false)}
+              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+
+            <div className="w-16 h-16 bg-terracotta/10 rounded-full flex items-center justify-center mx-auto mb-4 text-terracotta">
+              <ScanLine size={32} />
+            </div>
+
+            <h3 className="text-xl font-serif font-bold text-gray-900 mb-2">
+              View in Augmented Reality
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Scan this QR code with your mobile camera to view this rug in your
+              room.
+            </p>
+
+            <div className="bg-white p-4 rounded-xl border-2 border-gray-100 inline-block mb-4 shadow-inner">
+              <QRCodeSVG value={currentUrl} size={180} level="M" />
+            </div>
+
+            <p className="text-xs text-gray-400">
+              Only works on AR-compatible iOS & Android devices.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
