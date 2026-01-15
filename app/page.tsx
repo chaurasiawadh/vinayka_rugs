@@ -14,9 +14,9 @@ import UploadPrompt from '../components/visualizer/UploadPrompt';
 
 // Hero background images pool
 const HERO_BACKGROUNDS = [
-  '/images/hero-bg-1.png',
-  '/images/hero-bg-2.png',
-  '/images/hero-bg-3.png',
+  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2vtV4ykXA916xNGyb5hMPUZ0fuaQK42mzXSwe',
+  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2pYzO3VslILk9OwRmSXQepDPgZCBrMzyjtiEx',
+  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B223WtkGNgumoR3wZ50HUNLIvcqKS72bzfpDFM',
 ];
 
 const Home: React.FC = () => {
