@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 // import { COLLECTIONS } from '../constants';
@@ -12,10 +12,24 @@ import { GalleryItem } from '@/types';
 import { motion } from 'framer-motion';
 import UploadPrompt from '../components/visualizer/UploadPrompt';
 
+// Hero background images pool
+const HERO_BACKGROUNDS = [
+  '/images/hero-bg-1.png',
+  '/images/hero-bg-2.png',
+  '/images/hero-bg-3.png',
+];
+
 const Home: React.FC = () => {
   const { products, openBespokeModal } = useShop();
   const galleryItems = useCollection('gallery') as GalleryItem[];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [heroBackground, setHeroBackground] = useState(HERO_BACKGROUNDS[0]);
+
+  // Randomly select a hero background on component mount
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * HERO_BACKGROUNDS.length);
+    setHeroBackground(HERO_BACKGROUNDS[randomIndex]);
+  }, []);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -42,8 +56,8 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <section className="relative h-[85vh] w-full bg-gray-900 overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1600166898405-da9535204843?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
-          alt="Luxury Rug Living Room"
+          src={heroBackground}
+          alt="Luxury Rug Interior"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
