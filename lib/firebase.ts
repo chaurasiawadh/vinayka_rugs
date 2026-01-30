@@ -15,6 +15,14 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+// Validate config
+if (!firebaseConfig.apiKey) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    'Firebase Configuration Missing: NEXT_PUBLIC_FIREBASE_API_KEY is not set. The app will likely fail to load data.'
+  );
+}
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);

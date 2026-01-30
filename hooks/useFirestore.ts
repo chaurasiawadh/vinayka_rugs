@@ -32,8 +32,9 @@ export const useProducts = () => {
         setProducts(data);
         setLoading(false);
       },
-      (_err) => {
-        // console.error('Firestore Error:', err);
+      (err) => {
+        // eslint-disable-next-line no-console
+        console.error('Firestore Error:', err);
         // Fallback on error
         setProducts([]);
         setLoading(false);
