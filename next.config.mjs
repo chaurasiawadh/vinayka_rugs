@@ -14,9 +14,10 @@ const nextConfig = {
   },
 };
 
-// if (isProd) {
-//   nextConfig.output = 'export';
-//   nextConfig.basePath = '/vinayka_rugs';
-// }
+const isGithubActions = process.env.GITHUB_ACTIONS || false;
+
+if (isGithubActions) {
+  nextConfig.output = 'export';
+}
 
 export default nextConfig;
