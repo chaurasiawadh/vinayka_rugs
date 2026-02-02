@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Moveable from 'react-moveable';
+import { RotateCw, RotateCcw } from 'lucide-react';
 
 interface ActiveRugProps {
   image: string;
@@ -10,18 +11,50 @@ interface ActiveRugProps {
 
 export default function ActiveRug({ image, onClose }: ActiveRugProps) {
   const targetRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const moveableRef = useRef<Moveable>(null);
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
   const [mode, setMode] = useState<'scale' | 'warp'>('warp');
   const [opacity, setOpacity] = useState(0.9);
   const [blendMode, setBlendMode] = useState<'multiply' | 'normal'>('multiply');
 
+  // Selection & Visibility States
+  const [isSelected, setIsSelected] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Handle click outside to deselect
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsSelected(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   useEffect(() => {
     setTarget(targetRef.current);
   }, []);
 
   return (
-    <div className="absolute top-[20%] left-[20%] w-[300px] z-10 group">
+    <div
+      ref={containerRef}
+      className="absolute top-[20%] left-[20%] w-[300px] z-10 group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsSelected(true);
+      }}
+    >
       {/* Controls Toolbar */}
       <div
         className="absolute -top-24 left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur p-3 rounded-xl shadow-xl min-w-[200px]"
@@ -40,6 +73,28 @@ export default function ActiveRug({ image, onClose }: ActiveRugProps) {
             className={`flex-1 px-3 py-1 text-xs font-semibold rounded-md transition-all ${mode === 'warp' ? 'bg-white text-terracotta shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
           >
             Distort
+          </button>
+        </div>
+
+        {/* Rotate Controls */}
+        <div className="flex gap-2">
+          <button
+            onClick={() =>
+              moveableRef.current?.request('rotatable', { delta: -90 }, true)
+            }
+            className="flex-1 flex items-center justify-center py-1.5 bg-gray-100 hover:bg-white hover:text-terracotta rounded text-gray-500 transition-colors"
+            title="Rotate Left"
+          >
+            <RotateCcw size={14} />
+          </button>
+          <button
+            onClick={() =>
+              moveableRef.current?.request('rotatable', { delta: 90 }, true)
+            }
+            className="flex-1 flex items-center justify-center py-1.5 bg-gray-100 hover:bg-white hover:text-terracotta rounded text-gray-500 transition-colors"
+            title="Rotate Right"
+          >
+            <RotateCw size={14} />
           </button>
         </div>
 
@@ -100,12 +155,22 @@ export default function ActiveRug({ image, onClose }: ActiveRugProps) {
 
       {/* The Moveable Control */}
       <Moveable
-        target={target}
+        ref={moveableRef}
+        target={isSelected || isHovered || isDragging ? target : null}
         // Toggle modes based on state
         draggable={true}
-        rotatable={mode === 'scale'}
+        rotatable={true} // Always allow rotation for the buttons to work
         resizable={mode === 'scale'}
         warpable={mode === 'warp'}
+        // Interaction Handlers to track dragging state
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={() => setIsDragging(false)}
+        onResizeStart={() => setIsDragging(true)}
+        onResizeEnd={() => setIsDragging(false)}
+        onRotateStart={() => setIsDragging(true)}
+        onRotateEnd={() => setIsDragging(false)}
+        onWarpStart={() => setIsDragging(true)}
+        onWarpEnd={() => setIsDragging(false)}
         // Handlers
         onDrag={({ target, transform }) => {
           target.style.transform = transform;
