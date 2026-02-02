@@ -193,8 +193,6 @@ export default function ActiveRug({ image, onClose }: ActiveRugProps) {
         padding={{ left: 0, top: 0, right: 0, bottom: 0 }}
         // Styles for handles to make them visible against rugs
         rotationPosition="top"
-        lineColor="#E07A5F" // Terracotta
-        controlColor="#E07A5F"
       />
     </div>
   );
