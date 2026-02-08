@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, MouseEvent } from 'react';
+import { useState, useRef, MouseEvent, useEffect } from 'react';
 import {
   Minus,
   Plus,
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import ProductCard from './ProductCard';
 import ARButton from './ARButton';
+import { useRouter } from 'next/navigation';
 import { useShop } from '@/context/ShopContext';
 
 interface ProductDetailsProps {
@@ -36,8 +37,10 @@ export default function ProductDetails({
   reviews,
   faqs,
 }: ProductDetailsProps) {
-  const { addToCart } = useShop();
+  const { addToCart, setDirectPurchaseItem } = useShop();
+  const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(
     product.sizes ? product.sizes[0] : null
@@ -78,28 +81,47 @@ export default function ProductDetails({
   const [imgDimensions, setImgDimensions] = useState({ width: 0, height: 0 });
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
+  // Close zoom on scroll to prevent stuck magnifier (Amazon behavior)
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowZoom(false);
+    };
+
+    if (showZoom) {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [showZoom]);
+
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!imageContainerRef.current) return;
 
-    const { left, top, width, height } =
-      imageContainerRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
+    const rect = imageContainerRef.current.getBoundingClientRect();
+
+    // Calculate cursor position relative to the image
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Constrain x and y to be within the image bounds
+    const constrainedX = Math.max(0, Math.min(x, rect.width));
+    const constrainedY = Math.max(0, Math.min(y, rect.height));
 
     // Store dimensions for lens constraints
-    setImgDimensions({ width, height });
-    setCursorPos({ x, y });
+    setImgDimensions({ width: rect.width, height: rect.height });
+    setCursorPos({ x: constrainedX, y: constrainedY });
 
     // Calculate position as percentage for background-position
-    // We ensure values stay within 0-100 bounds for safety
-    const xPercent = Math.max(0, Math.min(100, (x / width) * 100));
-    const yPercent = Math.max(0, Math.min(100, (y / height) * 100));
+    const xPercent = (constrainedX / rect.width) * 100;
+    const yPercent = (constrainedY / rect.height) * 100;
 
     setZoomPosition({ x: xPercent, y: yPercent });
   };
 
   // Lens Size
-  const lensSize = 200;
+  const lensSize = 180;
 
   // Calculate constrained lens position
   const lensX = Math.max(
@@ -114,103 +136,116 @@ export default function ProductDetails({
   return (
     <div className="bg-[#FAF8F6] min-h-screen pb-20">
       <div className="w-full pl-8 pr-8">
-        <div className="bg-white rounded-none p-6 md:p-12 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
-            {/* Left: Image Gallery */}
-            <div className="flex flex-col gap-4">
-              {/* //! Main Image */}
-              <div className="w-full relative z-20">
-                <div
-                  ref={imageContainerRef}
-                  onMouseEnter={() => setShowZoom(true)}
-                  onMouseLeave={() => setShowZoom(false)}
-                  onMouseMove={handleMouseMove}
-                  className="aspect-[3/4] md:aspect-[4/5] w-full max-h-[600px] bg-[#FAFAFA] rounded-sm overflow-hidden relative shadow-sm cursor-crosshair border border-gray-100"
-                >
-                  <img
-                    src={product.images[selectedImage]}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {product.tags && (
-                    <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm border border-gray-100 text-[10px] font-bold px-3 py-1.5 uppercase tracking-wider rounded-full shadow-sm text-gray-900 pointer-events-none">
-                      {product.tags[0]}
-                    </span>
-                  )}
-
-                  {/* Lens Overlay */}
-                  {showZoom && (
-                    <div
-                      className="absolute pointer-events-none z-10 border border-blue-200 hidden lg:block"
-                      style={{
-                        left: lensX,
-                        top: lensY,
-                        width: lensSize,
-                        height: lensSize,
-                        // Specific pattern style matching request
-                        backgroundImage:
-                          'radial-gradient(circle, #93c5fd 1px, transparent 1px)',
-                        backgroundSize: '4px 4px',
-                        backgroundColor: 'rgba(147, 197, 253, 0.15)', // Lighter blue tint
-                      }}
+        <div className="bg-white rounded-none p-6 md:p-12 shadow-sm ">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(auto,700px)_1fr] gap-12 lg:gap-16 items-start ">
+            {/* Left Column: Sticky Images (Thumbnails + Main) */}
+            <div className="lg:sticky lg:top-[110px] self-start flex flex-col lg:flex-row gap-8 z-30 ">
+              {/* Vertical Thumbnails (Desktop Sticky) */}
+              <div className="hidden lg:flex flex-col gap-3 w-20 flex-shrink-0 rounded-md">
+                {product.images.slice(0, 8).map((img: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`aspect-square w-full bg-gray-50 border-2 rounded-sm overflow-hidden transition-all duration-200 ${
+                      selectedImage === idx
+                        ? 'border-[#41354D] shadow-sm'
+                        : 'border-transparent hover:border-gray-200 opacity-80 hover:opacity-100'
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`${product.name} thumb ${idx + 1}`}
+                      className="w-full h-full object-cover"
                     />
-                  )}
-                </div>
-
-                {/* Zoom Window - Only visible on Desktop when hovering */}
-                {showZoom && (
-                  <div
-                    className="hidden lg:block absolute left-[105%] top-0 w-[700px] h-[700px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden"
-                    style={{
-                      backgroundImage: `url(${product.images[selectedImage]})`,
-                      backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                      backgroundSize: '300%', // Zoom level
-                      backgroundRepeat: 'no-repeat',
-                    }}
-                  ></div>
+                  </button>
+                ))}
+                {product.images.length > 8 && (
+                  <button
+                    onClick={() => setShowLightbox(true)}
+                    className="aspect-square w-full bg-white border border-gray-200 rounded-sm flex items-center justify-center text-xs font-bold text-gray-500 hover:bg-gray-50 transition-colors"
+                  >
+                    +{product.images.length - 8}
+                  </button>
                 )}
               </div>
 
-              {/* Thumbnails (Bottom) */}
-              {/* Thumbnails (Bottom) */}
-              <div
-                className={`grid grid-cols-3 gap-4 py-2 ${product.images.length > 6 ? '' : ''}`}
-              >
-                {product.images.slice(0, 6).map((img: string, idx: number) => {
-                  const isLast = idx === 5;
-                  const remaining = product.images.length - 6;
+              {/* Main Image Display */}
+              <div className="flex-1 min-w-0 ">
+                <div className="w-full relative">
+                  <div
+                    ref={imageContainerRef}
+                    onMouseEnter={() => setShowZoom(true)}
+                    onMouseLeave={() => setShowZoom(false)}
+                    onMouseMove={handleMouseMove}
+                    className="aspect-[3/4] md:aspect-[4/5] w-full max-h-[670px] bg-[#FAFAFA] rounded-md overflow-hidden relative shadow-sm cursor-crosshair border border-gray-100"
+                  >
+                    <img
+                      src={product.images[selectedImage]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                    {product.tags && (
+                      <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm border border-gray-100 text-[10px] font-bold px-3 py-1.5 uppercase tracking-wider rounded-full shadow-sm text-gray-900 pointer-events-none">
+                        {product.tags[0]}
+                      </span>
+                    )}
 
-                  return (
-                    <div key={idx} className="relative aspect-square">
-                      <button
-                        onClick={() => setSelectedImage(idx)}
-                        className={`w-full h-full bg-gray-50 border transition-colors ${selectedImage === idx ? 'border-[#41354D]' : 'border-transparent hover:border-gray-200'}`}
-                      >
-                        <img
-                          src={img}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
+                    {/* Lens Overlay */}
+                    {showZoom && (
+                      <div
+                        className="absolute pointer-events-none z-10 border border-blue-200 hidden lg:block"
+                        style={{
+                          left: lensX,
+                          top: lensY,
+                          width: lensSize,
+                          height: lensSize,
+                          backgroundImage:
+                            'radial-gradient(circle, #93c5fd 1px, transparent 1px)',
+                          backgroundSize: '4px 4px',
+                          backgroundColor: 'rgba(147, 197, 253, 0.15)',
+                        }}
+                      />
+                    )}
+                  </div>
 
-                      {isLast && remaining > 0 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowLightbox(true);
-                          }}
-                          className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center text-lg font-medium text-gray-800 border border-transparent hover:bg-white/70 transition-colors"
-                        >
-                          {remaining}+
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
+                  {/* Zoom Window - Appearing on the RIGHT of the main image */}
+                  {showZoom && (
+                    <div
+                      className="hidden lg:block absolute left-[103%] top-0 w-[650px] h-[670px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden pointer-events-none"
+                      style={{
+                        backgroundImage: `url(${product.images[selectedImage]})`,
+                        backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                        backgroundSize: '300%',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                    ></div>
+                  )}
+                </div>
+
+                {/* Mobile Thumbnails (Horizontal) */}
+                <div className="flex lg:hidden gap-3 mt-4 overflow-x-auto pb-4 scrollbar-hide">
+                  {product.images.map((img: string, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImage(idx)}
+                      className={`flex-none w-20 h-20 bg-gray-50 border transition-all rounded-sm overflow-hidden ${
+                        selectedImage === idx
+                          ? 'border-[#41354D]'
+                          : 'border-transparent'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Right: Product Info */}
+            {/* Right Column: Scrolling Product Content */}
             <div className="flex flex-col">
               <h2 className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-2">
                 {product.brand}
@@ -235,7 +270,6 @@ export default function ProductDetails({
 
               <div className="flex items-center space-x-4 mb-8">
                 {(() => {
-                  // Helper to parse price safely
                   const parsePrice = (price: any): number => {
                     if (typeof price === 'number') return price;
                     if (typeof price === 'string')
@@ -260,7 +294,6 @@ export default function ProductDetails({
                   const currentPrice = parsePrice(rawPrice);
                   const currentMrp = parsePrice(rawMrp);
 
-                  // Calculate discount dynamically
                   const discount =
                     currentMrp > currentPrice
                       ? `Save ${Math.round(((currentMrp - currentPrice) / currentMrp) * 100)}%`
@@ -386,7 +419,6 @@ export default function ProductDetails({
                               {(() => {
                                 const val = row.value;
                                 if (Array.isArray(val)) {
-                                  // Robust cleaning for corrupted data (e.g. ['L','i','v',...])
                                   const singleChars = val.filter(
                                     (v: any) =>
                                       typeof v === 'string' && v.length === 1
@@ -395,26 +427,19 @@ export default function ProductDetails({
                                     (v: any) =>
                                       typeof v === 'string' && v.length > 1
                                   );
-
-                                  // If we have single chars, they are likely a fragmented string
                                   if (singleChars.length > 0) {
                                     const reconstructed = singleChars
                                       .join('')
-                                      .replace(/^,/, '') // Remove leading comma
-                                      .replace(/,$/, ''); // Remove trailing comma
-
-                                    // Heuristic: If the reconstructed string contains commas, split it?
-                                    // For now, just add it as a word if it's substantial
+                                      .replace(/^,/, '')
+                                      .replace(/,$/, '');
                                     if (reconstructed.trim().length > 0) {
                                       words.push(reconstructed);
                                     }
                                   }
-
-                                  // Deduplicate and Join
                                   return Array.from(new Set(words))
                                     .map((w: any) =>
                                       w.toString().replace(/^]/, '').trim()
-                                    ) // Cleanup artifact like ]Wool
+                                    )
                                     .filter((w) => w.length > 0)
                                     .join(', ');
                                 }
@@ -493,16 +518,32 @@ export default function ProductDetails({
                 >
                   Add to Cart
                 </button>
+                <button
+                  onClick={() => {
+                    const buyNowItem = {
+                      ...product,
+                      selectedSize: selectedSize || 'Standard',
+                      quantity: quantity,
+                    };
+                    setDirectPurchaseItem(buyNowItem);
+                    router.push('/cart?buyNow=true');
+                  }}
+                  className="flex-1 bg-terracotta text-white h-12 rounded-lg font-medium tracking-wide hover:bg-[#724D31] transition-colors uppercase text-sm"
+                >
+                  Buy Now
+                </button>
                 <button className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-colors">
                   <Heart className="w-5 h-5 text-gray-400" />
                 </button>
               </div>
 
               {/* AR Live View Button */}
-              <ARButton product={product} />
+              <div className="mb-8">
+                <ARButton product={product} />
+              </div>
 
               {/* Trust Badges */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 bg-gray-50 p-6 rounded-lg">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12 bg-gray-50 p-6 rounded-lg">
                 <div className="text-center flex flex-col items-center">
                   <div className="mb-3 p-3 bg-amber-50 rounded-full">
                     <Diamond

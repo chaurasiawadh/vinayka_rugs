@@ -53,6 +53,8 @@ interface ShopContextType {
   products: Product[];
   loading: boolean;
   cart: CartItem[];
+  directPurchaseItem: CartItem | null;
+  setDirectPurchaseItem: (item: CartItem | null) => void;
   wishlist: WatchlistItem[];
   orders: Order[];
   bespokeRequests: BespokeRequest[];
@@ -73,7 +75,7 @@ interface ShopContextType {
   ) => void;
 
   clearCart: () => void;
-  placeOrder: (order: Order) => void;
+  placeOrder: (order: Order, isBuyNowFlow?: boolean) => void;
   submitBespokeRequest: (request: BespokeRequest) => void;
 
   cartTotal: number;
@@ -105,6 +107,9 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
   const { user } = useAuth(); // Integrate Auth
 
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [directPurchaseItem, setDirectPurchaseItem] = useState<CartItem | null>(
+    null
+  );
   const [wishlist, setWishlist] = useState<WatchlistItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [bespokeRequests, setBespokeRequests] = useState<BespokeRequest[]>([]);
@@ -296,6 +301,12 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const removeFromCart = async (productId: string, selectedSize: string) => {
+    if (
+      directPurchaseItem?.id === productId &&
+      directPurchaseItem?.selectedSize === selectedSize
+    ) {
+      setDirectPurchaseItem(null);
+    }
     setCart((prev) =>
       prev.filter(
         (item) => !(item.id === productId && item.selectedSize === selectedSize)
@@ -319,6 +330,14 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
     quantity: number
   ) => {
     if (quantity < 1) return;
+
+    if (
+      directPurchaseItem?.id === productId &&
+      directPurchaseItem?.selectedSize === selectedSize
+    ) {
+      setDirectPurchaseItem({ ...directPurchaseItem, quantity });
+    }
+
     setCart((prev) =>
       prev.map((item) =>
         item.id === productId && item.selectedSize === selectedSize
@@ -404,9 +423,12 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
 
   const clearCart = () => setCart([]);
 
-  const placeOrder = (order: Order) => {
+  const placeOrder = (order: Order, isBuyNowFlow: boolean = false) => {
     setOrders((prev) => [order, ...prev]);
-    clearCart();
+    if (!isBuyNowFlow) {
+      clearCart();
+    }
+    setDirectPurchaseItem(null);
   };
 
   const submitBespokeRequest = (request: BespokeRequest) => {
@@ -447,6 +469,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
         products,
         loading,
         cart,
+        directPurchaseItem,
+        setDirectPurchaseItem,
         wishlist,
         orders,
         bespokeRequests,
