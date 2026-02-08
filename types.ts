@@ -49,8 +49,8 @@ export interface Product {
     origin: string;
     includedComponents: string;
     itemHeight: string;
-    manufacturer: string;
-    manufacturerContact: string;
+    manufacturer?: string;
+    manufacturerContact?: string;
     unitCount: string;
     warranty: string;
 
@@ -69,6 +69,7 @@ export interface Product {
     dimensionsLxW: string;
     numberOfPieces: string;
     itemThickness: string;
+    quality?: string;
   };
 
   // About This Item (Dynamic Bullets)

@@ -78,8 +78,8 @@ const INITIAL_PRODUCT: Partial<Product> = {
     origin: 'India',
     includedComponents: 'Carpet',
     itemHeight: '5 cm',
-    manufacturer: 'Carpet Collection',
-    manufacturerContact: '',
+    // manufacturer: 'Carpet Collection',
+    // manufacturerContact: '',
     unitCount: '1.0 Count',
     warranty: '1 Year Warranty',
 
@@ -98,6 +98,7 @@ const INITIAL_PRODUCT: Partial<Product> = {
     dimensionsLxW: '',
     numberOfPieces: '1',
     itemThickness: '5 cm',
+    quality: '',
   },
   aboutItems: [],
   rating: 4.5,
@@ -488,6 +489,7 @@ const ProductManager: React.FC = () => {
                     {renderSpecInput('Stain Resistant?', 'stainResistant')}
                     {renderSpecInput('Special Features', 'specialFeatures')}
                     {renderSpecInput('Water Resistance', 'waterResistance')}
+                    {renderSpecInput('Quality', 'quality')}
                   </div>
                 </div>
 
@@ -514,11 +516,11 @@ const ProductManager: React.FC = () => {
                       'Included Components',
                       'includedComponents'
                     )}
-                    {renderSpecInput('Manufacturer', 'manufacturer')}
+                    {/* {renderSpecInput('Manufacturer', 'manufacturer')}
                     {renderSpecInput(
                       'Manufacturer Contact',
                       'manufacturerContact'
-                    )}
+                    )} */}
                     {renderSpecInput('Unit Count', 'unitCount')}
                     {renderSpecInput('Warranty', 'warranty')}
                   </div>
