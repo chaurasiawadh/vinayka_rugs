@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { useShop } from '@/context/ShopContext';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Minus, Plus, Trash2, ArrowLeft, Check } from 'lucide-react';
+import { Suspense } from 'react';
+
 import Button from '@/components/Button';
 import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from '@/constants';
 import { useAuth } from '@/context/AuthContext';
@@ -13,16 +15,33 @@ import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Loader } from 'lucide-react';
 
-const Cart: React.FC = () => {
+const CartContent: React.FC = () => {
+  const searchParams = useSearchParams();
+  const isBuyNow = searchParams.get('buyNow') === 'true';
+
   const {
     cart,
+    directPurchaseItem,
     updateQuantity,
     removeFromCart,
-    cartTotal,
-    shippingDiff,
     placeOrder,
   } = useShop();
+
+  const displayItems =
+    isBuyNow && directPurchaseItem ? [directPurchaseItem] : cart;
+
+  const displaySubtotal = displayItems.reduce(
+    (acc, item) => acc + Number(item.price) * item.quantity,
+    0
+  );
+
+  const displayShippingDiff = Math.max(
+    0,
+    FREE_SHIPPING_THRESHOLD - displaySubtotal
+  );
+
   const { user, userProfile } = useAuth();
+
   const router = useRouter();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
@@ -100,15 +119,15 @@ const Cart: React.FC = () => {
 
   const handleApplyCoupon = () => {
     if (couponCode === 'WELCOME10') {
-      setDiscount(cartTotal * 0.1);
+      setDiscount(displaySubtotal * 0.1);
     } else {
       alert('Invalid coupon');
     }
   };
 
-  const isFreeShipping = cartTotal >= FREE_SHIPPING_THRESHOLD;
+  const isFreeShipping = displaySubtotal >= FREE_SHIPPING_THRESHOLD;
   const finalShipping = isFreeShipping ? 0 : SHIPPING_COST;
-  const finalTotal = cartTotal + finalShipping - discount;
+  const finalTotal = displaySubtotal + finalShipping - discount;
 
   const handlePayment = async () => {
     setLoading(true);
@@ -142,14 +161,16 @@ const Cart: React.FC = () => {
         setLoading(false);
         const order = {
           id: 'ORD-' + Math.floor(Math.random() * 10000),
-          items: cart,
+          items: displayItems,
           total: finalTotal,
+
           status: 'confirmed' as const,
           date: new Date().toISOString(),
           shippingAddress: address,
         };
-        placeOrder(order);
+        placeOrder(order, isBuyNow);
         alert('Order Placed Successfully! Mock Payment Processed.');
+
         router.push('/');
       }, 2000);
     } catch (error) {
@@ -158,7 +179,7 @@ const Cart: React.FC = () => {
     }
   };
 
-  if (cart.length === 0 && step === 'cart') {
+  if (displayItems.length === 0 && step === 'cart') {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <h2 className="text-2xl font-serif mb-4">Your bag is empty</h2>
@@ -198,9 +219,11 @@ const Cart: React.FC = () => {
           <div className="lg:col-span-2 space-y-8">
             {step === 'cart' && (
               <div className="bg-white rounded-xl shadow-sm p-6 animate-fade-in">
-                <h2 className="font-serif text-2xl mb-6">Shopping Bag</h2>
+                <h2 className="font-serif text-2xl mb-6">
+                  {isBuyNow ? 'Checkout' : 'Shopping Bag'}
+                </h2>
                 <div className="space-y-6">
-                  {cart.map((item) => (
+                  {displayItems.map((item) => (
                     <div
                       key={`${item.id}-${item.selectedSize}`}
                       className="flex gap-4 border-b border-gray-100 pb-6 last:border-0"
@@ -511,8 +534,9 @@ const Cart: React.FC = () => {
               <div className="space-y-3 text-sm border-b border-gray-100 pb-4 mb-4">
                 <div className="flex justify-between">
                   <span className="text-text-muted">Subtotal</span>
-                  <span>₹{cartTotal.toLocaleString('en-IN')}</span>
+                  <span>₹{displaySubtotal.toLocaleString('en-IN')}</span>
                 </div>
+
                 <div className="flex justify-between">
                   <span className="text-text-muted">Shipping</span>
                   <span>{isFreeShipping ? 'Free' : `₹${SHIPPING_COST}`}</span>
@@ -550,11 +574,11 @@ const Cart: React.FC = () => {
                 <span>₹{finalTotal.toLocaleString('en-IN')}</span>
               </div>
 
-              {shippingDiff > 0 && (
+              {displayShippingDiff > 0 && (
                 <div className="bg-cream p-3 rounded text-xs text-center mb-6">
                   Add{' '}
                   <span className="font-bold">
-                    ₹{shippingDiff.toLocaleString('en-IN')}
+                    ₹{displayShippingDiff.toLocaleString('en-IN')}
                   </span>{' '}
                   more for free shipping.
                 </div>
@@ -632,6 +656,20 @@ const Cart: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const Cart: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-cream">
+          <Loader className="animate-spin text-terracotta" size={48} />
+        </div>
+      }
+    >
+      <CartContent />
+    </Suspense>
   );
 };
 
