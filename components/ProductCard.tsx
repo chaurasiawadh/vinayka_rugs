@@ -4,13 +4,18 @@ import { Heart, ShoppingBag, Star } from 'lucide-react';
 import { Product } from '../types';
 import { useShop } from '../context/ShopContext';
 import Button from './Button';
+import ImageSmart from './ImageSmart';
 import { PLACEHOLDER_IMAGE } from '../constants';
 
 interface ProductCardProps {
   product: Product;
+  priority?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  priority = false,
+}) => {
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
   const isWishlisted = isInWishlist(product.id);
 
@@ -79,16 +84,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         href={`/product/${product.id}`}
         className="block relative aspect-[4/5] overflow-hidden bg-gray-100"
       >
-        <img
+        <ImageSmart
           src={product.images?.[0] || PLACEHOLDER_IMAGE}
           alt={product.name}
-          className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+          className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
+          priority={priority}
         />
         {product.images?.[1] && (
-          <img
+          <ImageSmart
             src={product.images[1]}
             alt={product.name}
-            className="absolute inset-0 object-cover w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
         )}
 

@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 // import { COLLECTIONS } from '../constants';
 import ProductCard from '../components/ProductCard';
+import ImageSmart from '../components/ImageSmart';
 import Button from '../components/Button';
 import { useShop } from '../context/ShopContext';
 import { useCollection } from '@/hooks/useFirestore';
@@ -55,10 +57,12 @@ const Home: React.FC = () => {
     <div className="animate-fade-in">
       {/* Hero Section */}
       <section className="relative h-[85vh] w-full bg-gray-900 overflow-hidden">
-        <img
+        <Image
           src={heroBackground}
           alt="Luxury Rug Interior"
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
+          fill
+          priority
+          className="object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div className="relative h-full flex items-center justify-center text-center px-4">
@@ -116,9 +120,9 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <div className="relative h-[300px] lg:h-auto bg-gray-100">
-                <img
+                <ImageSmart
                   src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0"
                   alt="Room Visualizer Demo"
                 />
                 <div className="absolute inset-0 bg-gradient-to-l from-black/20 to-transparent pointer-events-none"></div>
@@ -177,9 +181,9 @@ const Home: React.FC = () => {
                   whileHover={{ y: -10 }}
                   className="min-w-[280px] md:min-w-[400px] h-[500px] relative rounded-2xl overflow-hidden snap-start cursor-pointer group shadow-lg"
                 >
-                  <img
+                  <ImageSmart
                     src={item.image}
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                    className="transition-transform duration-1000 group-hover:scale-110"
                     alt={item.title}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
@@ -228,8 +232,12 @@ const Home: React.FC = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {displayProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {displayProducts.map((product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                priority={index < 4}
+              />
             ))}
           </div>
           <div className="mt-12 text-center sm:hidden">
@@ -273,9 +281,9 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <div className="relative h-[400px] lg:h-auto">
-                <img
+                <ImageSmart
                   src="https://images.unsplash.com/photo-1615529182904-14819c35db37?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0"
                   alt="Custom Rug Design"
                 />
               </div>
@@ -289,10 +297,10 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
-              <img
+              <ImageSmart
                 src="https://images.unsplash.com/photo-1599303000936-1cf21eac4456?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80"
                 alt="Artisan weaving"
-                className="rounded-lg shadow-xl object-cover"
+                className="rounded-lg shadow-xl"
               />
             </div>
             <div className="order-1 lg:order-2">
