@@ -396,6 +396,10 @@ export default function ProductDetails({
                         value: product.specifications?.color,
                       },
                       {
+                        label: 'Quality',
+                        value: product.specifications?.quality,
+                      },
+                      {
                         label: 'Usage',
                         value: product.specifications?.indoorOutdoor,
                       },
