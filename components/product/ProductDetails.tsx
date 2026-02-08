@@ -16,8 +16,12 @@ import {
   ThumbsDown,
   Diamond,
   Cloud,
-  Infinity,
+  Infinity as InfinityIcon,
   RotateCcw,
+  Layers,
+  Ruler,
+  ShieldCheck,
+  Globe,
 } from 'lucide-react';
 import ProductCard from './ProductCard';
 import ARButton from './ARButton';
@@ -573,7 +577,7 @@ export default function ProductDetails({
                 </div>
                 <div className="text-center flex flex-col items-center">
                   <div className="mb-3 p-3 bg-indigo-50 rounded-full">
-                    <Infinity size={32} className="text-indigo-600" />
+                    <InfinityIcon size={32} className="text-indigo-600" />
                   </div>
                   <p className="text-[10px] font-medium text-gray-600 uppercase tracking-wider">
                     Heirloom
@@ -891,55 +895,89 @@ export default function ProductDetails({
                 ))}
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* FAQ */}
-            {/* FAQ */}
-            <div className="flex-1 w-full bg-[#f9f9f9] p-8 rounded-xl shadow-sm border border-gray-100">
-              <h2 className="text-2xl font-bold text-[#212121] mb-8">
-                Frequently Asked Questions
-              </h2>
-              <div className="space-y-4">
-                {faqs.map((faq, idx) => (
-                  <div
-                    key={idx}
-                    className={`border border-gray-200 rounded-lg overflow-hidden bg-white transition-all duration-200 ${openFaq === idx ? 'shadow-md border-[#D4C49D]/30' : 'hover:border-gray-300'}`}
-                  >
-                    <button
-                      onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                      className="w-full flex items-center justify-between p-5 text-left"
-                    >
-                      <span
-                        className={`font-semibold text-sm ${openFaq === idx ? 'text-[#212121]' : 'text-gray-700'}`}
+        {/* Frequently Asked Questions Section - Reference Style */}
+        <div className="mt-24 mb-12">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-serif text-[#111] mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-gray-500 font-medium tracking-wide">
+              Need Help? We&apos;ve Got You Covered
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto divide-y divide-gray-100 px-4 md:px-0">
+            {faqs.map((faq, idx) => {
+              const getIcon = (index: number) => {
+                const icons = [
+                  <Ruler key="1" size={20} className="text-[#111]" />,
+                  <Layers key="2" size={20} className="text-[#111]" />,
+                  <RotateCcw key="3" size={20} className="text-[#111]" />,
+                  <ShieldCheck key="4" size={20} className="text-[#111]" />,
+                  <Globe key="5" size={20} className="text-[#111]" />,
+                ];
+                return icons[index % icons.length];
+              };
+
+              return (
+                <div key={idx} className="py-8 first:pt-0 last:pb-0">
+                  <div className="flex gap-6 items-start">
+                    {/* Icon Box */}
+                    <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center border border-gray-200 rounded-lg shadow-sm bg-white">
+                      {getIcon(idx)}
+                    </div>
+
+                    {/* Question & Answer Content */}
+                    <div className="flex-1">
+                      <button
+                        onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                        className="w-full flex items-center justify-between text-left group pt-2"
                       >
-                        {faq.question}
-                      </span>
+                        <h3
+                          className={`text-sm md:text-lg font-semibold transition-colors ${
+                            openFaq === idx ? 'text-black' : 'text-[#111]'
+                          }`}
+                        >
+                          {faq.question}
+                        </h3>
+                        <div className="flex-shrink-0 ml-4">
+                          {openFaq === idx ? (
+                            <ChevronUp
+                              size={22}
+                              className="text-gray-400 group-hover:text-black transition-colors"
+                            />
+                          ) : (
+                            <ChevronDown
+                              size={22}
+                              className="text-gray-400 group-hover:text-black transition-colors"
+                            />
+                          )}
+                        </div>
+                      </button>
+
                       <div
-                        className={`p-1 rounded-full border transition-colors ${openFaq === idx ? 'bg-[#D4C49D] border-[#D4C49D] text-white' : 'border-gray-300 text-gray-400'}`}
+                        className={`overflow-hidden transition-all duration-300 ${
+                          openFaq === idx
+                            ? 'max-h-96 mt-4 opacity-100'
+                            : 'max-h-0 opacity-0'
+                        }`}
                       >
-                        {openFaq === idx ? (
-                          <Minus size={14} />
-                        ) : (
-                          <Plus size={14} />
-                        )}
-                      </div>
-                    </button>
-
-                    {openFaq === idx && (
-                      <div className="px-5 pb-5 animate-in slide-in-from-top-2 duration-200">
-                        <p className="text-sm text-gray-500 leading-relaxed pt-2 border-t border-gray-50">
+                        <p className="text-lg text-gray-500 leading-relaxed max-w-2xl">
                           {faq.answer}
                         </p>
                       </div>
-                    )}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Lightbox Overlay */}
       {/* Lightbox Overlay */}
       {showLightbox && (
         <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
