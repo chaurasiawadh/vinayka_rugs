@@ -96,6 +96,9 @@ interface ShopContextType {
 
   notification: { message: string; type: 'success' | 'error' | 'info' } | null;
   notify: (message: string, type?: 'success' | 'error' | 'info') => void;
+
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -122,6 +125,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
     message: string;
     type: 'success' | 'error' | 'info';
   } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Track previous auth state to detect logout
   const [previousUid, setPreviousUid] = useState<string | null>(null);
@@ -570,6 +574,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
         closeLoginModal,
         notify,
         notification,
+        searchQuery,
+        setSearchQuery,
       }}
     >
       {children}

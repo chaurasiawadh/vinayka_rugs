@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Search,
   ShoppingBag,
@@ -26,9 +26,17 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isShopHovered, setIsShopHovered] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { cartCount, setIsCartOpen, wishlist, openBespokeModal } = useShop();
+  const {
+    cartCount,
+    setIsCartOpen,
+    wishlist,
+    openBespokeModal,
+    searchQuery,
+    setSearchQuery,
+  } = useShop();
   const { user } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -186,6 +194,14 @@ const Header: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Search for..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSearchQuery(val);
+                      if (pathname !== '/shop') {
+                        router.push('/shop');
+                      }
+                    }}
                     className="flex-1 text-lg font-light outline-none text-gray-500 placeholder:text-gray-300 bg-transparent font-serif"
                     autoFocus
                   />

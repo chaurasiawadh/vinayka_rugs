@@ -5,15 +5,18 @@ import { useProducts } from '../../hooks/useFirestore';
 import { mockAutocomplete } from '../../utils/mockSearch';
 import { SearchSuggestion } from '../../types';
 import SearchAutocomplete from './SearchAutocomplete';
+import { useShop } from '../../context/ShopContext';
 
 const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
-  const [query, setQuery] = useState('');
+  const { searchQuery: query, setSearchQuery: setQuery } = useShop();
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const { products } = useProducts();
+  const pathname =
+    typeof window !== 'undefined' ? window.location.pathname : '';
 
   // Debounce Autocomplete
   useEffect(() => {
@@ -69,9 +72,20 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query)}`);
+      if (pathname !== '/shop') {
+        router.push('/shop');
+      }
       setIsFocused(false);
-      setQuery('');
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    if (val.trim() && pathname !== '/shop' && pathname !== '/search') {
+      // Optional: don't redirect on every keystroke if not on shop page
+      // but for "real-time" across site, we might want to.
+      // Let's stick to the requirement: "Search must filter products dynamically inside the Shop page"
     }
   };
 
@@ -83,7 +97,7 @@ const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
           type="text"
           placeholder="Search products, collections..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={handleInputChange}
           onFocus={() => setIsFocused(true)}
           onKeyDown={handleKeyDown}
           className="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-terracotta rounded-lg py-2 pl-10 pr-10 text-sm transition-all outline-none"

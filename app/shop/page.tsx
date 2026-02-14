@@ -21,7 +21,7 @@ const ShopContent: React.FC = () => {
   const initialShape = searchParams.get('shape');
   const initialSize = searchParams.get('size');
 
-  const { products, loading } = useShop();
+  const { products, loading, searchQuery } = useShop();
 
   // Calculate dynamic price range based on products
   const { minPrice, maxPrice } = useMemo(() => {
@@ -114,7 +114,35 @@ const ShopContent: React.FC = () => {
         const maxPrice = priceRange.max ? Number(priceRange.max) : Infinity;
         const matchPrice = pPrice >= minPrice && pPrice <= maxPrice;
 
+        // Search Logic
+        const matchSearch =
+          !searchQuery ||
+          [
+            product.name,
+            product.shortDescription,
+            product.description,
+            product.brand,
+            product.collection,
+            ...(Array.isArray(product.category)
+              ? product.category
+              : [product.category]),
+            ...(Array.isArray(product.specifications?.material)
+              ? product.specifications.material
+              : [product.specifications?.material]),
+            ...(Array.isArray(product.specifications?.roomType)
+              ? product.specifications.roomType
+              : [product.specifications?.roomType]),
+            ...(Array.isArray(product.specifications?.shape)
+              ? product.specifications.shape
+              : [product.specifications?.shape]),
+          ].some((field) =>
+            String(field || '')
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          );
+
         return (
+          matchSearch &&
           matchStyle &&
           matchMaterial &&
           matchRoom &&
@@ -144,6 +172,7 @@ const ShopContent: React.FC = () => {
     selectedSizes,
     priceRange,
     sortOption,
+    searchQuery,
   ]);
 
   const toggleFilter = (
