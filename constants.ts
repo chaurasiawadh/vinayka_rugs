@@ -53,9 +53,9 @@ export const REVIEW_TAGS = [
   'Color quality',
 ];
 
-export const CONTACT_PHONE = '+91 9936169852';
+export const CONTACT_PHONE = '9936169852';
 export const WHATSAPP_NUMBER = '919936169852';
-export const ADMIN_EMAIL = 'chaurasiawadh@gmail.com';
+export const ADMIN_EMAIL = 'info@vinaykarugs.com';
 
 export const PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1615529182904-14819c35db37?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';

@@ -15,10 +15,6 @@ import {
   Cloud,
   Infinity as InfinityIcon,
   RotateCcw,
-  Layers,
-  Ruler,
-  ShieldCheck,
-  Globe,
 } from 'lucide-react';
 import ProductCard from './ProductCard';
 import ARButton from './ARButton';
@@ -35,13 +31,11 @@ interface ProductDetailsProps {
   product: any;
   relatedProducts: any[];
   reviews: any[];
-  faqs: any[];
 }
 
 export default function ProductDetails({
   product,
   relatedProducts,
-  faqs,
 }: ProductDetailsProps) {
   const { addToCart, setDirectPurchaseItem } = useShop();
   const { user } = useAuth();
@@ -76,9 +70,6 @@ export default function ProductDetails({
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
-
-  // FAQ State
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   // Lightbox Logic
   const [showLightbox, setShowLightbox] = useState(false);
@@ -795,85 +786,6 @@ export default function ProductDetails({
                 />
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Frequently Asked Questions Section - Reference Style */}
-        <div className="mt-24 mb-12">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif text-[#111] mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-gray-500 font-medium tracking-wide">
-              Need Help? We&apos;ve Got You Covered
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto divide-y divide-gray-100 px-4 md:px-0">
-            {faqs.map((faq, idx) => {
-              const getIcon = (index: number) => {
-                const icons = [
-                  <Ruler key="1" size={20} className="text-[#111]" />,
-                  <Layers key="2" size={20} className="text-[#111]" />,
-                  <RotateCcw key="3" size={20} className="text-[#111]" />,
-                  <ShieldCheck key="4" size={20} className="text-[#111]" />,
-                  <Globe key="5" size={20} className="text-[#111]" />,
-                ];
-                return icons[index % icons.length];
-              };
-
-              return (
-                <div key={idx} className="py-8 first:pt-0 last:pb-0">
-                  <div className="flex gap-6 items-start">
-                    {/* Icon Box */}
-                    <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center border border-gray-200 rounded-lg shadow-sm bg-white">
-                      {getIcon(idx)}
-                    </div>
-
-                    {/* Question & Answer Content */}
-                    <div className="flex-1">
-                      <button
-                        onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                        className="w-full flex items-center justify-between text-left group pt-2"
-                      >
-                        <h3
-                          className={`text-sm md:text-lg font-semibold transition-colors ${
-                            openFaq === idx ? 'text-black' : 'text-[#111]'
-                          }`}
-                        >
-                          {faq.question}
-                        </h3>
-                        <div className="flex-shrink-0 ml-4">
-                          {openFaq === idx ? (
-                            <ChevronUp
-                              size={22}
-                              className="text-gray-400 group-hover:text-black transition-colors"
-                            />
-                          ) : (
-                            <ChevronDown
-                              size={22}
-                              className="text-gray-400 group-hover:text-black transition-colors"
-                            />
-                          )}
-                        </div>
-                      </button>
-
-                      <div
-                        className={`overflow-hidden transition-all duration-300 ${
-                          openFaq === idx
-                            ? 'max-h-96 mt-4 opacity-100'
-                            : 'max-h-0 opacity-0'
-                        }`}
-                      >
-                        <p className="text-lg text-gray-500 leading-relaxed max-w-2xl">
-                          {faq.answer}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>

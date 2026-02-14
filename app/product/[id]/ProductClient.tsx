@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ProductDetails from '@/components/product/ProductDetails';
-import { REVIEWS, FAQS } from '@/lib/product-data';
+import { REVIEWS } from '@/lib/product-data';
 import { db } from '@/lib/firebase';
 import {
   doc,
@@ -129,7 +129,6 @@ export default function ProductClient({ id }: { id: string }) {
           product={product}
           relatedProducts={relatedProducts}
           reviews={REVIEWS}
-          faqs={FAQS}
         />
       </main>
     </div>
