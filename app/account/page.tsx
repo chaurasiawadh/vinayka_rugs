@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useShop } from '@/context/ShopContext';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -28,6 +30,7 @@ import { UserProfile, Address } from '@/types';
 
 const AccountPage = () => {
   const { user, userProfile, loading, logout } = useAuth();
+  const { orders } = useShop();
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -540,29 +543,83 @@ const AccountPage = () => {
               </div>
             </section>
 
-            {/* Order History Placeholder */}
+            {/* Recent Orders Section */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fade-in animation-delay-100">
-              <h3 className="text-lg font-bold font-serif mb-6 flex items-center gap-2 text-gray-800">
-                <ShoppingBag size={20} className="text-terracotta" /> Recent
-                Orders
-              </h3>
-
-              {/* Empty State */}
-              <div className="text-center py-12 px-4 bg-gray-50/50 rounded-xl border-2 border-dashed border-gray-200">
-                <div className="bg-white p-3 rounded-full inline-flex mb-4 shadow-sm">
-                  <ShoppingBag size={24} className="text-gray-300" />
-                </div>
-                <h4 className="text-gray-900 font-medium mb-1">
-                  No orders yet
-                </h4>
-                <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
-                  Looks like you haven&apos;t placed an order for our exquisite
-                  rugs yet.
-                </p>
-                <Button size="sm" onClick={() => router.push('/shop')}>
-                  Explore Collection
-                </Button>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-bold font-serif flex items-center gap-2 text-gray-800">
+                  <ShoppingBag size={20} className="text-terracotta" /> Recent
+                  Orders
+                </h3>
+                {orders.length > 0 && (
+                  <Link
+                    href="/orders"
+                    className="text-xs font-bold text-terracotta hover:underline"
+                  >
+                    View All
+                  </Link>
+                )}
               </div>
+
+              {orders.length > 0 ? (
+                <div className="space-y-4">
+                  {orders.slice(0, 3).map((order) => (
+                    <div
+                      key={order.id}
+                      className="flex items-center gap-4 p-4 rounded-lg border border-gray-50 bg-gray-50/30 hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => router.push('/orders')}
+                    >
+                      <div className="w-12 h-12 bg-white rounded border border-gray-100 flex-shrink-0 flex items-center justify-center p-1">
+                        <img
+                          src={order.items[0].images[0]}
+                          alt={order.items[0].name}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-gray-900 truncate">
+                          {order.items[0].name}
+                          {order.items.length > 1 &&
+                            ` + ${order.items.length - 1} more`}
+                        </p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                          Order ID: {order.id}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-gray-900">
+                          ₹{order.total.toLocaleString('en-IN')}
+                        </p>
+                        <p
+                          className={`text-[10px] font-bold uppercase tracking-wider ${
+                            order.status === 'delivered'
+                              ? 'text-success'
+                              : 'text-blue-500'
+                          }`}
+                        >
+                          {order.status}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* Empty State */
+                <div className="text-center py-12 px-4 bg-gray-50/50 rounded-xl border-2 border-dashed border-gray-200">
+                  <div className="bg-white p-3 rounded-full inline-flex mb-4 shadow-sm">
+                    <ShoppingBag size={24} className="text-gray-300" />
+                  </div>
+                  <h4 className="text-gray-900 font-medium mb-1">
+                    No orders yet
+                  </h4>
+                  <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
+                    Looks like you haven&apos;t placed an order for our
+                    exquisite rugs yet.
+                  </p>
+                  <Button size="sm" onClick={() => router.push('/shop')}>
+                    Explore Collection
+                  </Button>
+                </div>
+              )}
             </section>
           </div>
         </div>
