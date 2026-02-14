@@ -89,9 +89,9 @@ const Contact: React.FC = () => {
                   <div>
                     <p className="font-medium text-lg">Visit Our Studio</p>
                     <p className="text-text-muted">
-                      Lanka BHU, Varanasi
+                      Bhadohi, Varanasi
                       <br />
-                      Uttar Pradesh, India - 221005
+                      Uttar Pradesh
                     </p>
                   </div>
                 </div>
