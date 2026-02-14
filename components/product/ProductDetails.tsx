@@ -141,6 +141,15 @@ export default function ProductDetails({
   return (
     <div className="bg-[#FAF8F6] min-h-screen pb-20">
       <div className="w-full pl-8 pr-8">
+        {/* Breadcrumb Navigation - Outside white container */}
+        <div className="mb-6">
+          <Breadcrumb
+            category={product.category}
+            collection={product.collection}
+            productName={product.name}
+          />
+        </div>
+
         <div className="bg-white rounded-none p-6 md:p-12 shadow-sm ">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(auto,700px)_1fr] gap-12 lg:gap-16 items-start ">
             {/* Left Column: Sticky Images (Thumbnails + Main) */}
@@ -252,13 +261,6 @@ export default function ProductDetails({
 
             {/* Right Column: Scrolling Product Content */}
             <div className="flex flex-col">
-              {/* Breadcrumb Navigation */}
-              <Breadcrumb
-                category={product.category}
-                collection={product.collection}
-                productName={product.name}
-              />
-
               <h2 className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-2">
                 {product.brand}
               </h2>
