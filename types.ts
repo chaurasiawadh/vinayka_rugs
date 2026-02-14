@@ -67,7 +67,7 @@ export interface Product {
   // About This Item (Dynamic Bullets)
   aboutItems: string[];
 
-  // Admin Controlled Review Data
+  // Admin Controlled Review Data (DEPRECATED - will be removed)
   rating: number;
   reviews: number;
   reviewSummary: string;
@@ -101,6 +101,22 @@ export interface Product {
     placement: 'floor' | 'wall';
     scale?: string;
   };
+}
+
+export interface Review {
+  id: string;
+  productId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  rating: number; // 1-5
+  reviewTitle?: string;
+  reviewText: string;
+  isPurchaseVerified: boolean;
+  createdAt: any;
+  updatedAt?: any;
+  isEditedByAdmin?: boolean;
+  adminEditedAt?: any;
 }
 
 export interface GalleryItem {

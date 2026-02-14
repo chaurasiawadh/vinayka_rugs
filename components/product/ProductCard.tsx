@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Star } from 'lucide-react';
+import { useProductReviews } from '@/hooks/useReviews';
 
 interface ProductCardProps {
   id: string;
@@ -9,8 +10,8 @@ interface ProductCardProps {
   originalPrice?: number;
   image: string;
   tags?: string[];
-  rating: number;
-  reviewsCount: number;
+  rating: number; // Kept for backward compatibility but not used
+  reviewsCount: number; // Kept for backward compatibility but not used
 }
 
 export default function ProductCard({
@@ -21,24 +22,26 @@ export default function ProductCard({
   originalPrice,
   image,
   tags,
-  rating,
-  reviewsCount,
 }: ProductCardProps) {
+  const { averageRating, totalReviews, loading } = useProductReviews(id);
+
   return (
-    <div className="group relative bg-white p-4">
-      {/* Image */}
-      <div className="relative aspect-square mb-4 overflow-hidden bg-gray-50">
+    <Link
+      href={`/product/${id}`}
+      className="group block bg-white rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+    >
+      <div className="relative overflow-hidden bg-gray-100 aspect-square">
         <img
           src={image}
           alt={name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {tags && tags.length > 0 && (
-          <div className="absolute top-2 left-2 flex flex-col gap-2">
+          <div className="absolute top-3 left-3 flex flex-wrap gap-2">
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="bg-white border border-gray-200 text-[10px] font-medium px-2 py-1 uppercase tracking-wider rounded-full"
+                className="bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-bold text-gray-800 rounded-sm shadow-md"
               >
                 {tag}
               </span>
@@ -47,40 +50,42 @@ export default function ProductCard({
         )}
       </div>
 
-      {/* Info */}
-      <div className="space-y-2">
-        <p className="text-[10px] text-gray-400 uppercase tracking-widest">
-          {brand}
-        </p>
-        <h3 className="text-sm font-serif text-[#111] group-hover:underline decoration-gray-300 underline-offset-4 line-clamp-2 min-h-[40px]">
-          <Link href={`/product/${id}`}>{name}</Link>
+      <div className="p-4">
+        <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 text-sm">
+          {name}
         </h3>
+        <p className="text-xs text-gray-500 mb-2">{brand}</p>
 
-        <div className="flex items-center space-x-2 text-xs">
-          <div className="flex text-[#D4C49D]">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-3 h-3 ${i < Math.floor(rating) ? 'fill-current' : 'text-gray-200'}`}
-              />
-            ))}
+        {/* Dynamic Rating */}
+        {loading ? (
+          <div className="flex items-center gap-1.5 mb-3 h-4">
+            <div className="animate-pulse bg-gray-200 h-3 w-16 rounded"></div>
           </div>
-          <span className="text-gray-400">({reviewsCount})</span>
-        </div>
+        ) : (
+          <div className="flex items-center gap-1.5 mb-3">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-3 h-3 ${i < Math.floor(averageRating) ? 'fill-current text-[#D4C49D]' : 'text-gray-200'}`}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-gray-400">({totalReviews})</span>
+          </div>
+        )}
 
-        <div className="flex items-center space-x-2 text-sm font-medium">
-          <span>₹{price.toLocaleString('en-IN')}</span>
-          {originalPrice && (
-            <span className="text-gray-300 line-through text-xs">
-              ₹{originalPrice.toLocaleString('en-IN')}
+        <div className="flex items-baseline gap-2">
+          <span className="text-lg font-bold text-gray-900">
+            ₹{price.toLocaleString()}
+          </span>
+          {originalPrice && originalPrice > price && (
+            <span className="text-sm text-gray-400 line-through">
+              ₹{originalPrice.toLocaleString()}
             </span>
           )}
         </div>
       </div>
-
-      <button className="w-full mt-4 py-2 bg-[#41354D] text-white text-xs font-medium uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
-        Add to Cart
-      </button>
-    </div>
+    </Link>
   );
 }

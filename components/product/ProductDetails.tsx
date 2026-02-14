@@ -6,14 +6,11 @@ import {
   Plus,
   Heart,
   Star,
-  Check,
   X,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   ChevronUp,
-  ThumbsUp,
-  ThumbsDown,
   Diamond,
   Cloud,
   Infinity as InfinityIcon,
@@ -26,8 +23,13 @@ import {
 import ProductCard from './ProductCard';
 import ARButton from './ARButton';
 import Breadcrumb from './Breadcrumb';
+import ReviewForm from './ReviewForm';
+import ReviewsList from './ReviewsList';
 import { useRouter } from 'next/navigation';
 import { useShop } from '@/context/ShopContext';
+import { useProductReviews } from '@/hooks/useReviews';
+import { hasUserPurchasedProduct } from '@/lib/reviewUtils';
+import { useAuth } from '@/context/AuthContext';
 
 interface ProductDetailsProps {
   product: any;
@@ -39,10 +41,17 @@ interface ProductDetailsProps {
 export default function ProductDetails({
   product,
   relatedProducts,
-  reviews,
   faqs,
 }: ProductDetailsProps) {
   const { addToCart, setDirectPurchaseItem } = useShop();
+  const { user } = useAuth();
+  const {
+    reviews: productReviews,
+    loading: reviewsLoading,
+    averageRating,
+    totalReviews,
+    distribution,
+  } = useProductReviews(product.id);
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -57,15 +66,46 @@ export default function ProductDetails({
   // Specs Expansion State
   const [isSpecsExpanded, setIsSpecsExpanded] = useState(false);
 
+  // Review Form State
+  const [showReviewForm, setShowReviewForm] = useState(false);
+
+  // Purchase Validation State
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [checkingPurchase, setCheckingPurchase] = useState(true);
+
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
 
   // FAQ State
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   // Lightbox Logic
   const [showLightbox, setShowLightbox] = useState(false);
+
+  // Check if user has purchased this product
+  useEffect(() => {
+    const checkPurchaseStatus = async () => {
+      if (!user) {
+        setHasPurchased(false);
+        setCheckingPurchase(false);
+        return;
+      }
+
+      try {
+        setCheckingPurchase(true);
+        const purchased = await hasUserPurchasedProduct(user.uid, product.id);
+        setHasPurchased(purchased);
+      } catch (error) {
+        // Error checking purchase status
+        setHasPurchased(false);
+      } finally {
+        setCheckingPurchase(false);
+      }
+    };
+
+    checkPurchaseStatus();
+  }, [user, product.id]);
 
   const nextImage = (e?: MouseEvent) => {
     e?.stopPropagation();
@@ -274,18 +314,18 @@ export default function ProductDetails({
                   {product.shortDescription}
                 </p>
               )}
-
-              <div className="flex items-center space-x-4 mb-6">
+              {/* Rating */}
+              <div className="flex items-center space-x-2 mb-2">
                 <div className="flex text-[#D4C49D]">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-gray-200'}`}
+                      className={`w-4 h-4 ${i < Math.floor(averageRating) ? 'fill-current' : 'text-gray-200'}`}
                     />
                   ))}
                 </div>
                 <span className="text-sm text-gray-500">
-                  {product.reviewsCount} reviews
+                  {totalReviews} review{totalReviews !== 1 ? 's' : ''}
                 </span>
               </div>
 
@@ -730,183 +770,30 @@ export default function ProductDetails({
                 <h2 className="text-2xl font-bold text-[#212121]">
                   Ratings & Reviews
                 </h2>
-                <button className="px-8 py-3 bg-white border border-gray-300 shadow-sm text-sm font-medium text-[#212121] rounded-sm hover:shadow-md transition-shadow">
-                  Rate Product
-                </button>
-              </div>
-
-              {/* Summary & Breakdown */}
-              <div className="flex flex-col md:flex-row gap-12 mb-10 border-b border-gray-200 pb-10">
-                <div className="flex-none flex flex-col items-center justify-center min-w-[150px]">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-4xl font-medium text-[#212121]">
-                      {product.rating}
-                    </span>
-                    <Star className="w-6 h-6 fill-[#D4C49D] text-[#D4C49D]" />
-                  </div>
-                  <p className="text-sm text-gray-400 text-center font-medium">
-                    {product.reviewsCount} Verified Ratings
-                  </p>
-                </div>
-
-                {/* Rating Bars - EXACT STYLE */}
-                <div className="flex-1 w-full max-w-md space-y-2.5">
-                  {[
-                    { star: 5, count: 2450, color: '#D4C49D' },
-                    { star: 4, count: 850, color: '#D4C49D' },
-                    { star: 3, count: 420, color: '#D4C49D' },
-                    { star: 2, count: 120, color: '#D4C49D' },
-                    { star: 1, count: 80, color: '#D4C49D' },
-                  ].map((row) => (
-                    <div
-                      key={row.star}
-                      className="flex items-center gap-4 text-xs font-medium"
-                    >
-                      <span className="w-3 text-[#212121]">
-                        {row.star}{' '}
-                        <div className="w-3 h-3 fill-[#D4C49D] text-[#D4C49D]">
-                          ★
-                        </div>
-                      </span>
-                      <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${(row.count / 3000) * 100}%`,
-                            backgroundColor: row.color,
-                          }}
-                        />
-                      </div>
-                      <span className="w-8 text-right text-gray-400">
-                        {row.count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Customers Say Summary */}
-              {(product.reviewSummary ||
-                (product.reviewTags && product.reviewTags.length > 0)) && (
-                <div className="mb-10 p-6 bg-gray-50 rounded-lg border border-gray-100">
-                  <h3 className="font-bold text-[#212121] mb-2 font-serif text-lg">
-                    Customers Say
-                  </h3>
-                  {product.reviewSummary && (
-                    <p className="text-gray-600 text-sm mb-4 leading-relaxed italic">
-                      &quot;{product.reviewSummary}&quot;
-                    </p>
-                  )}
-                  {product.reviewTags && product.reviewTags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {product.reviewTags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="bg-white border border-gray-200 px-3 py-1 rounded-sm text-xs font-medium text-gray-700 shadow-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Customer Photos Strip */}
-              <div className="mb-10">
-                <h3 className="text-lg font-bold text-[#212121] mb-4">
-                  Customer Photos
-                </h3>
-                <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-                  {reviews
-                    .flatMap((r) => r.images || [])
-                    .slice(0, 8)
-                    .map((img: string, idx: number) => (
-                      <div
-                        key={idx}
-                        className="flex-none w-24 h-24 relative cursor-pointer hover:opacity-90 transition-opacity border border-gray-200 rounded-sm"
-                      >
-                        <img
-                          src={img}
-                          alt=""
-                          className="w-full h-full object-cover rounded-sm"
-                        />
-                        {idx === 7 && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-medium text-lg">
-                            +12
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              </div>
-
-              {/* Reviews List */}
-              <div className="space-y-8">
-                {reviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="border-b border-gray-100 pb-8 last:border-0"
+                {/* Only show Rate Product button if user has purchased the product */}
+                {user && hasPurchased && !checkingPurchase && (
+                  <button
+                    onClick={() => setShowReviewForm(true)}
+                    className="px-8 py-3 bg-white border border-gray-300 shadow-sm text-sm font-medium text-[#212121] rounded-sm hover:shadow-md transition-shadow"
                   >
-                    <div className="flex items-start gap-3 mb-3">
-                      <span className="px-2 py-0.5 text-xs font-bold text-white rounded-sm flex items-center gap-1 bg-[#D4C49D]">
-                        {review.rating}{' '}
-                        <Star className="w-2.5 h-2.5 fill-current" />
-                      </span>
-                      <h4 className="font-medium text-[#212121] text-sm">
-                        Mind-blowing purchase
-                      </h4>
-                    </div>
-
-                    <p className="text-sm text-[#212121] leading-relaxed mb-4">
-                      {review.content} 👌😍
-                    </p>
-
-                    {review.images && (
-                      <div className="flex gap-2 mb-4">
-                        {review.images.map((img: string, i: number) => (
-                          <div
-                            key={i}
-                            className="w-16 h-16 border border-gray-200 p-0.5 rounded-sm"
-                          >
-                            <img
-                              src={img}
-                              alt=""
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between text-xs text-gray-400 font-medium">
-                      <div className="flex items-center gap-2">
-                        <span className="text-gray-500">{review.author}</span>
-                        {review.verified && (
-                          <span className="flex items-center gap-1 text-gray-400">
-                            <span className="w-3 h-3 bg-gray-400 rounded-full flex items-center justify-center">
-                              <Check className="w-2 h-2 text-white" />
-                            </span>{' '}
-                            Certified Buyer, Mumbai
-                          </span>
-                        )}
-                        <span>{review.date}</span>
-                      </div>
-
-                      <div className="flex items-center gap-6">
-                        <button className="flex items-center gap-1.5 hover:text-gray-600 transition-colors">
-                          <ThumbsUp className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-400 font-medium">60</span>
-                        </button>
-                        <button className="flex items-center gap-1.5 hover:text-gray-600 transition-colors">
-                          <ThumbsDown className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-400 font-medium">12</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    Rate Product
+                  </button>
+                )}
               </div>
+
+              {reviewsLoading ? (
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <div className="animate-spin w-8 h-8 border-4 border-terracotta border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-gray-500">Loading reviews...</p>
+                </div>
+              ) : (
+                <ReviewsList
+                  reviews={productReviews}
+                  averageRating={averageRating}
+                  totalReviews={totalReviews}
+                  distribution={distribution}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1071,6 +958,18 @@ export default function ProductDetails({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Review Form Modal */}
+      {showReviewForm && (
+        <ReviewForm
+          productId={product.id}
+          productName={product.name}
+          onClose={() => setShowReviewForm(false)}
+          onSuccess={() => {
+            // Reviews will auto-update via the hook
+          }}
+        />
       )}
     </div>
   );

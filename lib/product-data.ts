@@ -6,8 +6,8 @@ export const PRODUCTS = [
     price: 196000,
     originalPrice: 256000,
     discount: 'Save ₹60,000',
-    rating: 5.0,
-    reviewsCount: 12,
+    rating: 0,
+    reviewsCount: 0,
     description:
       'Experience the timeless elegance of the Legacy collection. Meticulously hand-knotted by skilled artisans, this rug features a sophisticated traditional pattern reimagined for modern interiors. Crafted from premium New Zealand wool, it offers a luxurious underfoot feel and exceptional durability.',
     images: [
@@ -30,8 +30,8 @@ export const PRODUCTS = [
     name: 'Abstract Silk & Wool Blend',
     brand: 'VINAYKA RUGS',
     price: 304000,
-    rating: 4.8,
-    reviewsCount: 8,
+    rating: 0,
+    reviewsCount: 0,
     images: [
       'https://images.unsplash.com/photo-1570197788417-0e289a9da872?auto=format&fit=crop&q=80&w=1200',
     ],
@@ -48,8 +48,8 @@ export const PRODUCTS = [
     brand: 'VINAYKA RUGS',
     price: 336000,
     originalPrice: 384000,
-    rating: 4.9,
-    reviewsCount: 15,
+    rating: 0,
+    reviewsCount: 0,
     images: [
       'https://images.unsplash.com/photo-1549488344-cbb6c34cf08b?auto=format&fit=crop&q=80&w=1200',
     ],
@@ -65,8 +65,8 @@ export const PRODUCTS = [
     name: 'Minimalist Jute Texture',
     brand: 'VINAYKA RUGS',
     price: 68000,
-    rating: 4.5,
-    reviewsCount: 32,
+    rating: 0,
+    reviewsCount: 0,
     images: [
       'https://images.unsplash.com/photo-1596558450255-70077979f454?auto=format&fit=crop&q=80&w=1200',
     ],

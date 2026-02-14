@@ -21,6 +21,7 @@
     "@google/model-viewer": "^4.1.0",
     "@swc/helpers": "^0.5.18",
     "clsx": "^2.1.0",
+    "date-fns": "^4.1.0",
     "firebase": "^12.7.0",
     "framer-motion": "^12.34.0",
     "lucide-react": "^0.344.0",
