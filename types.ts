@@ -2,7 +2,6 @@ export interface Product {
   id: string;
   name: string;
   brand: string;
-  sku: string;
   description: string;
   shortDescription: string;
   category: string;

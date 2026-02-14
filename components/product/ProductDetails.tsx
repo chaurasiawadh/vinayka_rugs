@@ -258,6 +258,13 @@ export default function ProductDetails({
                 {product.name}
               </h1>
 
+              {/* Short Description */}
+              {product.shortDescription && (
+                <p className="text-gray-600 text-base mb-4 leading-relaxed">
+                  {product.shortDescription}
+                </p>
+              )}
+
               <div className="flex items-center space-x-4 mb-6">
                 <div className="flex text-[#D4C49D]">
                   {[...Array(5)].map((_, i) => (
