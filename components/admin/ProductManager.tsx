@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Plus,
   Trash2,
@@ -13,6 +14,7 @@ import {
   Layers,
   Image as ImageIcon,
   Smartphone,
+  MessageSquare,
 } from 'lucide-react';
 import { db, storage } from '@/lib/firebase';
 import {
@@ -97,17 +99,16 @@ const INITIAL_PRODUCT: Partial<Product> = {
     quality: '',
   },
   aboutItems: [],
-  rating: 4.5,
+  rating: 0,
   reviews: 0,
-  reviewSummary:
-    'Customers find the rug to be well-made, soft, and comfortable.',
+  reviewSummary: '',
   reviewTags: [],
   reviewDistribution: {
-    fiveStar: 70,
-    fourStar: 20,
-    threeStar: 5,
-    twoStar: 2,
-    oneStar: 3,
+    fiveStar: 0,
+    fourStar: 0,
+    threeStar: 0,
+    twoStar: 0,
+    oneStar: 0,
   },
   inStock: true,
   deliveryText: '7-10 Business Days',
@@ -121,7 +122,8 @@ const INITIAL_PRODUCT: Partial<Product> = {
   },
 };
 
-const ProductManager: React.FC = () => {
+const ProductManager = () => {
+  const router = useRouter();
   const { products } = useProducts();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<Product>>(INITIAL_PRODUCT);
@@ -1443,12 +1445,21 @@ const ProductManager: React.FC = () => {
                   <button
                     onClick={() => handleEdit(p)}
                     className="p-2 hover:bg-gray-200 rounded text-gray-600"
+                    title="Edit Product"
                   >
                     <Edit2 size={16} />
                   </button>
                   <button
+                    onClick={() => router.push(`/admin/reviews/${p.id}`)}
+                    className="p-2 hover:bg-blue-50 rounded text-blue-600"
+                    title="Manage Reviews"
+                  >
+                    <MessageSquare size={16} />
+                  </button>
+                  <button
                     onClick={() => handleDelete(p.id)}
                     className="p-2 hover:bg-error/10 rounded text-error"
+                    title="Delete Product"
                   >
                     <Trash2 size={16} />
                   </button>
