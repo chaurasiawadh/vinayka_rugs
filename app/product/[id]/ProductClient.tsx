@@ -45,6 +45,7 @@ export default function ProductClient({ id }: { id: string }) {
             reviewsCount: data.reviews || 0,
             reviewSummary: data.reviewSummary || '',
             reviewTags: data.reviewTags || [],
+            shortDescription: data.shortDescription || '',
             description: data.description,
             details: data.description,
             material: data.specifications?.material || 'Premium Wool',

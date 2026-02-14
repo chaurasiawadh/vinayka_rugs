@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import ProductCard from './ProductCard';
 import ARButton from './ARButton';
+import Breadcrumb from './Breadcrumb';
 import { useRouter } from 'next/navigation';
 import { useShop } from '@/context/ShopContext';
 
@@ -251,6 +252,13 @@ export default function ProductDetails({
 
             {/* Right Column: Scrolling Product Content */}
             <div className="flex flex-col">
+              {/* Breadcrumb Navigation */}
+              <Breadcrumb
+                category={product.category}
+                collection={product.collection}
+                productName={product.name}
+              />
+
               <h2 className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-2">
                 {product.brand}
               </h2>
@@ -331,10 +339,6 @@ export default function ProductDetails({
                   );
                 })()}
               </div>
-
-              <p className="text-gray-600 leading-relaxed mb-8 text-sm">
-                {product.description}
-              </p>
 
               {/* Size Selector */}
               <div className="mb-6">
