@@ -61,13 +61,6 @@ export interface Product {
     rugForm: string;
     style: string;
     occasion: string;
-
-    // Measurements
-    size: string; // Dimensions string
-    itemWeight: string;
-    dimensionsLxW: string;
-    numberOfPieces: string;
-    itemThickness: string;
     quality?: string;
   };
 
