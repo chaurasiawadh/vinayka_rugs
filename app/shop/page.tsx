@@ -5,14 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Filter, ChevronDown, Check, X } from 'lucide-react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import {
-  CATEGORIES,
-  MATERIALS,
-  COLLECTIONS,
-  ROOMS,
-  SHAPES,
-  SIZES,
-} from '@/constants';
+import { CATEGORIES, MATERIALS, ROOMS, SHAPES, SIZES } from '@/constants';
 import ProductCard from '@/components/ProductCard';
 import Button from '@/components/Button';
 import { useShop } from '@/context/ShopContext';
@@ -23,7 +16,6 @@ const ShopContent: React.FC = () => {
   // Read all potential filters from URL
   const initialCategory =
     searchParams.get('cat') || searchParams.get('category');
-  const initialCollection = searchParams.get('collection');
   const initialMaterial = searchParams.get('material');
   const initialRoom = searchParams.get('room');
   const initialShape = searchParams.get('shape');
@@ -41,9 +33,6 @@ const ShopContent: React.FC = () => {
     };
   }, [products]);
 
-  const [selectedCollections, setSelectedCollections] = useState<string[]>(
-    initialCollection ? [initialCollection] : []
-  );
   const [selectedStyles, setSelectedStyles] = useState<string[]>(
     initialCategory ? [initialCategory] : []
   );
@@ -68,14 +57,12 @@ const ShopContent: React.FC = () => {
 
   useEffect(() => {
     const cat = searchParams.get('cat') || searchParams.get('category');
-    const col = searchParams.get('collection');
     const mat = searchParams.get('material');
     const room = searchParams.get('room');
     const shape = searchParams.get('shape');
     const size = searchParams.get('size');
 
     setSelectedStyles(cat ? [cat] : []);
-    setSelectedCollections(col ? [col] : []);
     setSelectedMaterials(mat ? [mat] : []);
     setSelectedRooms(room ? [room] : []);
     setSelectedShapes(shape ? [shape] : []);
@@ -83,7 +70,6 @@ const ShopContent: React.FC = () => {
   }, [searchParams]);
 
   const clearFilters = () => {
-    setSelectedCollections([]);
     setSelectedStyles([]);
     setSelectedMaterials([]);
     setSelectedRooms([]);
@@ -100,7 +86,6 @@ const ShopContent: React.FC = () => {
         const toArray = (val: any) =>
           Array.isArray(val) ? val : val ? [val] : [];
 
-        const pCollections = toArray(product.collection);
         const pStyles = toArray(product.category);
         const pMaterials = toArray(product.specifications?.material);
         const pRooms = toArray(product.specifications?.roomType);
@@ -109,9 +94,6 @@ const ShopContent: React.FC = () => {
         const pPrice = Number(product.price || 0);
 
         // Filtering: OR logic within a filter type, AND logic across filter types
-        const matchCollection =
-          selectedCollections.length === 0 ||
-          pCollections.some((c) => selectedCollections.includes(c));
         const matchStyle =
           selectedStyles.length === 0 ||
           pStyles.some((s) => selectedStyles.includes(s));
@@ -133,7 +115,6 @@ const ShopContent: React.FC = () => {
         const matchPrice = pPrice >= minPrice && pPrice <= maxPrice;
 
         return (
-          matchCollection &&
           matchStyle &&
           matchMaterial &&
           matchRoom &&
@@ -156,7 +137,6 @@ const ShopContent: React.FC = () => {
       });
   }, [
     products,
-    selectedCollections,
     selectedStyles,
     selectedMaterials,
     selectedRooms,
@@ -180,9 +160,6 @@ const ShopContent: React.FC = () => {
 
   const activeFilters = useMemo(() => {
     const filters: { type: string; value: string; label: string }[] = [];
-    selectedCollections.forEach((f) =>
-      filters.push({ type: 'collection', value: f, label: f })
-    );
     selectedStyles.forEach((f) =>
       filters.push({ type: 'cat', value: f, label: f })
     );
@@ -200,7 +177,6 @@ const ShopContent: React.FC = () => {
     );
     return filters;
   }, [
-    selectedCollections,
     selectedStyles,
     selectedMaterials,
     selectedRooms,
@@ -210,11 +186,6 @@ const ShopContent: React.FC = () => {
 
   const removeFilter = (filter: { type: string; value: string }) => {
     switch (filter.type) {
-      case 'collection':
-        setSelectedCollections((prev) =>
-          prev.filter((i) => i !== filter.value)
-        );
-        break;
       case 'cat':
         setSelectedStyles((prev) => prev.filter((i) => i !== filter.value));
         break;
@@ -448,12 +419,6 @@ const ShopContent: React.FC = () => {
                 </div>
               </div>
 
-              {renderFilterSection(
-                'Collections',
-                COLLECTIONS,
-                selectedCollections,
-                setSelectedCollections
-              )}
               {renderFilterSection(
                 'Style',
                 CATEGORIES,

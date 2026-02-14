@@ -29,13 +29,17 @@ import Button from '@/components/Button';
 import ImageInput from '@/components/ImageInput';
 import {
   CATEGORIES,
-  COLLECTIONS,
   SIZES,
   REVIEW_TAGS,
   MATERIALS,
   ROOMS,
   SHAPES,
 } from '@/constants';
+import {
+  getCustomValues,
+  addCustomValue,
+  CustomFieldType,
+} from '@/lib/customValues';
 import { Product } from '@/types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 
@@ -43,7 +47,6 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 const INITIAL_PRODUCT: Partial<Product> = {
   name: '',
   brand: 'Vinayka Rugs',
-  sku: '',
   category: 'Modern',
   collection: '',
   description: '',
@@ -138,6 +141,51 @@ const ProductManager: React.FC = () => {
     isOpen: false,
     id: null,
   });
+  const [customMaterials, setCustomMaterials] = useState<string[]>([]);
+  const [customRooms, setCustomRooms] = useState<string[]>([]);
+  const [customShapes, setCustomShapes] = useState<string[]>([]);
+  const [isAddingCustom, setIsAddingCustom] = useState<{
+    field: CustomFieldType | null;
+    value: string;
+  }>({ field: null, value: '' });
+
+  // Load custom values on mount
+  useEffect(() => {
+    const loadCustomValues = async () => {
+      const materials = await getCustomValues('materials');
+      const rooms = await getCustomValues('rooms');
+      const shapes = await getCustomValues('shapes');
+      setCustomMaterials(materials);
+      setCustomRooms(rooms);
+      setCustomShapes(shapes);
+    };
+    loadCustomValues();
+  }, []);
+
+  // Handler for adding custom values
+  const handleAddCustomValue = async () => {
+    if (!isAddingCustom.field || !isAddingCustom.value.trim()) return;
+
+    const success = await addCustomValue(
+      isAddingCustom.field,
+      isAddingCustom.value.trim()
+    );
+
+    if (success) {
+      // Update local state
+      if (isAddingCustom.field === 'materials') {
+        setCustomMaterials((prev) => [...prev, isAddingCustom.value.trim()]);
+      } else if (isAddingCustom.field === 'rooms') {
+        setCustomRooms((prev) => [...prev, isAddingCustom.value.trim()]);
+      } else if (isAddingCustom.field === 'shapes') {
+        setCustomShapes((prev) => [...prev, isAddingCustom.value.trim()]);
+      }
+
+      setIsAddingCustom({ field: null, value: '' });
+    } else {
+      alert('Failed to add custom value. Please try again.');
+    }
+  };
 
   // Helper to update nested state
   const updateField = (field: keyof Product, value: any) => {
@@ -379,16 +427,6 @@ const ProductManager: React.FC = () => {
                     className="w-full border p-2 rounded"
                     value={formData.brand}
                     onChange={(e) => updateField('brand', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold uppercase text-gray-500">
-                    SKU
-                  </label>
-                  <input
-                    className="w-full border p-2 rounded"
-                    value={formData.sku}
-                    onChange={(e) => updateField('sku', e.target.value)}
                   />
                 </div>
                 <div className="col-span-2">
@@ -772,25 +810,19 @@ const ProductManager: React.FC = () => {
                   <label className="text-xs font-bold uppercase text-gray-500">
                     Collection
                   </label>
-                  <select
+                  <input
                     className="w-full border p-2 rounded"
-                    value={formData.collection}
+                    value={formData.collection || ''}
                     onChange={(e) => updateField('collection', e.target.value)}
-                  >
-                    <option value="">None</option>
-                    {COLLECTIONS.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="e.g., Viraasat, Aether, Silk Route"
+                  />
                 </div>
                 <div>
                   <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">
                     Material
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {MATERIALS.map((m) => {
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {[...MATERIALS, ...customMaterials].map((m) => {
                       const current = (formData.specifications as any)
                         ?.material;
                       const isSelected = Array.isArray(current)
@@ -841,13 +873,62 @@ const ProductManager: React.FC = () => {
                       );
                     })}
                   </div>
+                  {isAddingCustom.field === 'materials' ? (
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={isAddingCustom.value}
+                        onChange={(e) =>
+                          setIsAddingCustom({
+                            ...isAddingCustom,
+                            value: e.target.value,
+                          })
+                        }
+                        placeholder="Enter new material"
+                        className="flex-1 border border-gray-300 p-2 rounded text-sm"
+                        autoFocus
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCustomValue();
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomValue}
+                        className="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
+                      >
+                        Add
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setIsAddingCustom({ field: null, value: '' })
+                        }
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsAddingCustom({ field: 'materials', value: '' })
+                      }
+                      className="px-3 py-1 rounded-full text-xs border border-dashed border-gray-400 text-gray-600 hover:border-terracotta hover:text-terracotta transition-colors mt-2"
+                    >
+                      + Add New Material
+                    </button>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">
                     Room
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {ROOMS.map((r) => {
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {[...ROOMS, ...customRooms].map((r) => {
                       const current = (formData.specifications as any)
                         ?.roomType;
                       const isSelected = Array.isArray(current)
@@ -898,13 +979,62 @@ const ProductManager: React.FC = () => {
                       );
                     })}
                   </div>
+                  {isAddingCustom.field === 'rooms' ? (
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={isAddingCustom.value}
+                        onChange={(e) =>
+                          setIsAddingCustom({
+                            ...isAddingCustom,
+                            value: e.target.value,
+                          })
+                        }
+                        placeholder="Enter new room type"
+                        className="flex-1 border border-gray-300 p-2 rounded text-sm"
+                        autoFocus
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCustomValue();
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomValue}
+                        className="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
+                      >
+                        Add
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setIsAddingCustom({ field: null, value: '' })
+                        }
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsAddingCustom({ field: 'rooms', value: '' })
+                      }
+                      className="px-3 py-1 rounded-full text-xs border border-dashed border-gray-400 text-gray-600 hover:border-terracotta hover:text-terracotta transition-colors mt-2"
+                    >
+                      + Add New Room
+                    </button>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs font-bold uppercase text-gray-500 mb-2 block">
                     Shape
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {SHAPES.map((s) => {
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {[...SHAPES, ...customShapes].map((s) => {
                       const current = (formData.specifications as any)?.shape;
                       const isSelected = Array.isArray(current)
                         ? current.includes(s)
@@ -954,6 +1084,55 @@ const ProductManager: React.FC = () => {
                       );
                     })}
                   </div>
+                  {isAddingCustom.field === 'shapes' ? (
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={isAddingCustom.value}
+                        onChange={(e) =>
+                          setIsAddingCustom({
+                            ...isAddingCustom,
+                            value: e.target.value,
+                          })
+                        }
+                        placeholder="Enter new shape"
+                        className="flex-1 border border-gray-300 p-2 rounded text-sm"
+                        autoFocus
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCustomValue();
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomValue}
+                        className="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
+                      >
+                        Add
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setIsAddingCustom({ field: null, value: '' })
+                        }
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsAddingCustom({ field: 'shapes', value: '' })
+                      }
+                      className="px-3 py-1 rounded-full text-xs border border-dashed border-gray-400 text-gray-600 hover:border-terracotta hover:text-terracotta transition-colors mt-2"
+                    >
+                      + Add New Shape
+                    </button>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-4 pt-2">
                   <label className="flex items-center gap-2 text-sm">
