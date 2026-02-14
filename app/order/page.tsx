@@ -1,31 +1,30 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, MessageSquare, MapPin, Package } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import OrderTracker from '@/components/OrderTracker';
 import ImageSmart from '@/components/ImageSmart';
 import Button from '@/components/Button';
 import Link from 'next/link';
+import { Order } from '@/types';
 
-interface OrderDetailsProps {
-  params: { id: string };
-}
-
-const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
+const OrderDetailsContent = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('id');
   const { orders, loading } = useShop();
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    if (!loading && orders.length > 0) {
-      const found = orders.find((o) => o.id === params.id);
+    if (!loading && orders.length > 0 && orderId) {
+      const found = orders.find((o) => o.id === orderId);
       if (found) {
         setOrder(found);
       }
     }
-  }, [loading, orders, params.id]);
+  }, [loading, orders, orderId]);
 
   if (loading)
     return (
@@ -43,8 +42,7 @@ const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
       </div>
     );
 
-  // const subtotal = order?.items.reduce((acc: number, item: any) => acc + (Number(item.price) * item.quantity), 0);
-  // const formattedDate = new Date(order.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  if (!order) return null;
 
   return (
     <div className="bg-[#f1f3f6] min-h-screen pb-12 pt-4">
@@ -57,14 +55,6 @@ const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
           >
             <ArrowLeft size={16} className="mr-1" /> Back to My Orders
           </button>
-          {/* <div className="flex gap-3">
-                <button className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-blue-600">
-                    <Printer size={16} /> Download Invoice
-                </button>
-                <button className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-blue-600">
-                    <HelpCircle size={16} /> Need help?
-                </button>
-            </div> */}
         </div>
 
         {/* Status Tracker Card */}
@@ -88,14 +78,7 @@ const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
                 Phone: {order.shippingAddress.phone}
               </p>
             </div>
-            <div className="md:px-8 mt-6 md:mt-0">
-              {/* <h3 className="text-xs font-bold uppercase text-gray-400 mb-1">More Actions</h3> */}
-              {/* <div className="mt-2 space-y-2">
-                        <button className="flex items-center gap-2 text-sm font-bold text-blue-600">
-                            <Printer size={16} /> Invoice Download
-                        </button>
-                    </div> */}
-            </div>
+            <div className="md:px-8 mt-6 md:mt-0"></div>
             <div className="md:px-8 mt-6 md:mt-0">
               <div className="flex flex-col items-end">
                 <h3 className="text-xs font-bold uppercase text-gray-400 mb-1">
@@ -138,7 +121,7 @@ const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
                       <h3 className="text-[15px] font-medium text-gray-900 mb-1 hover:text-blue-600 transition-colors cursor-pointer">
                         {item.name}
                       </h3>
-                      <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+                      <div className="flex wrap gap-4 text-xs text-gray-500">
                         <span>
                           Size: <b>{item.selectedSize}</b>
                         </span>
@@ -178,10 +161,12 @@ const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
                   Estimated Delivery
                 </p>
                 <p className="text-sm font-bold text-gray-900">
-                  {new Date(order.estimatedDelivery).toLocaleDateString(
-                    'en-US',
-                    { weekday: 'long', month: 'short', day: 'numeric' }
-                  )}
+                  {order.estimatedDelivery
+                    ? new Date(order.estimatedDelivery).toLocaleDateString(
+                        'en-US',
+                        { weekday: 'long', month: 'short', day: 'numeric' }
+                      )
+                    : 'TBD'}
                 </p>
               </div>
             </div>
@@ -195,7 +180,6 @@ const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
                   Buy Again
                 </Button>
               </Link>
-              {/* <Button size="sm" className="bg-black text-white hover:bg-gray-800">Return Item</Button> */}
             </div>
           </div>
         </div>
@@ -223,5 +207,17 @@ const OrderDetailsPage: React.FC<OrderDetailsProps> = ({ params }) => {
     </div>
   );
 };
+
+const OrderDetailsPage = () => (
+  <Suspense
+    fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    }
+  >
+    <OrderDetailsContent />
+  </Suspense>
+);
 
 export default OrderDetailsPage;

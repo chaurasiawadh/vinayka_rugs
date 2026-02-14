@@ -295,7 +295,7 @@ const OrderCard = ({
 
   return (
     <div
-      onClick={() => router.push(`/order/${order.id}`)}
+      onClick={() => router.push(`/order?id=${order.id}`)}
       className="bg-white p-5 rounded-sm shadow-sm border border-gray-100 hover:shadow-md transition-all group cursor-pointer"
     >
       <div className="flex flex-col sm:flex-row gap-6">

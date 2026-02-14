@@ -35,7 +35,7 @@ const OrderSuccessContent = () => {
     const timer1 = setTimeout(() => setStage('success'), 1500);
     const timer2 = setTimeout(() => setStage('summary'), 3500);
     const timer3 = setTimeout(() => {
-      router.push(`/order/${orderId}`);
+      router.push(`/order?id=${orderId}`);
     }, 7500); // 1.5 (loading) + 2 (success tick) + 4 (summary) = 7.5s
 
     return () => {
@@ -194,7 +194,7 @@ const OrderSuccessContent = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
-                <Link href={`/order/${orderId}`} className="flex-1">
+                <Link href={`/order?id=${orderId}`} className="flex-1">
                   <Button fullWidth>View Order Details</Button>
                 </Link>
                 <Link href="/shop" className="flex-1">
