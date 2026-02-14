@@ -151,6 +151,35 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
     return () => unsubscribe();
   }, [user]);
 
+  // Firestore Real-time Orders Listener
+  useEffect(() => {
+    if (!user) {
+      setOrders([]);
+      return;
+    }
+
+    const ordersRef = collection(db, 'users', user.uid, 'orders');
+    const unsubscribe = onSnapshot(
+      ordersRef,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Order[];
+        // Sort by date descending
+        items.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        setOrders(items);
+      },
+      (_error) => {
+        // console.error('Error fetching orders:', error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user]);
+
   // Load Cart from LocalStorage on Mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -423,10 +452,32 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
 
   const clearCart = () => setCart([]);
 
-  const placeOrder = (order: Order, isBuyNowFlow: boolean = false) => {
+  const placeOrder = async (order: Order, isBuyNowFlow: boolean = false) => {
+    if (user) {
+      try {
+        const orderRef = doc(db, 'users', user.uid, 'orders', order.id);
+        await setDoc(orderRef, {
+          ...order,
+          createdAt: serverTimestamp(),
+        });
+      } catch (error) {
+        // console.error('Error saving order:', error);
+        notify('Failed to save order. Please try again.', 'error');
+        return;
+      }
+    }
+
     setOrders((prev) => [order, ...prev]);
     if (!isBuyNowFlow) {
       clearCart();
+      // Also clear from Firestore if not guest
+      if (user) {
+        const cartRef = collection(db, 'users', user.uid, 'cart');
+        const snapshot = await getDocs(cartRef);
+        const batch = writeBatch(db);
+        snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+      }
     }
     setDirectPurchaseItem(null);
   };
