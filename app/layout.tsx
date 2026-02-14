@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
-import WhatsAppChat from '@/components/WhatsAppChat';
+import SupportChatWidget from '@/components/SupportChatWidget';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-primary' });
 const spaceGrotesk = Space_Grotesk({
@@ -27,7 +27,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
-          <WhatsAppChat />
+          <SupportChatWidget />
         </Providers>
       </body>
     </html>

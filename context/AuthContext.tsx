@@ -124,7 +124,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     <AuthContext.Provider
       value={{ user, userProfile, loading, logout, signInWithGoogle }}
     >
-      {!loading && children}
+      {loading ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-[#faf8f6] z-[9999]">
+          <div className="w-8 h-8 border-4 border-[#2874f0] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };
