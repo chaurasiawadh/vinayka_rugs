@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { X, Mail, Lock, Loader } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
 import Button from './Button';
 import { useShop } from '../context/ShopContext';
 import { useRouter } from 'next/navigation';
 
 const LoginModal: React.FC = () => {
   const { isLoginModalOpen, closeLoginModal, notify } = useShop();
+  const { signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,6 +26,21 @@ const LoginModal: React.FC = () => {
       closeLoginModal();
     } catch (err: any) {
       notify('Invalid credentials. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle();
+      notify('Welcome back!', 'success');
+      closeLoginModal();
+    } catch (err: any) {
+      if (err.code !== 'auth/cancelled-popup-request') {
+        notify('Google sign-in failed.', 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -89,6 +106,29 @@ const LoginModal: React.FC = () => {
               'Login'
             )}
           </Button>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-100"></div>
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase font-bold text-gray-400">
+              <span className="bg-white px-2">Or</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-bold hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google"
+              className="w-4 h-4"
+            />
+            Google
+          </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-text-muted">

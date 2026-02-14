@@ -1,7 +1,18 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { auth, db } from '../lib/firebase';
+import {
+  onAuthStateChanged,
+  User,
+  signOut,
+  signInWithPopup,
+} from 'firebase/auth';
+import {
+  doc,
+  onSnapshot,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { auth, db, googleProvider } from '../lib/firebase';
 import { UserProfile } from '../types';
 
 interface AuthContextType {
@@ -9,6 +20,7 @@ interface AuthContextType {
   userProfile: UserProfile | null;
   loading: boolean;
   logout: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -73,8 +85,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUserProfile(null);
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      // Handle profile creation if it doesn't exist
+      const docRef = doc(db, 'users', user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        const [firstName, ...lastNameParts] = (user.displayName || '').split(
+          ' '
+        );
+        const profile: UserProfile = {
+          uid: user.uid,
+          firstName: firstName || 'User',
+          lastName: lastNameParts.join(' ') || '',
+          email: user.email || '',
+          phone: '',
+          profession: '',
+          city: '',
+          companyName: '',
+          address: '',
+          createdAt: serverTimestamp(),
+          role: 'customer',
+        };
+        await setDoc(docRef, profile);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error signing in with Google:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, userProfile, loading, logout }}>
+    <AuthContext.Provider
+      value={{ user, userProfile, loading, logout, signInWithGoogle }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/Button';
 import ImageSmart from '@/components/ImageSmart';
@@ -110,6 +111,7 @@ const Login: React.FC = () => {
     message: string;
   } | null>(null);
   const [notification, setNotification] = notificationState;
+  const { signInWithGoogle } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/account';
@@ -254,6 +256,20 @@ const Login: React.FC = () => {
         'error',
         'Failed to send reset email. Check if email is correct.'
       );
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle();
+      router.push(redirectUrl);
+    } catch (err: any) {
+      if (err.code !== 'auth/cancelled-popup-request') {
+        showNotification('error', 'Google sign-in failed.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -405,6 +421,31 @@ const Login: React.FC = () => {
                 <Button fullWidth size="lg" disabled={loading}>
                   {loading ? 'Authenticating...' : 'Sign In'}
                 </Button>
+
+                <div className="relative my-8">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-4 text-gray-500 font-medium">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <img
+                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                    alt="Google"
+                    className="w-5 h-5"
+                  />
+                  Sign in with Google
+                </button>
               </form>
             </div>
           ) : (
@@ -563,6 +604,31 @@ const Login: React.FC = () => {
                 <Button fullWidth size="lg" disabled={loading}>
                   {loading ? 'Creating Account...' : 'Register'}
                 </Button>
+
+                <div className="relative my-8">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-4 text-gray-500 font-medium">
+                      Or join with
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <img
+                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                    alt="Google"
+                    className="w-5 h-5"
+                  />
+                  Sign up with Google
+                </button>
               </form>
             </div>
           )}
