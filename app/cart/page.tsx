@@ -157,21 +157,23 @@ const CartContent: React.FC = () => {
       }
 
       // Simulate Stripe API call
-      setTimeout(() => {
-        setLoading(false);
-        const order = {
-          id: 'ORD-' + Math.floor(Math.random() * 10000),
+      setTimeout(async () => {
+        const orderData = {
+          id: 'ORD-' + Math.floor(Math.random() * 1000000),
           items: displayItems,
           total: finalTotal,
-
-          status: 'confirmed' as const,
+          status: 'placed' as const,
           date: new Date().toISOString(),
           shippingAddress: address,
         };
-        placeOrder(order, isBuyNow);
-        alert('Order Placed Successfully! Mock Payment Processed.');
+        const placedOrder = await placeOrder(orderData, isBuyNow);
 
-        router.push('/');
+        if (placedOrder) {
+          setLoading(false);
+          router.push(`/order-success?orderId=${placedOrder.id}`);
+        } else {
+          setLoading(false);
+        }
       }, 2000);
     } catch (error) {
       alert('Error processing order.');

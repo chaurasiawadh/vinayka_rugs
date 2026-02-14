@@ -133,13 +133,22 @@ export interface FilterState {
   sort: 'newest' | 'price-low-high' | 'price-high-low' | 'popular';
 }
 
+export interface OrderTrackingStep {
+  status: 'placed' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered';
+  date: string;
+  isCompleted: boolean;
+  message?: string;
+}
+
 export interface Order {
   id: string;
   items: CartItem[];
   total: number;
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered';
+  status: 'placed' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered';
   date: string;
   shippingAddress: Address;
+  estimatedDelivery?: string;
+  trackingHistory?: OrderTrackingStep[];
 }
 
 export interface Address {

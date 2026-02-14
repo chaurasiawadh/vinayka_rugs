@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Loader,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import ImageSmart from '@/components/ImageSmart';
 import { Order, CartItem } from '@/types';
 
@@ -34,6 +35,7 @@ const ORDER_TIME_FILTERS = [
 ];
 
 const OrdersPage = () => {
+  const router = useRouter();
   const { orders, loading: shopLoading } = useShop();
   const { user, loading: authLoading } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,12 +60,13 @@ const OrdersPage = () => {
         // Current status is 'pending' | 'confirmed' | 'shipped' | 'delivered'
         const mappedStatus = order.status;
         const normalizedStatusMap: { [key: string]: string } = {
-          delivered: 'delivered',
+          placed: 'on_the_way',
+          packed: 'on_the_way',
           shipped: 'on_the_way',
-          confirmed: 'on_the_way',
-          pending: 'on_the_way',
-          cancelled: 'cancelled', // assuming it exists or will be added
-          returned: 'returned', // assuming it exists or will be added
+          out_for_delivery: 'on_the_way',
+          delivered: 'delivered',
+          cancelled: 'cancelled',
+          returned: 'returned',
         };
         const filterId = normalizedStatusMap[mappedStatus] || 'on_the_way';
         if (!statusFilters.includes(filterId)) return false;
@@ -258,6 +261,7 @@ const OrdersPage = () => {
                     key={`${order.id}-${item.id}-${index}`}
                     order={order}
                     item={item}
+                    router={router}
                   />
                 ))
               )
@@ -271,7 +275,15 @@ const OrdersPage = () => {
   );
 };
 
-const OrderCard = ({ order, item }: { order: Order; item: CartItem }) => {
+const OrderCard = ({
+  order,
+  item,
+  router,
+}: {
+  order: Order;
+  item: CartItem;
+  router: any;
+}) => {
   const isDelivered = order.status === 'delivered';
   const statusColor = isDelivered ? SUCCESS_GREEN : PRIMARY_BLUE;
 
@@ -282,7 +294,10 @@ const OrderCard = ({ order, item }: { order: Order; item: CartItem }) => {
   });
 
   return (
-    <div className="bg-white p-5 rounded-sm shadow-sm border border-gray-100 hover:shadow-md transition-all group cursor-pointer">
+    <div
+      onClick={() => router.push(`/order/${order.id}`)}
+      className="bg-white p-5 rounded-sm shadow-sm border border-gray-100 hover:shadow-md transition-all group cursor-pointer"
+    >
       <div className="flex flex-col sm:flex-row gap-6">
         {/* Left: Thumbnail & Details */}
         <div className="sm:flex-[0.5] flex gap-4">
@@ -324,8 +339,12 @@ const OrderCard = ({ order, item }: { order: Order; item: CartItem }) => {
               <p className="text-sm font-bold text-gray-900">
                 {isDelivered
                   ? `Delivered on ${formattedDate}`
-                  : order.status.charAt(0).toUpperCase() +
-                    order.status.slice(1)}
+                  : order.status
+                      .split('_')
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(' ')}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {isDelivered
@@ -336,14 +355,13 @@ const OrderCard = ({ order, item }: { order: Order; item: CartItem }) => {
           </div>
 
           <div className="pt-2">
-            <Link
-              href={`/product/${item.id}`}
+            <div
               className="flex items-center gap-2 text-xs font-bold transition-colors"
               style={{ color: PRIMARY_BLUE }}
             >
               <Star size={14} fill={PRIMARY_BLUE} />
               <span>Rate & Review Product</span>
-            </Link>
+            </div>
           </div>
         </div>
       </div>

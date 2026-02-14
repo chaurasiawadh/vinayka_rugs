@@ -75,7 +75,7 @@ interface ShopContextType {
   ) => void;
 
   clearCart: () => void;
-  placeOrder: (order: Order, isBuyNowFlow?: boolean) => void;
+  placeOrder: (order: Order, isBuyNowFlow?: boolean) => Promise<Order | null>;
   submitBespokeRequest: (request: BespokeRequest) => void;
 
   cartTotal: number;
@@ -453,21 +453,42 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
   const clearCart = () => setCart([]);
 
   const placeOrder = async (order: Order, isBuyNowFlow: boolean = false) => {
+    // Add default tracking history and estimated delivery
+    const enrichedOrder: Order = {
+      ...order,
+      status: 'placed',
+      trackingHistory: [
+        {
+          status: 'placed',
+          date: new Date().toISOString(),
+          isCompleted: true,
+          message: 'Your order has been placed successfully.',
+        },
+        { status: 'packed', date: '', isCompleted: false },
+        { status: 'shipped', date: '', isCompleted: false },
+        { status: 'out_for_delivery', date: '', isCompleted: false },
+        { status: 'delivered', date: '', isCompleted: false },
+      ],
+      estimatedDelivery: new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      ).toISOString(), // Default 7 days delivery
+    };
+
     if (user) {
       try {
-        const orderRef = doc(db, 'users', user.uid, 'orders', order.id);
+        const orderRef = doc(db, 'users', user.uid, 'orders', enrichedOrder.id);
         await setDoc(orderRef, {
-          ...order,
+          ...enrichedOrder,
           createdAt: serverTimestamp(),
         });
       } catch (error) {
         // console.error('Error saving order:', error);
         notify('Failed to save order. Please try again.', 'error');
-        return;
+        return null;
       }
     }
 
-    setOrders((prev) => [order, ...prev]);
+    setOrders((prev) => [enrichedOrder, ...prev]);
     if (!isBuyNowFlow) {
       clearCart();
       // Also clear from Firestore if not guest
@@ -480,6 +501,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
       }
     }
     setDirectPurchaseItem(null);
+    return enrichedOrder;
   };
 
   const submitBespokeRequest = (request: BespokeRequest) => {
