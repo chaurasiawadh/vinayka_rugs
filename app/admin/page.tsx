@@ -3,9 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Image as ImageIcon, LogOut, Loader } from 'lucide-react';
+import {
+  ShoppingBag,
+  Image as ImageIcon,
+  LogOut,
+  Loader,
+  ArrowLeft,
+} from 'lucide-react';
 import ProductManager from '@/components/admin/ProductManager';
 import GalleryManager from '@/components/admin/GalleryManager';
+import Link from 'next/link';
 
 const Admin: React.FC = () => {
   const { user, userProfile, loading, logout } = useAuth();
@@ -38,7 +45,17 @@ const Admin: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col h-auto md:h-screen sticky top-0 z-20">
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-gray-100 space-y-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-terracotta transition-colors group mb-2"
+          >
+            <ArrowLeft
+              size={16}
+              className="transition-transform group-hover:-translate-x-1"
+            />
+            <span>Back to Website</span>
+          </Link>
           <h1 className="font-serif text-2xl font-bold">
             Admin<span className="text-terracotta">Panel</span>
           </h1>

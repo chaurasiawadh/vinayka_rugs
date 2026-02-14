@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Heart, ShoppingBag, Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Heart, ShoppingBag, Star, Loader2 } from 'lucide-react';
 import { Product } from '../types';
 import { useShop } from '../context/ShopContext';
 import Button from './Button';
@@ -12,7 +13,20 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
+  const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
   const isWishlisted = isInWishlist(product.id);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // If the click was on the Quick Add or Wishlist button, don't navigate
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+
+    e.preventDefault();
+    setIsNavigating(true);
+    router.push(`/product/${product.id}`);
+  };
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -75,9 +89,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-      <Link
-        href={`/product/${product.id}`}
-        className="block relative aspect-[4/5] overflow-hidden bg-gray-100"
+      <div
+        onClick={handleCardClick}
+        className="block relative aspect-[4/5] overflow-hidden bg-gray-100 cursor-pointer"
       >
         <img
           src={product.images?.[0] || PLACEHOLDER_IMAGE}
@@ -90,6 +104,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             alt={product.name}
             className="absolute inset-0 object-cover w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
+        )}
+
+        {/* Loader Overlay */}
+        {isNavigating && (
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-30 flex items-center justify-center transition-all animate-in fade-in duration-300">
+            <div className="flex flex-col items-center gap-3">
+              <div className="relative">
+                <Loader2 className="animate-spin text-terracotta" size={40} />
+                <div className="absolute inset-0 animate-ping rounded-full border-2 border-terracotta/20"></div>
+              </div>
+              <span className="text-sm font-medium text-terracotta animate-pulse">
+                Loading Details...
+              </span>
+            </div>
+          </div>
         )}
 
         <div className="absolute top-3 left-3 flex flex-col gap-2">
@@ -145,7 +174,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </Button>
           )}
         </div>
-      </Link>
+      </div>
 
       <div className="p-4">
         <Link href={`/product/${product.id}`}>
