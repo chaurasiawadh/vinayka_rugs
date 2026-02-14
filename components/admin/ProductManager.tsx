@@ -94,13 +94,6 @@ const INITIAL_PRODUCT: Partial<Product> = {
     rugForm: 'Area Rug',
     style: 'Casual',
     occasion: 'Housewarming',
-
-    // Measurements
-    size: '',
-    itemWeight: '12 Kilograms',
-    dimensionsLxW: '',
-    numberOfPieces: '1',
-    itemThickness: '5 cm',
     quality: '',
   },
   aboutItems: [],
@@ -577,24 +570,6 @@ const ProductManager: React.FC = () => {
                     {renderSpecInput('Rug Form Type', 'rugForm')}
                     {renderSpecInput('Style', 'style')}
                     {renderSpecInput('Occasion', 'occasion')}
-                  </div>
-                </div>
-
-                {/* 5. Measurements */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                  <h4 className="font-bold text-sm text-terracotta uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
-                    Measurements
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    {renderSpecInput('Size (Text)', 'size', 'e.g. 5x7 feet')}
-                    {renderSpecInput('Item Weight', 'itemWeight')}
-                    {renderSpecInput(
-                      'Dimensions (LxW)',
-                      'dimensionsLxW',
-                      'e.g. 2.13L x 1.52W Meters'
-                    )}
-                    {renderSpecInput('Number of Pieces', 'numberOfPieces')}
-                    {renderSpecInput('Item Thickness/Height', 'itemThickness')}
                   </div>
                 </div>
               </div>
