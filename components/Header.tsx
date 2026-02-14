@@ -17,6 +17,7 @@ import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import SearchBar from './Search/SearchBar';
 import MegaMenu from './MegaMenu';
+import AccountDropdown from './AccountDropdown';
 
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -135,14 +136,11 @@ const Header: React.FC = () => {
                   <Search size={22} strokeWidth={1.5} />
                 </button>
 
-                <Link
-                  href={user ? '/account' : '/login'}
-                  className="p-2 text-gray-500 hover:text-black transition-colors hidden sm:block"
-                >
-                  <User size={22} strokeWidth={1.5} />
-                </Link>
+                <div className="hidden sm:block">
+                  <AccountDropdown />
+                </div>
 
-                <Link
+                {/* <Link
                   href="/watchlist"
                   className="p-2 text-gray-500 hover:text-black transition-colors relative hidden sm:block"
                 >
@@ -150,7 +148,7 @@ const Header: React.FC = () => {
                   {wishlist.length > 0 && (
                     <span className="absolute top-1 right-1 w-2 h-2 bg-terracotta rounded-full ring-2 ring-white"></span>
                   )}
-                </Link>
+                </Link> */}
 
                 <button
                   className="p-2 text-gray-500 hover:text-black transition-colors relative group"
