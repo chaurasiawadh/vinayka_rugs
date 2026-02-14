@@ -12,7 +12,7 @@ const SupportChatWidget: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
 
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+  const whatsappNumber = '919936169852';
 
   useEffect(() => {
     setIsMounted(true);
