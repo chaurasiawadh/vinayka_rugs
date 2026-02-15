@@ -120,10 +120,16 @@ const Footer: React.FC = () => {
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
           <p>&copy; 2026 Vinayka Rugs. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="/privacy-policy" className="hover:text-gray-300 transition-colors">
+            <Link
+              href="/privacy-policy"
+              className="hover:text-gray-300 transition-colors"
+            >
               Privacy Policy
             </Link>
-            <Link href="/terms-and-conditions" className="hover:text-gray-300 transition-colors">
+            <Link
+              href="/terms-and-conditions"
+              className="hover:text-gray-300 transition-colors"
+            >
               Terms & Conditions
             </Link>
           </div>
