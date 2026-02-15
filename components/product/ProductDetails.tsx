@@ -56,7 +56,6 @@ export default function ProductDetails({
 
   // Accordion states
   const [openSection, setOpenSection] = useState<string | null>('detail');
-
   // Specs Expansion State
   const [isSpecsExpanded, setIsSpecsExpanded] = useState(false);
 

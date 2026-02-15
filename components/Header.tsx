@@ -102,12 +102,13 @@ const Header: React.FC = () => {
               <div className="flex lg:w-1/4 justify-center lg:justify-start">
                 <Link
                   href="/"
-                  className="flex-shrink-0 flex items-center group"
+                  className="flex-shrink-0 flex items-center group transition-all duration-300 hover:opacity-80 active:scale-95"
                 >
-                  <span
-                    className={`font-serif text-2xl font-medium tracking-tight text-black transition-colors`}
-                  >
-                    Vinayka<span className="font-light">Rugs</span>
+                  <span className="font-serif text-2xl font-medium tracking-tight text-black flex items-center">
+                    Vinayka
+                    <span className="font-light text-terracotta ml-0.5">
+                      Rugs
+                    </span>
                   </span>
                 </Link>
               </div>
@@ -136,13 +137,15 @@ const Header: React.FC = () => {
 
               {/* Icons - Right aligned */}
               <div className="flex items-center justify-end lg:w-1/4 gap-5">
-                <button
-                  className="p-2 text-gray-500 hover:text-black transition-colors hidden sm:block"
-                  aria-label="Search"
-                  onClick={() => setIsSearchOpen(!isSearchOpen)}
-                >
-                  <Search size={22} strokeWidth={1.5} />
-                </button>
+                {pathname === '/shop' && (
+                  <button
+                    className="p-2 text-gray-500 hover:text-black transition-colors hidden sm:block"
+                    aria-label="Search"
+                    onClick={() => setIsSearchOpen(!isSearchOpen)}
+                  >
+                    <Search size={22} strokeWidth={1.5} />
+                  </button>
+                )}
 
                 <div className="hidden sm:block">
                   <AccountDropdown />
