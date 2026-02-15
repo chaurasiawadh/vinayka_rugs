@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="/shipping"
+                  href="/orders"
                   className="hover:text-terracotta transition-colors"
                 >
                   Shipping & Returns
