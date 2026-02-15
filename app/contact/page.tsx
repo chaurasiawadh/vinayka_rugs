@@ -12,7 +12,14 @@ export const metadata: Metadata = {
       'Contact Our Concierge | Luxury Rug Showroom & Inquiries | Vinayka Rugs',
     description:
       'Reach out to the Vinayka Rugs team for inquiries, appointments, or trade program details.',
-    images: [{ url: '/images/seo-og-image.png' }],
+    images: [
+      {
+        url: '/images/seo-og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Contact Vinayka Rugs Concierge',
+      },
+    ],
     type: 'website',
   },
   twitter: {
@@ -20,7 +27,7 @@ export const metadata: Metadata = {
     title:
       'Contact Our Concierge | Luxury Rug Showroom & Inquiries | Vinayka Rugs',
     description: 'Reach out to the Vinayka Rugs team for inquiries.',
-    images: ['/images/seo-og-image.png'],
+    images: ['/images/seo-og-image.jpg'],
   },
 };
 

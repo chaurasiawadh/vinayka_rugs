@@ -10,7 +10,14 @@ export const metadata: Metadata = {
     title: 'Luxury Hand-Knotted Rugs & Premium Carpets | Vinayka Rugs',
     description:
       'Discover exquisite hand-knotted rugs blending tradition and modern luxury. Premium artisan craftsmanship from Varanasi, India.',
-    images: [{ url: '/images/seo-og-image.png' }],
+    images: [
+      {
+        url: '/images/seo-og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Luxury Hand-Knotted Rug by Vinayka Rugs',
+      },
+    ],
     type: 'website',
   },
   twitter: {
@@ -18,7 +25,7 @@ export const metadata: Metadata = {
     title: 'Luxury Hand-Knotted Rugs & Premium Carpets | Vinayka Rugs',
     description:
       'Discover exquisite hand-knotted rugs blending tradition and modern luxury.',
-    images: ['/images/seo-og-image.png'],
+    images: ['/images/seo-og-image.jpg'],
   },
 };
 

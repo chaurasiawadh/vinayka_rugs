@@ -10,14 +10,21 @@ export const metadata: Metadata = {
     title: 'Bespoke Hand-Knotted Rugs | Custom Designer Carpets | Vinayka Rugs',
     description:
       'Create your own masterpiece. Our bespoke service offers custom sizes, color matching, and unique designs handcrafted by master artisans.',
-    images: [{ url: '/images/megamenu_showcase.png' }],
+    images: [
+      {
+        url: '/images/megamenu_showcase.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Bespoke Custom Rug Design Service',
+      },
+    ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Bespoke Hand-Knotted Rugs | Custom Designer Carpets | Vinayka Rugs',
     description: 'Custom sizes, color matching, and unique artisan designs.',
-    images: ['/images/megamenu_showcase.png'],
+    images: ['/images/megamenu_showcase.jpg'],
   },
 };
 
