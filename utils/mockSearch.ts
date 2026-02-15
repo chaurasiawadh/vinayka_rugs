@@ -10,8 +10,8 @@ export const mockAutocomplete = (
   return products
     .filter(
       (p) =>
-        p.name.toLowerCase().includes(lowerQ) ||
-        p.collection.toLowerCase().includes(lowerQ)
+        (p.name || '').toLowerCase().includes(lowerQ) ||
+        (p.collection || '').toLowerCase().includes(lowerQ)
     )
     .slice(0, 5)
     .map((p) => ({
@@ -41,9 +41,9 @@ export const mockSearchProducts = (
         ? material.join(' ')
         : material;
       return (
-        p.name.toLowerCase().includes(lowerQ) ||
-        p.category.toLowerCase().includes(lowerQ) ||
-        p.collection.toLowerCase().includes(lowerQ) ||
+        (p.name || '').toLowerCase().includes(lowerQ) ||
+        (p.category || '').toLowerCase().includes(lowerQ) ||
+        (p.collection || '').toLowerCase().includes(lowerQ) ||
         materialStr.toLowerCase().includes(lowerQ)
       );
     });

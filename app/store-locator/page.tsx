@@ -29,8 +29,7 @@ const LOCATIONS: StoreLocation[] = [
     hours: 'Mon - Sun : 10am - 8pm',
     phone: '+91 9250491858',
     whatsapp: '9250491858',
-    image:
-      'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2jLi3qs0Mm7rGDItZJY2vQCpbxHc1KdPXgko4',
+    image: '/images/vinayka_rugs_store.png',
     mapLink: 'https://maps.google.com/?q=Vinayka+Gallery+Bhadohi',
   },
   {
@@ -46,8 +45,7 @@ const LOCATIONS: StoreLocation[] = [
     phone: '+91-9580122122',
     email: 'mailtoshyamaexports@gmail.com',
     gstin: '09APJPJ3572L1ZE',
-    image:
-      'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2tLkK1mCB0YgcxnrQpOvMLloCya1skduSKPF2',
+    image: '/images/shyama_exports_store.png',
     mapLink: 'https://maps.google.com/?q=Shyama+Exports+Bhadohi',
   },
 ];
