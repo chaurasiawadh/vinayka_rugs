@@ -1381,7 +1381,9 @@ const ProductManager = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-serif">Product Inventory</h2>
+        <h2 className="text-2xl font-serif">
+          Product Inventory ({products.length})
+        </h2>
         <Button
           onClick={() => {
             setFormData(INITIAL_PRODUCT);
