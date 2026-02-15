@@ -27,6 +27,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { UserProfile } from '@/types';
+import Image from 'next/image';
 
 const PROFESSIONS = [
   'Architect',
@@ -296,9 +297,16 @@ const Login: React.FC = () => {
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
         <div className="relative z-10 text-center text-white px-8">
-          <h1 className="font-serif text-5xl mb-4">
-            Vinayka<span className="font-light text-terracotta">Rugs</span>
-          </h1>
+          <div className="mb-6 flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Vinayka Rugs"
+              width={250}
+              height={80}
+              priority
+              className="w-auto h-24 "
+            />
+          </div>
           <p className="text-lg font-light opacity-90 max-w-md mx-auto">
             Join our exclusive community of connoisseurs, architects, and design
             enthusiasts.
@@ -325,12 +333,17 @@ const Login: React.FC = () => {
       </div>
 
       {/* RIGHT SIDE: Form Container */}
-      <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-16 overflow-y-auto">
+      <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-16 overflow-y-auto mt-20">
         {/* Mobile Brand Header */}
-        <div className="lg:hidden text-center mb-8">
-          <h2 className="font-serif text-3xl font-bold">
-            Vinayka<span className="font-light text-terracotta">Rugs</span>
-          </h2>
+        <div className="lg:hidden flex justify-center mb-8">
+          <Image
+            src="/images/logo.png"
+            alt="Vinayka Rugs"
+            width={180}
+            height={50}
+            priority
+            className="w-auto h-16"
+          />
         </div>
 
         {/* Notifications */}

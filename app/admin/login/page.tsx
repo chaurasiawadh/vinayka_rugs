@@ -6,6 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { Shield, Lock, Mail, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -62,9 +63,15 @@ const AdminLogin = () => {
           <div className="h-16 w-16 bg-terracotta/10 rounded-full flex items-center justify-center mb-4 text-terracotta">
             <Shield size={32} />
           </div>
-          <h1 className="text-2xl font-serif font-bold text-gray-900">
-            Admin<span className="text-terracotta">Portal</span>
-          </h1>
+          <div className="flex flex-col items-center gap-2">
+            <Image
+              src="/images/logo.png"
+              alt="Vinayka Rugs"
+              width={180}
+              height={50}
+              className="w-auto h-16 object-contain"
+            />
+          </div>
           <p className="text-sm text-gray-500 mt-2">Secure Restricted Access</p>
         </div>
 

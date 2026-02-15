@@ -13,6 +13,7 @@ import {
   ChevronRight,
   PenTool,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import SearchBar from './Search/SearchBar';
@@ -80,7 +81,7 @@ const Header: React.FC = () => {
         onMouseLeave={() => setIsShopHovered(false)}
       >
         <div
-          className={`w-full transition-all duration-500 ${isScrolled ? 'py-2' : 'py-4'}`}
+          className={`w-full transition-all duration-500 ${isScrolled ? 'py-1' : 'py-2'}`}
         >
           <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16">
             <div className="flex items-center justify-between">
@@ -90,12 +91,14 @@ const Header: React.FC = () => {
                   href="/"
                   className="inline-flex items-center group transition-all duration-300 hover:opacity-80 active:scale-95"
                 >
-                  <span className="font-serif text-2xl font-semibold tracking-tight text-black transition-colors duration-500">
-                    Vinayka
-                    <span className="font-light text-terracotta ml-0.5">
-                      Rugs
-                    </span>
-                  </span>
+                  <Image
+                    src="/images/logo.png"
+                    alt="Vinayka Rugs"
+                    width={240}
+                    height={80}
+                    priority
+                    className="w-auto h-20 object-contain"
+                  />
                 </Link>
               </div>
 
@@ -230,10 +233,13 @@ const Header: React.FC = () => {
               {/* Drawer Header */}
               <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-cream flex-shrink-0">
                 <div>
-                  <span className="font-serif text-2xl font-bold text-text-body">
-                    Vinayka
-                    <span className="font-light text-terracotta">Rugs</span>
-                  </span>
+                  <Image
+                    src="/images/logo.png"
+                    alt="Vinayka Rugs"
+                    width={160}
+                    height={48}
+                    className="w-auto h-12 object-contain"
+                  />
                   <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted mt-1">
                     Luxury Hand-Knotted
                   </p>
