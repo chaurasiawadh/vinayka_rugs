@@ -19,10 +19,10 @@ module.exports = {
         success: '#1E8F6E',
       },
       fontFamily: {
-        primary: ['var(--font-primary)', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'Space Grotesk', 'sans-serif'],
-        serif: ['var(--font-serif)', 'serif'],
-        sans: ['var(--font-primary)', 'Inter', 'system-ui', 'sans-serif'],
+        primary: ['"Mona Sans"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['"Mona Sans"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        serif: ['"Mona Sans"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['"Mona Sans"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

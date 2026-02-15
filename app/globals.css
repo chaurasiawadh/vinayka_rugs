@@ -8,10 +8,18 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+/* Apply Mona Sans font family globally to all elements */
+*,
+*::before,
+*::after {
+  font-family: "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: #faf8f6;
   color: #222222;
+  font-family: "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Custom Scrollbar */
