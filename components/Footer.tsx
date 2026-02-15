@@ -49,10 +49,18 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Customer Care */}
+          {/* Customer Service */}
           <div>
-            <h3 className="text-lg font-serif mb-6">Support</h3>
+            <h3 className="text-lg font-serif mb-6">Customer Service</h3>
             <ul className="space-y-3 text-sm text-gray-400">
+              <li>
+                <Link
+                  href="/customer-service"
+                  className="hover:text-terracotta transition-colors"
+                >
+                  Help & Support
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/contact"
@@ -61,15 +69,6 @@ const Footer: React.FC = () => {
                   Contact Us
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/orders"
-                  className="hover:text-terracotta transition-colors"
-                >
-                  Shipping & Returns
-                </Link>
-              </li>
-
               <li>
                 <Link
                   href="/admin"
@@ -121,8 +120,12 @@ const Footer: React.FC = () => {
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
           <p>&copy; 2026 Vinayka Rugs. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="/privacy">Privacy Policy</Link>
-            <Link href="/terms">Terms of Service</Link>
+            <Link href="/privacy-policy" className="hover:text-gray-300 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms-and-conditions" className="hover:text-gray-300 transition-colors">
+              Terms & Conditions
+            </Link>
           </div>
         </div>
       </div>

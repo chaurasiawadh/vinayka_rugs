@@ -121,7 +121,7 @@ const OrdersPage = () => {
   }
 
   return (
-    <div className="bg-[#f1f3f6] min-h-screen pb-12">
+    <div className="bg-[#f1f3f6] min-h-screen pt-24 lg:pt-32 pb-12">
       {/* Breadcrumb - Top */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center text-xs text-gray-500 gap-2">
@@ -340,11 +340,11 @@ const OrderCard = ({
                 {isDelivered
                   ? `Delivered on ${formattedDate}`
                   : order.status
-                      .split('_')
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(' ')}
+                    .split('_')
+                    .map(
+                      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                    )
+                    .join(' ')}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {isDelivered
