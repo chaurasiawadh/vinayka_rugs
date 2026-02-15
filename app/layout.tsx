@@ -15,6 +15,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://vinaykarugs.com'),
   title: 'Vinayka Rugs | Luxury Hand-Knotted Carpets',
   description: 'Vinayka Rugs offers premium hand-knotted carpets.',
 };

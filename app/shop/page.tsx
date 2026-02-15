@@ -12,6 +12,16 @@ export const metadata: Metadata = {
       'Shop Luxury Rugs & Carpets Online | Handmade Collections | Vinayka Rugs',
     description:
       'Browse our curated collection of luxury hand-knotted rugs. Find the perfect artisan flooring for your home.',
+    images: [{ url: '/images/seo-og-image.png' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title:
+      'Shop Luxury Rugs & Carpets Online | Handmade Collections | Vinayka Rugs',
+    description:
+      'Browse our curated collection of luxury hand-knotted rugs online.',
+    images: ['/images/seo-og-image.png'],
   },
 };
 
