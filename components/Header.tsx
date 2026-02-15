@@ -81,7 +81,7 @@ const Header: React.FC = () => {
         onMouseLeave={() => setIsShopHovered(false)}
       >
         <div
-          className={`w-full transition-all duration-500 ${isScrolled ? 'py-2' : 'py-4'}`}
+          className={`w-full transition-all duration-500 ${isScrolled ? 'py-1' : 'py-2'}`}
         >
           <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16">
             <div className="flex items-center justify-between">
@@ -94,10 +94,10 @@ const Header: React.FC = () => {
                   <Image
                     src="/images/logo.png"
                     alt="Vinayka Rugs"
-                    width={180}
-                    height={40}
+                    width={240}
+                    height={80}
                     priority
-                    className="w-auto h-14 object-contain"
+                    className="w-auto h-20 object-contain"
                   />
                 </Link>
               </div>
@@ -237,7 +237,7 @@ const Header: React.FC = () => {
                     src="/images/logo.png"
                     alt="Vinayka Rugs"
                     width={160}
-                    height={40}
+                    height={48}
                     className="w-auto h-12 object-contain"
                   />
                   <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted mt-1">

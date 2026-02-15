@@ -304,7 +304,7 @@ const Login: React.FC = () => {
               width={250}
               height={80}
               priority
-              className="w-auto h-24 brightness-0 invert"
+              className="w-auto h-24 "
             />
           </div>
           <p className="text-lg font-light opacity-90 max-w-md mx-auto">
@@ -333,7 +333,7 @@ const Login: React.FC = () => {
       </div>
 
       {/* RIGHT SIDE: Form Container */}
-      <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-16 overflow-y-auto">
+      <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-16 overflow-y-auto mt-20">
         {/* Mobile Brand Header */}
         <div className="lg:hidden flex justify-center mb-8">
           <Image

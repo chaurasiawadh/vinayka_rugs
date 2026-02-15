@@ -13,10 +13,11 @@ const Footer: React.FC = () => {
             <Link href="/" className="inline-block">
               <Image
                 src="/images/logo.png"
-                alt="Vinayka Rugs"
-                width={180}
-                height={50}
-                className="w-auto h-16 object-contain brightness-0 invert"
+              alt="Vinayka Rugs"
+              width={250}
+              height={80}
+              priority
+              className="w-auto h-24 mb-[-24px] mt-[-12px]"
               />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
