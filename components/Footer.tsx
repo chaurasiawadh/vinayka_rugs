@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Mail } from 'lucide-react';
 
 const Footer: React.FC = () => {
@@ -9,9 +10,15 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="space-y-6">
-            <h2 className="font-serif text-2xl font-bold text-white">
-              Vinayka<span className="font-light text-terracotta">Rugs</span>
-            </h2>
+            <Link href="/" className="inline-block">
+              <Image
+                src="/images/logo.png"
+                alt="Vinayka Rugs"
+                width={180}
+                height={50}
+                className="w-auto h-16 object-contain brightness-0 invert"
+              />
+            </Link>
             <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
               Crafting legacy since 1982. We weave stories into every knot,
               bringing the timeless art of handmade luxury to your modern home.

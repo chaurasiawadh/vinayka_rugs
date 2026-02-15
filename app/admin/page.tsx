@@ -13,6 +13,7 @@ import {
 import ProductManager from '@/components/admin/ProductManager';
 import GalleryManager from '@/components/admin/GalleryManager';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Admin: React.FC = () => {
   const { user, userProfile, loading, logout } = useAuth();
@@ -56,9 +57,18 @@ const Admin: React.FC = () => {
             />
             <span>Back to Website</span>
           </Link>
-          <h1 className="font-serif text-2xl font-bold">
-            Admin<span className="text-terracotta">Panel</span>
-          </h1>
+          <div className="flex flex-col items-start gap-2">
+            <Image
+              src="/images/logo.png"
+              alt="Vinayka Rugs"
+              width={160}
+              height={40}
+              className="w-auto h-12"
+            />
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+              Admin Panel
+            </span>
+          </div>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           <button
