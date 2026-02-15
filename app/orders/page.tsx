@@ -340,11 +340,11 @@ const OrderCard = ({
                 {isDelivered
                   ? `Delivered on ${formattedDate}`
                   : order.status
-                    .split('_')
-                    .map(
-                      (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                    )
-                    .join(' ')}
+                      .split('_')
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(' ')}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {isDelivered

@@ -16,9 +16,9 @@ const PolicySection: React.FC<PolicySectionProps> = ({
   const HeadingTag = `h${level + 1}` as keyof JSX.IntrinsicElements;
 
   const headingClasses = {
-    1: 'text-2xl md:text-3xl font-serif font-bold text-text-body mt-12 mb-6 first:mt-0',
-    2: 'text-xl md:text-2xl font-serif font-semibold text-text-body mt-8 mb-4',
-    3: 'text-lg md:text-xl font-serif font-medium text-text-body mt-6 mb-3',
+    1: 'font-serif font-bold text-text-body mt-8 mb-2',
+    2: 'font-serif font-semibold text-text-body mt-6 mb-2',
+    3: 'font-serif font-medium text-text-body mt-4 mb-2',
   };
 
   return (

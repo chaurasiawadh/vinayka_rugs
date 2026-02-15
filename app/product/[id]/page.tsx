@@ -1,6 +1,42 @@
 import ProductClient from './ProductClient';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  try {
+    const productDoc = await getDoc(doc(db, 'products', params.id));
+    if (!productDoc.exists()) {
+      return {
+        title: 'Product Not Found | Vinayka Rugs',
+      };
+    }
+
+    const product = productDoc.data();
+    const title = `${product.name} | ${product.category?.[0] || 'Handmade Rug'} | Vinayka Rugs`;
+    const description =
+      product.shortDescription ||
+      `Discover the exquisite ${product.name}, a luxury hand-knotted rug from Vinayka Rugs. Artisan crafted in Varanasi.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: product.images?.[0] ? [{ url: product.images[0] }] : [],
+      },
+    };
+  } catch (error) {
+    return {
+      title: 'Luxury Rug | Vinayka Rugs',
+    };
+  }
+}
 
 export async function generateStaticParams() {
   try {

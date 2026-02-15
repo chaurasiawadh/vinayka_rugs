@@ -28,8 +28,8 @@ const policyLinks: PolicyLink[] = [
 ];
 
 const PolicyLayout: React.FC<PolicyLayoutProps> = ({
-  title,
-  lastUpdated,
+  title: _title,
+  lastUpdated: _lastUpdated,
   currentPath,
   children,
 }) => {
@@ -37,19 +37,6 @@ const PolicyLayout: React.FC<PolicyLayoutProps> = ({
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-br from-terracotta/90 to-terracotta py-16 md:py-20 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-3">
-            {title}
-          </h1>
-          {lastUpdated && (
-            <p className="text-white/90 text-sm">Last updated: {lastUpdated}</p>
-          )}
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">

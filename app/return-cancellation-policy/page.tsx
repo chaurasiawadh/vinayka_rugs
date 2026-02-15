@@ -19,8 +19,8 @@ const ReturnCancellationPolicyPage: React.FC = () => {
 
       <PolicySection title="Cancellation Policy" level={1}>
         <p>
-          We understand that circumstances change. Here's how you can cancel
-          your order based on the product type and order status.
+          We understand that circumstances change. Here&apos;s how you can
+          cancel your order based on the product type and order status.
         </p>
 
         <h4 className="font-semibold text-text-body mt-6 mb-3">
@@ -222,7 +222,7 @@ const ReturnCancellationPolicyPage: React.FC = () => {
                 Receive Your Refund
               </h5>
               <p className="text-text-muted">
-                Once we receive and inspect your return, we'll process your
+                Once we receive and inspect your return, we&apos;ll process your
                 refund within 7-10 business days.
               </p>
             </div>
@@ -270,7 +270,7 @@ const ReturnCancellationPolicyPage: React.FC = () => {
               </tr>
               <tr>
                 <td className="px-6 py-4 text-sm text-text-muted">
-                  Doesn't match description
+                  Doesn&apos;t match description
                 </td>
                 <td className="px-6 py-4 text-sm text-text-muted">
                   We cover all costs
@@ -321,7 +321,7 @@ const ReturnCancellationPolicyPage: React.FC = () => {
           <li>Take photos of the packaging and damage immediately</li>
           <li>Contact us within 48 hours of delivery</li>
           <li>Provide photos and a detailed description of the issue</li>
-          <li>We'll arrange for pickup at no cost to you</li>
+          <li>We&apos;ll arrange for pickup at no cost to you</li>
           <li>
             Choose between a replacement or full refund (including shipping)
           </li>
@@ -340,9 +340,9 @@ const ReturnCancellationPolicyPage: React.FC = () => {
         </p>
 
         <p className="mt-4">
-          The exchange process follows the same steps as returns. If there's a
-          price difference between the items, we'll either refund the difference
-          or request additional payment.
+          The exchange process follows the same steps as returns. If
+          there&apos;s a price difference between the items, we&apos;ll either
+          refund the difference or request additional payment.
         </p>
       </PolicySection>
 

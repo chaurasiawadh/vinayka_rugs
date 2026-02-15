@@ -102,8 +102,8 @@ const CustomerServicePage: React.FC = () => {
 
       <PolicySection title="Product Information" level={1}>
         <p>
-          Have questions about our rugs? We're here to help you find the perfect
-          piece for your space.
+          Have questions about our rugs? We&apos;re here to help you find the
+          perfect piece for your space.
         </p>
 
         <h4 className="font-semibold text-text-body mt-6 mb-3">
@@ -140,7 +140,7 @@ const CustomerServicePage: React.FC = () => {
         </h4>
         <ul className="list-disc list-inside space-y-2 ml-4">
           <li>Track your order status</li>
-          <li>Modify shipping address (if order hasn't shipped)</li>
+          <li>Modify shipping address (if order hasn&apos;t shipped)</li>
           <li>Request updates on custom orders</li>
           <li>Schedule delivery or pickup</li>
         </ul>
@@ -163,6 +163,17 @@ const CustomerServicePage: React.FC = () => {
         </div>
       </PolicySection>
 
+      <PolicySection title="Changes to This Policy" level={1}>
+        <p>
+          We may update this Privacy Policy from time to time. Changes will be
+          effective immediately upon posting on the Site.
+        </p>
+        <p className="mt-4">
+          Contact us at info@vinaykarugs.com with &quot;Privacy Request&quot; in
+          the subject line to exercise your data rights.
+        </p>
+      </PolicySection>
+
       <PolicySection title="Trade & Wholesale Program" level={1}>
         <p>
           Are you an interior designer, architect, or retailer? We offer special
@@ -176,8 +187,8 @@ const CustomerServicePage: React.FC = () => {
           >
             {ADMIN_EMAIL}
           </a>{' '}
-          with "Trade Program" in the subject line to learn more about our
-          professional services and discounts.
+          with &quot;Trade Program&quot; in the subject line to learn more about
+          our professional services and discounts.
         </p>
       </PolicySection>
     </PolicyLayout>

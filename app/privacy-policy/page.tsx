@@ -11,10 +11,10 @@ const PrivacyPolicyPage: React.FC = () => {
     >
       <PolicySection title="Introduction" level={1}>
         <p>
-          At Vinayka Rugs ("we," "us," or "our"), we value your privacy and are
-          committed to protecting your personal information. This Privacy Policy
-          outlines how we collect, use, share, and safeguard your data when you
-          visit our website or make a purchase from us.
+          This Privacy Policy describes how Vinayka Rugs (&quot;we&quot;,
+          &quot;us&quot;, or &quot;our&quot;) collects, uses, and shares your
+          personal information when you visit or make a purchase from
+          vinaykarugs.com (the &quot;Site&quot;).
         </p>
         <p className="mt-4">
           By using our services, you agree to the terms outlined in this Privacy
@@ -210,14 +210,8 @@ const PrivacyPolicyPage: React.FC = () => {
         </ul>
 
         <p className="mt-4">
-          To exercise any of these rights, please contact us at{' '}
-          <a
-            href="mailto:info@vinaykarugs.com"
-            className="text-terracotta hover:underline"
-          >
-            info@vinaykarugs.com
-          </a>
-          .
+          Contact us at info@vinaykarugs.com with &quot;Privacy Request&quot; in
+          the subject line to exercise your data rights.
         </p>
       </PolicySection>
 
@@ -274,7 +268,7 @@ const PrivacyPolicyPage: React.FC = () => {
           We may update this Privacy Policy from time to time to reflect changes
           in our practices or legal requirements. We will notify you of any
           material changes by posting the updated policy on our website and
-          updating the "Last Updated" date.
+          updating the &quot;Last Updated&quot; date.
         </p>
         <p className="mt-4">
           We encourage you to review this Privacy Policy periodically to stay

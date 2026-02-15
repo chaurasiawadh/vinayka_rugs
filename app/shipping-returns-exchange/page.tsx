@@ -88,8 +88,8 @@ const ShippingReturnsExchangePage: React.FC = () => {
 
       <PolicySection title="Return Policy" level={1}>
         <p>
-          We want you to love your rug! If you're not completely satisfied, we
-          accept returns within <strong>14 days</strong> of delivery.
+          We want you to love your rug! If you&apos;re not completely satisfied,
+          we accept returns within <strong>14 days</strong> of delivery.
         </p>
 
         <h4 className="font-semibold text-text-body mt-6 mb-3">
@@ -151,7 +151,7 @@ const ShippingReturnsExchangePage: React.FC = () => {
 
       <PolicySection title="Exchange Policy" level={1}>
         <p>
-          We're happy to exchange your rug for a different size, color, or
+          We&apos;re happy to exchange your rug for a different size, color, or
           design within 14 days of delivery, subject to availability.
         </p>
 
@@ -162,11 +162,12 @@ const ShippingReturnsExchangePage: React.FC = () => {
           <li>Contact us to discuss exchange options</li>
           <li>Return the original rug following our return process</li>
           <li>
-            Once we receive and inspect the return, we'll ship your exchange
+            Once we receive and inspect the return, we&apos;ll ship your
+            exchange
           </li>
           <li>
-            If there's a price difference, we'll either refund or charge
-            accordingly
+            If there&apos;s a price difference, we&apos;ll either refund or
+            charge accordingly
           </li>
         </ol>
 
@@ -185,7 +186,7 @@ const ShippingReturnsExchangePage: React.FC = () => {
         <ol className="list-decimal list-inside space-y-2 ml-4 mt-4">
           <li>Contact us immediately (within 48 hours of delivery)</li>
           <li>Provide photos of the damage and packaging</li>
-          <li>We'll arrange for pickup at no cost to you</li>
+          <li>We&apos;ll arrange for pickup at no cost to you</li>
           <li>Choose a replacement or full refund</li>
         </ol>
 
@@ -208,7 +209,8 @@ const ShippingReturnsExchangePage: React.FC = () => {
               items)
             </li>
             <li>
-              You'll receive an email confirmation once your refund is processed
+              You&apos;ll receive an email confirmation once your refund is
+              processed
             </li>
           </ul>
         </div>
@@ -217,7 +219,7 @@ const ShippingReturnsExchangePage: React.FC = () => {
       <PolicySection title="Questions?" level={1}>
         <p>
           If you have any questions about shipping, returns, or exchanges,
-          please don't hesitate to contact us at{' '}
+          please don&apos;t hesitate to contact us at{' '}
           <a
             href="mailto:info@vinaykarugs.com"
             className="text-terracotta hover:underline"

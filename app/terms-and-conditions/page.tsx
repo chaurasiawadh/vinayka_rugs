@@ -13,8 +13,8 @@ const TermsAndConditionsPage: React.FC = () => {
         <p>
           Welcome to Vinayka Rugs. By accessing our website at vinaykarugs.com
           and making a purchase, you agree to be bound by these Terms and
-          Conditions ("Terms"). Please read them carefully before using our
-          services.
+          Conditions (&quot;Terms&quot;). Please read them carefully before
+          using our services.
         </p>
         <p className="mt-4">
           If you do not agree with any part of these Terms, you may not access
@@ -216,8 +216,8 @@ const TermsAndConditionsPage: React.FC = () => {
         <p className="mb-3">TO THE FULLEST EXTENT PERMITTED BY LAW:</p>
         <ul className="list-disc list-inside space-y-2 ml-4">
           <li>
-            Our website and products are provided "as is" without warranties of
-            any kind
+            Our website and products are provided &quot;as is&quot; without
+            warranties of any kind
           </li>
           <li>
             We do not warrant that the website will be uninterrupted or
