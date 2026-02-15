@@ -67,7 +67,6 @@ const Header: React.FC = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Shop', path: '/shop', hasMegaMenu: true },
-    { name: 'Collections', path: '/shop?filter=collections' },
     { name: 'Bespoke', path: '/bespoke' },
     { name: 'Store Locator', path: '/store-locator' },
   ];
@@ -75,36 +74,23 @@ const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-300 ${
-          isScrolled
-            ? 'bg-[#faf8f6]/95 backdrop-blur shadow-sm'
-            : 'bg-[#faf8f6]'
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 bg-white/90 backdrop-blur-xl ${
+          isScrolled ? 'shadow-sm border-b border-gray-100/50' : ''
         }`}
         onMouseLeave={() => setIsShopHovered(false)}
       >
         <div
-          className={`w-full transition-all duration-300 border-b border-transparent ${isScrolled ? 'py-4 border-gray-100' : 'py-6'}`}
+          className={`w-full transition-all duration-500 ${isScrolled ? 'py-2' : 'py-4'}`}
         >
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16">
             <div className="flex items-center justify-between">
-              {/* Mobile Menu Button - Left on Mobile */}
-              <div className="lg:hidden">
-                <button
-                  className="p-2 -ml-2 text-black hover:bg-black/5 rounded-full transition-colors"
-                  onClick={() => setIsMobileMenuOpen(true)}
-                  aria-label="Open Menu"
-                >
-                  <Menu size={24} strokeWidth={1.5} />
-                </button>
-              </div>
-
               {/* Logo - Left aligned */}
-              <div className="flex lg:w-1/4 justify-center lg:justify-start">
+              <div className="flex-shrink-0 w-1/4">
                 <Link
                   href="/"
-                  className="flex-shrink-0 flex items-center group transition-all duration-300 hover:opacity-80 active:scale-95"
+                  className="inline-flex items-center group transition-all duration-300 hover:opacity-80 active:scale-95"
                 >
-                  <span className="font-serif text-2xl font-medium tracking-tight text-black flex items-center">
+                  <span className="font-serif text-2xl font-semibold tracking-tight text-black transition-colors duration-500">
                     Vinayka
                     <span className="font-light text-terracotta ml-0.5">
                       Rugs
@@ -115,20 +101,20 @@ const Header: React.FC = () => {
 
               {/* Desktop Nav - Centered */}
               <div className="hidden lg:flex flex-1 justify-center">
-                <nav className="flex items-center gap-8 xl:gap-12">
+                <nav className="flex items-center gap-10 xl:gap-14">
                   {navLinks.map((link) => (
                     <div
                       key={link.name}
-                      className="relative py-2" // Added padding for hover area
+                      className="relative py-2"
                       onMouseEnter={() => setIsShopHovered(!!link.hasMegaMenu)}
                     >
                       <Link
                         href={link.path}
-                        className="text-[13px] tracking-[0.05em] font-medium text-gray-500 hover:text-black transition-colors relative group whitespace-nowrap"
+                        className="text-[12px] tracking-[0.15em] uppercase font-semibold transition-colors duration-500 relative group whitespace-nowrap text-gray-600 hover:text-black"
                       >
                         {link.name}
-                        {/* Subtle underline effect */}
-                        <span className="absolute -bottom-1 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full"></span>
+                        {/* Luxury underline effect */}
+                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full bg-black"></span>
                       </Link>
                     </div>
                   ))}
@@ -136,42 +122,41 @@ const Header: React.FC = () => {
               </div>
 
               {/* Icons - Right aligned */}
-              <div className="flex items-center justify-end lg:w-1/4 gap-5">
-                {pathname === '/shop' && (
-                  <button
-                    className="p-2 text-gray-500 hover:text-black transition-colors hidden sm:block"
-                    aria-label="Search"
-                    onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  >
-                    <Search size={22} strokeWidth={1.5} />
-                  </button>
-                )}
+              <div className="flex items-center justify-end w-1/4 gap-6">
+                <button
+                  className="p-2 transition-colors duration-500 text-gray-600 hover:text-black"
+                  aria-label="Search"
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}
+                >
+                  <Search size={22} strokeWidth={1.5} />
+                </button>
 
-                <div className="hidden sm:block">
+                <div className="hidden sm:block transition-colors duration-500 text-gray-600">
                   <AccountDropdown />
                 </div>
 
-                {/* <Link
-                  href="/watchlist"
-                  className="p-2 text-gray-500 hover:text-black transition-colors relative hidden sm:block"
-                >
-                  <Heart size={22} strokeWidth={1.5} />
-                  {wishlist.length > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-terracotta rounded-full ring-2 ring-white"></span>
-                  )}
-                </Link> */}
-
                 <button
-                  className="p-2 text-gray-500 hover:text-black transition-colors relative group"
+                  className="p-2 transition-colors duration-500 relative group text-gray-600 hover:text-black"
                   onClick={() => setIsCartOpen(true)}
                 >
                   <ShoppingBag size={22} strokeWidth={1.5} />
                   {cartCount > 0 && (
-                    <span className="absolute top-0 right-0 w-4 h-4 bg-black text-white text-[10px] flex items-center justify-center rounded-full group-hover:bg-terracotta transition-colors">
+                    <span className="absolute top-0 right-0 w-4 h-4 bg-terracotta text-white text-[10px] flex items-center justify-center rounded-full shadow-lg">
                       {cartCount}
                     </span>
                   )}
                 </button>
+
+                {/* Mobile Menu Button */}
+                <div className="lg:hidden">
+                  <button
+                    className="p-2 -mr-2 transition-colors duration-500 text-black"
+                    onClick={() => setIsMobileMenuOpen(true)}
+                    aria-label="Open Menu"
+                  >
+                    <Menu size={24} strokeWidth={1.5} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -330,8 +315,8 @@ const Header: React.FC = () => {
           </div>
         )}
       </header>
-      {/* Spacer to prevent content jump */}
-      <div className="h-20 w-full" />
+      {/* Spacer to prevent content jump - removed for transparent hero */}
+      {/* <div className="h-20 w-full" /> */}
     </>
   );
 };

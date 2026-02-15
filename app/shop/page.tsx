@@ -281,7 +281,7 @@ const ShopContent: React.FC = () => {
     );
 
   return (
-    <div className="bg-cream min-h-screen pb-20 pt-8">
+    <div className="bg-cream min-h-screen pb-20 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-200 pb-6">
           <div className="flex items-center gap-4 mt-4 md:mt-0">

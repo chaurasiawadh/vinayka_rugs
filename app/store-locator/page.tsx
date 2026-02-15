@@ -54,9 +54,9 @@ const LOCATIONS: StoreLocation[] = [
 
 const StoreLocator = () => {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen pt-20">
       {/* Simple Header */}
-      <div className="bg-cream py-8 md:py-10 text-center px-4">
+      <div className="bg-cream py-12 md:py-14 text-center px-4">
         <h1 className="text-4xl md:text-5xl font-serif text-text-body mb-4">
           Visit Our Stores
         </h1>

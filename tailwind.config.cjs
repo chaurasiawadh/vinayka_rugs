@@ -21,6 +21,7 @@ module.exports = {
       fontFamily: {
         primary: ['var(--font-primary)', 'Inter', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'Space Grotesk', 'sans-serif'],
+        serif: ['var(--font-serif)', 'serif'],
         sans: ['var(--font-primary)', 'Inter', 'system-ui', 'sans-serif'],
       },
       animation: {

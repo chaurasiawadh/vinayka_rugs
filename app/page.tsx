@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 // import { COLLECTIONS } from '../constants';
@@ -12,22 +12,10 @@ import { GalleryItem } from '@/types';
 import { motion } from 'framer-motion';
 import UploadPrompt from '../components/visualizer/UploadPrompt';
 
-// Hero background images pool
-const HERO_BACKGROUNDS = [
-  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2LDT2rK1vNjA428xrHGWSBcKZi0YzeFpVXJ3D',
-];
-
 const Home: React.FC = () => {
   const { products, openBespokeModal } = useShop();
   const galleryItems = useCollection('gallery') as GalleryItem[];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const [heroBackground, setHeroBackground] = useState(HERO_BACKGROUNDS[0]);
-
-  // Randomly select a hero background on component mount
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * HERO_BACKGROUNDS.length);
-    setHeroBackground(HERO_BACKGROUNDS[randomIndex]);
-  }, []);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -51,42 +39,152 @@ const Home: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      {/* Hero Section */}
-      <section className="relative h-[85vh] w-full bg-gray-900 overflow-hidden">
-        <img
-          src={heroBackground}
-          alt="Luxury Rug Interior"
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-        <div className="relative h-full flex items-center justify-center text-center px-4">
-          <div className="max-w-4xl space-y-6 animate-slide-up">
-            <span className="text-white/90 text-sm md:text-base tracking-[0.3em] uppercase">
-              The Art of Flooring
-            </span>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-white font-medium leading-tight">
-              Weave Stories Into <br />{' '}
-              <span className="text-terracotta italic">Every Room</span>
-            </h1>
-            <p className="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto font-light">
-              Hand-knotted masterpieces that blend ancient craftsmanship with
-              contemporary vision.
-            </p>
-            <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/shop">
-                <Button size="lg" className="min-w-[180px]">
-                  Shop Collection
-                </Button>
-              </Link>
-              <Link href="/bespoke">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-white text-white !hover:bg-white !hover:text-black min-w-[180px]"
+      {/* Hero Section Redesign */}
+      <section className="relative min-h-screen w-full flex items-center overflow-hidden bg-[#FAF8F6] pt-24 lg:pt-32">
+        {/* Background is now clean to match the processed asset */}
+
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 relative z-10 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center pt-20 lg:pt-0">
+            {/* Left Content */}
+            <div className="flex flex-col space-y-8 max-w-2xl">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="flex flex-col space-y-4"
+              >
+                <span className="text-terracotta text-xs md:text-sm font-bold tracking-[0.4em] uppercase">
+                  The Art of Flooring
+                </span>
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-text-body font-medium leading-[1.1]">
+                  Weave Stories <br />
+                  Into{' '}
+                  <span className="text-terracotta italic">Every Room</span>
+                </h1>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="text-gray-600 text-lg md:text-xl max-w-lg font-light leading-relaxed"
+              >
+                Hand-knotted masterpieces blending tradition and modern luxury
+                for timeless interiors.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-5"
+              >
+                <Link href="/shop">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button
+                      size="lg"
+                      className="min-w-[200px] bg-text-body hover:bg-black text-white rounded-full py-6 text-sm tracking-widest uppercase font-bold shadow-xl transition-all"
+                    >
+                      Shop Collection
+                    </Button>
+                  </motion.div>
+                </Link>
+                <Link href="/bespoke">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="border-gray-300 text-text-body hover:border-text-body min-w-[200px] rounded-full py-6 text-sm tracking-widest uppercase font-bold transition-all"
+                    >
+                      Bespoke Services
+                    </Button>
+                  </motion.div>
+                </Link>
+              </motion.div>
+
+              {/* Trust Indicators */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 1 }}
+                className="pt-10 flex items-center gap-8 border-t border-gray-200 mt-10"
+              >
+                <div className="flex flex-col">
+                  <span className="text-2xl font-serif font-bold text-text-body">
+                    2K+
+                  </span>
+                  <span className="text-[10px] uppercase tracking-widest text-text-muted">
+                    Master Weavers
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-serif font-bold text-text-body">
+                    150+
+                  </span>
+                  <span className="text-[10px] uppercase tracking-widest text-text-muted">
+                    Global Awards
+                  </span>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Rug Visual */}
+            <div className="relative">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
+                animate={{ opacity: 1, scale: 1.4, rotate: 0 }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+                className="relative lg:scale-125 xl:scale-150 origin-center"
+              >
+                {/* Floating Rug Wrapper */}
+                <motion.div
+                  animate={{
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                  className="relative z-10"
                 >
-                  Bespoke Services
-                </Button>
-              </Link>
+                  <img
+                    src="/images/hero-model-rug-final.png"
+                    alt="Luxury Rug Presentation"
+                    className="w-full h-auto transform transition-transform duration-700"
+                  />
+                </motion.div>
+              </motion.div>
+
+              {/* Floating Info Card */}
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 1,
+                }}
+                className="absolute -bottom-6 lg:-bottom-12 left-0 lg:-left-12 bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-2xl z-20 hidden md:flex items-center gap-5 border border-gray-100 min-w-[240px]"
+              >
+                <div className="w-12 h-12 bg-terracotta rounded-xl flex items-center justify-center text-white shadow-soft">
+                  <Star size={24} fill="currentColor" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-text-body text-lg leading-tight">
+                    Hand-Knotted
+                  </h4>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-terracotta mt-1 font-semibold">
+                    Silk & Wool Masterpiece
+                  </p>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>

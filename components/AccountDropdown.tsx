@@ -9,11 +9,10 @@ import {
   RiShoppingBag3Line,
   RiHeart3Line,
   RiLogoutBoxRLine,
-  RiArrowDownSLine,
 } from '@remixicon/react';
 
 const AccountDropdown: React.FC = () => {
-  const { user, userProfile, logout } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -70,9 +69,6 @@ const AccountDropdown: React.FC = () => {
     router.push('/');
   };
 
-  const displayName =
-    userProfile?.firstName || user?.displayName?.split(' ')[0] || 'My Account';
-
   const menuItems = [
     { label: 'My Profile', href: '/account', icon: RiUser3Line },
     { label: 'My Orders', href: '/orders', icon: RiShoppingBag3Line },
@@ -83,9 +79,14 @@ const AccountDropdown: React.FC = () => {
     return (
       <Link
         href="/login"
-        className="px-6 py-1.5 bg-white text-[#2874f0] font-bold border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors hidden lg:block text-sm"
+        className="p-2 text-gray-500 hover:text-black transition-colors rounded-full flex items-center justify-center group"
+        aria-label="Login"
       >
-        Login
+        <RiUser3Line
+          size={22}
+          strokeWidth={1.5}
+          className="transition-colors group-hover:text-black"
+        />
       </Link>
     );
   }
@@ -100,21 +101,14 @@ const AccountDropdown: React.FC = () => {
       {/* Trigger Button */}
       <button
         onClick={handleClick}
-        className="flex items-center gap-1 p-2 text-gray-700 hover:text-blue-600 transition-colors focus:outline-none group"
+        className="p-2 text-gray-500 hover:text-black transition-colors focus:outline-none flex items-center justify-center group"
+        aria-label="Account Menu"
       >
-        <div className="flex items-center gap-1.5">
-          <RiUser3Line
-            size={18}
-            className="text-gray-700 group-hover:text-blue-600 transition-colors"
-          />
-          <span className="text-[14px] font-bold truncate hidden lg:block max-w-[100px]">
-            {displayName}
-          </span>
-          <RiArrowDownSLine
-            size={16}
-            className={`transition-transform duration-200 hidden lg:block ${isOpen ? 'rotate-180 text-blue-600' : 'text-gray-400'}`}
-          />
-        </div>
+        <RiUser3Line
+          size={22}
+          strokeWidth={1.5}
+          className="transition-colors group-hover:text-black"
+        />
       </button>
 
       {/* Dropdown Card */}
