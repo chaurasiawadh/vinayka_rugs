@@ -14,6 +14,7 @@ import { Address } from '@/types';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Loader } from 'lucide-react';
+import Script from 'next/script';
 
 const CartContent: React.FC = () => {
   const searchParams = useSearchParams();
@@ -47,6 +48,9 @@ const CartContent: React.FC = () => {
   const [discount, setDiscount] = useState(0);
   const [step, setStep] = useState<'cart' | 'shipping' | 'payment'>('cart');
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>(
+    'razorpay'
+  );
 
   // Address Selection State
   const [selectedAddressId, setSelectedAddressId] = useState<string>('new');
@@ -156,8 +160,8 @@ const CartContent: React.FC = () => {
         await updateDoc(userRef, updates);
       }
 
-      // Simulate Stripe API call
-      setTimeout(async () => {
+      if (paymentMethod === 'cod') {
+        // Handle Cash on Delivery
         const orderData = {
           id: 'ORD-' + Math.floor(Math.random() * 1000000),
           items: displayItems,
@@ -165,7 +169,10 @@ const CartContent: React.FC = () => {
           status: 'placed' as const,
           date: new Date().toISOString(),
           shippingAddress: address,
+          paymentMethod: 'COD',
+          paymentId: 'PENDING',
         };
+
         const placedOrder = await placeOrder(orderData, isBuyNow);
 
         if (placedOrder) {
@@ -173,10 +180,103 @@ const CartContent: React.FC = () => {
           router.push(`/order-success?orderId=${placedOrder.id}`);
         } else {
           setLoading(false);
+          alert('Order placement failed. Please contact support.');
         }
-      }, 2000);
+        return;
+      }
+
+      // Create Razorpay Order on Server
+      const res = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: finalTotal,
+          currency: 'INR',
+          receipt: 'order_rcptid_' + Date.now(),
+        }),
+      });
+
+      const order = await res.json();
+
+      if (!order.id) {
+        throw new Error('Server error: Could not create order');
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Vinayka Rugs',
+        description: 'Payment for your order',
+        order_id: order.id,
+        handler: async function (response: any) {
+          try {
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.status === 'success') {
+              const orderData = {
+                id: order.id,
+                items: displayItems,
+                total: finalTotal,
+                status: 'placed' as const,
+                date: new Date().toISOString(),
+                shippingAddress: address,
+                paymentId: response.razorpay_payment_id,
+                paymentMethod: 'Razorpay',
+              };
+
+              const placedOrder = await placeOrder(orderData, isBuyNow);
+
+              if (placedOrder) {
+                setLoading(false);
+                router.push(`/order-success?orderId=${placedOrder.id}`);
+              } else {
+                setLoading(false);
+                alert(
+                  'Order placement failed locally but payment was successful. Please contact support.'
+                );
+              }
+            } else {
+              alert('Payment verification failed');
+              setLoading(false);
+            }
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Verification Error:', err);
+            alert('Payment verification error');
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: address.fullName,
+          email: user?.email || 'customer@example.com',
+          contact: address.phone,
+        },
+        theme: {
+          color: '#D2691E',
+        },
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
     } catch (error) {
-      alert('Error processing order.');
+      // eslint-disable-next-line no-console
+      console.error('Payment Error:', error);
+      alert('Error processing payment. Please try again.');
       setLoading(false);
     }
   };
@@ -194,6 +294,10 @@ const CartContent: React.FC = () => {
 
   return (
     <div className="bg-cream min-h-screen py-12">
+      <Script
+        id="razorpay-checkout-js"
+        src="https://checkout.razorpay.com/v1/checkout.js"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Stepper */}
         <div className="flex items-center justify-center mb-12 text-sm font-medium">
@@ -231,7 +335,7 @@ const CartContent: React.FC = () => {
                       className="flex gap-4 border-b border-gray-100 pb-6 last:border-0"
                     >
                       <img
-                        src={item.images[0]}
+                        src={item.images?.[0] || '/placeholder-rug.jpg'}
                         alt={item.name}
                         className="w-24 h-32 object-cover rounded-md"
                       />
@@ -510,19 +614,25 @@ const CartContent: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm p-6 animate-fade-in">
                 <h2 className="font-serif text-2xl mb-6">Payment</h2>
                 <div className="space-y-4">
-                  <div className="p-4 border border-terracotta bg-cream/30 rounded-lg flex justify-between items-center cursor-pointer">
+                  <div
+                    onClick={() => setPaymentMethod('razorpay')}
+                    className={`p-4 border rounded-lg flex justify-between items-center cursor-pointer transition-all ${paymentMethod === 'razorpay' ? 'border-terracotta bg-cream/30' : 'border-gray-200 hover:border-gray-300'}`}
+                  >
                     <span className="font-medium">
-                      Credit / Debit Card (Stripe Test)
+                      Pay with Razorpay (Cards, UPI, NetBanking)
                     </span>
-                    <div className="h-4 w-4 rounded-full bg-terracotta"></div>
+                    <div
+                      className={`h-4 w-4 rounded-full border ${paymentMethod === 'razorpay' ? 'bg-terracotta border-terracotta' : 'border-gray-300'}`}
+                    ></div>
                   </div>
-                  <div className="p-4 border border-gray-200 rounded-lg flex justify-between items-center opacity-50 cursor-not-allowed">
-                    <span className="font-medium">UPI / Netbanking</span>
-                    <div className="h-4 w-4 rounded-full border border-gray-300"></div>
-                  </div>
-                  <div className="p-4 border border-gray-200 rounded-lg flex justify-between items-center opacity-50 cursor-not-allowed">
+                  <div
+                    onClick={() => setPaymentMethod('cod')}
+                    className={`p-4 border rounded-lg flex justify-between items-center cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-terracotta bg-cream/30' : 'border-gray-200 hover:border-gray-300'}`}
+                  >
                     <span className="font-medium">Cash on Delivery</span>
-                    <div className="h-4 w-4 rounded-full border border-gray-300"></div>
+                    <div
+                      className={`h-4 w-4 rounded-full border ${paymentMethod === 'cod' ? 'bg-terracotta border-terracotta' : 'border-gray-300'}`}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -626,7 +736,9 @@ const CartContent: React.FC = () => {
                     >
                       {loading
                         ? 'Processing...'
-                        : `Pay ₹${finalTotal.toLocaleString('en-IN')}`}
+                        : paymentMethod === 'cod'
+                          ? 'Place Order'
+                          : `Pay ₹${finalTotal.toLocaleString('en-IN')}`}
                     </Button>
                   </div>
                 )}

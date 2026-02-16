@@ -158,6 +158,8 @@ export interface Order {
   shippingAddress: Address;
   estimatedDelivery?: string;
   trackingHistory?: OrderTrackingStep[];
+  paymentId?: string;
+  paymentMethod?: string;
 }
 
 export interface Address {
