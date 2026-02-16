@@ -61,7 +61,7 @@ export const PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1615529182904-14819c35db37?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
 
 export const FREE_SHIPPING_THRESHOLD = 50000;
-export const SHIPPING_COST = 2500;
+export const SHIPPING_COST = 0;
 
 export const ROOMS = [
   'Living Room',
