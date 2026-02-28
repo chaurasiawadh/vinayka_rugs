@@ -88,7 +88,7 @@ const Header: React.FC = () => {
           <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16">
             <div className="flex items-center justify-between">
               {/* Logo - Left aligned */}
-              {/* <div className="flex-shrink-0 w-1/4">
+              <div className="flex-shrink-0 w-1/4">
                 <Link
                   href="/"
                   className="inline-flex items-center group transition-all duration-300 hover:opacity-80 active:scale-95"
@@ -96,13 +96,13 @@ const Header: React.FC = () => {
                   <Image
                     src="/images/logo.png"
                     alt="Vinayka Rugs"
-                    width={240}
-                    height={80}
+                    width={112}
+                    height={60}
                     priority
-                    className="w-auto h-20 object-contain"
+                    className="w-auto h-12 object-contain"
                   />
                 </Link>
-              </div> */}
+              </div>
 
               {/* Desktop Nav - Centered */}
               <div className="hidden lg:flex flex-1 justify-center">
@@ -238,7 +238,7 @@ const Header: React.FC = () => {
                   <Image
                     src="/images/logo.png"
                     alt="Vinayka Rugs"
-                    width={160}
+                    width={67}
                     height={48}
                     className="w-auto h-12 object-contain"
                   />
