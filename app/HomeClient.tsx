@@ -106,20 +106,6 @@ const HomeClient: React.FC = () => {
                   </Button>
                 </motion.div>
               </Link>
-              <Link href="/bespoke">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-[#C19A6B] text-[#C19A6B] hover:bg-[#C19A6B]/10 min-w-[200px] rounded-full py-6 text-sm tracking-widest uppercase font-serif shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur-sm"
-                  >
-                    Bespoke Services
-                  </Button>
-                </motion.div>
-              </Link>
             </div>
 
             {/* Trust Indicators - Now centered at the bottom of the hero text block */}
