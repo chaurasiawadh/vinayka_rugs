@@ -77,14 +77,14 @@ const Footer: React.FC = () => {
                   Contact Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/admin"
                   className="hover:text-terracotta transition-colors"
                 >
                   Admin Login
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
