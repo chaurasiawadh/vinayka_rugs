@@ -12,10 +12,10 @@ import { motion } from 'framer-motion';
 import UploadPrompt from '../components/visualizer/UploadPrompt';
 
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1620626011761-996317b8d101?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-  'https://images.unsplash.com/photo-1600607688969-a5bfcd64bd0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-  'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2Q2MIez8S9sfGP4g5WohVpmUMOQxJqdkLFTcy',
+  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2HPyTCIegap6B2L74KthM1CeG0Y9ENXbDOvFS',
+  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B21hbtJhvY0p3ukrcz4Bo8JlQw5TsevVaWSF1n',
+  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2SmHUNeldaI2ulv5ywRb6cpBAWTjkPZ1VE7MD',
 ];
 
 const HomeClient: React.FC = () => {
