@@ -40,7 +40,8 @@ const Header: React.FC = () => {
   const router = useRouter();
 
   const isHomePage = pathname === '/';
-  const isDarkText = isScrolled || !isHomePage;
+  // Always use dark text as the hero background is very bright
+  const isDarkText = true;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,7 +79,7 @@ const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
+        className={`sticky top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
           isScrolled
             ? 'bg-white shadow-md border-b border-gray-100'
             : `bg-transparent backdrop-blur-[2px] border-b shadow-none ${isHomePage ? 'border-white/20' : 'border-gray-200/50'}`
