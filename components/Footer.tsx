@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
                 src="/images/logo.png"
                 alt="Vinayka Rugs"
                 width={134}
-                height={96}
+                height={94}
                 priority
                 className="w-auto h-20 object-contain bg-white p-2 rounded-md"
               />
