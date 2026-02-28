@@ -78,7 +78,7 @@ const Header: React.FC = () => {
         className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
           isScrolled
             ? 'bg-white shadow-md border-b border-gray-100'
-            : 'bg-white/40 backdrop-blur-md border-b border-white/50 shadow-sm'
+            : 'bg-transparent backdrop-blur-[2px] border-b border-white/20 shadow-none'
         }`}
         onMouseLeave={() => setIsShopHovered(false)}
       >
@@ -115,11 +115,19 @@ const Header: React.FC = () => {
                     >
                       <Link
                         href={link.path}
-                        className="text-[12px] tracking-[0.15em] uppercase font-semibold transition-colors duration-500 relative group whitespace-nowrap text-gray-600 hover:text-black"
+                        className={`text-[12px] tracking-[0.15em] uppercase font-semibold transition-colors duration-500 relative group whitespace-nowrap ${
+                          isScrolled
+                            ? 'text-gray-800 hover:text-black'
+                            : 'text-[#FAF9F6] hover:text-white'
+                        }`}
                       >
                         {link.name}
                         {/* Luxury underline effect */}
-                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full bg-black"></span>
+                        <span
+                          className={`absolute -bottom-1 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full ${
+                            isScrolled ? 'bg-black' : 'bg-white'
+                          }`}
+                        ></span>
                       </Link>
                     </div>
                   ))}
@@ -129,19 +137,27 @@ const Header: React.FC = () => {
               {/* Icons - Right aligned */}
               <div className="flex items-center justify-end w-1/4 gap-6">
                 <button
-                  className="p-2 transition-colors duration-500 text-gray-600 hover:text-black"
+                  className={`p-2 transition-colors duration-500 ${
+                    isScrolled
+                      ? 'text-gray-800 hover:text-black'
+                      : 'text-[#FAF9F6] hover:text-white'
+                  }`}
                   aria-label="Search"
                   onClick={() => setIsSearchOpen(!isSearchOpen)}
                 >
                   <Search size={22} strokeWidth={1.5} />
                 </button>
 
-                <div className="hidden sm:block transition-colors duration-500 text-gray-600">
-                  <AccountDropdown />
+                <div className="hidden sm:block transition-colors duration-500">
+                  <AccountDropdown isScrolled={isScrolled} />
                 </div>
 
                 <button
-                  className="p-2 transition-colors duration-500 relative group text-gray-600 hover:text-black"
+                  className={`p-2 transition-colors duration-500 relative group ${
+                    isScrolled
+                      ? 'text-gray-800 hover:text-black'
+                      : 'text-[#FAF9F6] hover:text-white'
+                  }`}
                   onClick={() => setIsCartOpen(true)}
                 >
                   <ShoppingBag size={22} strokeWidth={1.5} />
@@ -155,7 +171,11 @@ const Header: React.FC = () => {
                 {/* Mobile Menu Button */}
                 <div className="lg:hidden">
                   <button
-                    className="p-2 -mr-2 transition-colors duration-500 text-black"
+                    className={`p-2 -mr-2 transition-colors duration-500 ${
+                      isScrolled
+                        ? 'text-black'
+                        : 'text-[#FAF9F6] hover:text-white'
+                    }`}
                     onClick={() => setIsMobileMenuOpen(true)}
                     aria-label="Open Menu"
                   >

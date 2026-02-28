@@ -11,7 +11,9 @@ import {
   RiLogoutBoxRLine,
 } from '@remixicon/react';
 
-const AccountDropdown: React.FC = () => {
+const AccountDropdown: React.FC<{ isScrolled?: boolean }> = ({
+  isScrolled = true,
+}) => {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -79,13 +81,17 @@ const AccountDropdown: React.FC = () => {
     return (
       <Link
         href="/login"
-        className="p-2 text-gray-500 hover:text-black transition-colors rounded-full flex items-center justify-center group"
+        className={`p-2 transition-colors rounded-full flex items-center justify-center group ${
+          isScrolled
+            ? 'text-gray-500 hover:text-black'
+            : 'text-[#FAF9F6] hover:text-white'
+        }`}
         aria-label="Login"
       >
         <RiUser3Line
           size={22}
           strokeWidth={1.5}
-          className="transition-colors group-hover:text-black"
+          className="transition-colors group-hover:currentColor"
         />
       </Link>
     );
@@ -101,13 +107,17 @@ const AccountDropdown: React.FC = () => {
       {/* Trigger Button */}
       <button
         onClick={handleClick}
-        className="p-2 text-gray-500 hover:text-black transition-colors focus:outline-none flex items-center justify-center group"
+        className={`p-2 transition-colors focus:outline-none flex items-center justify-center group ${
+          isScrolled
+            ? 'text-gray-500 hover:text-black'
+            : 'text-[#FAF9F6] hover:text-white'
+        }`}
         aria-label="Account Menu"
       >
         <RiUser3Line
           size={22}
           strokeWidth={1.5}
-          className="transition-colors group-hover:text-black"
+          className="transition-colors group-hover:currentColor"
         />
       </button>
 
