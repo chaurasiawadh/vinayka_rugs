@@ -39,6 +39,9 @@ const Header: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
 
+  const isHomePage = pathname === '/';
+  const isDarkText = isScrolled || !isHomePage;
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -78,7 +81,7 @@ const Header: React.FC = () => {
         className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
           isScrolled
             ? 'bg-white shadow-md border-b border-gray-100'
-            : 'bg-transparent backdrop-blur-[2px] border-b border-white/20 shadow-none'
+            : `bg-transparent backdrop-blur-[2px] border-b shadow-none ${isHomePage ? 'border-white/20' : 'border-gray-200/50'}`
         }`}
         onMouseLeave={() => setIsShopHovered(false)}
       >
@@ -116,7 +119,7 @@ const Header: React.FC = () => {
                       <Link
                         href={link.path}
                         className={`text-[12px] tracking-[0.15em] uppercase font-semibold transition-colors duration-500 relative group whitespace-nowrap ${
-                          isScrolled
+                          isDarkText
                             ? 'text-gray-800 hover:text-black'
                             : 'text-[#FAF9F6] hover:text-white'
                         }`}
@@ -125,7 +128,7 @@ const Header: React.FC = () => {
                         {/* Luxury underline effect */}
                         <span
                           className={`absolute -bottom-1 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full ${
-                            isScrolled ? 'bg-black' : 'bg-white'
+                            isDarkText ? 'bg-black' : 'bg-white'
                           }`}
                         ></span>
                       </Link>
@@ -138,7 +141,7 @@ const Header: React.FC = () => {
               <div className="flex items-center justify-end w-1/4 gap-6">
                 <button
                   className={`p-2 transition-colors duration-500 ${
-                    isScrolled
+                    isDarkText
                       ? 'text-gray-800 hover:text-black'
                       : 'text-[#FAF9F6] hover:text-white'
                   }`}
@@ -149,12 +152,12 @@ const Header: React.FC = () => {
                 </button>
 
                 <div className="hidden sm:block transition-colors duration-500">
-                  <AccountDropdown isScrolled={isScrolled} />
+                  <AccountDropdown isScrolled={isDarkText} />
                 </div>
 
                 <button
                   className={`p-2 transition-colors duration-500 relative group ${
-                    isScrolled
+                    isDarkText
                       ? 'text-gray-800 hover:text-black'
                       : 'text-[#FAF9F6] hover:text-white'
                   }`}
@@ -172,7 +175,7 @@ const Header: React.FC = () => {
                 <div className="lg:hidden">
                   <button
                     className={`p-2 -mr-2 transition-colors duration-500 ${
-                      isScrolled
+                      isDarkText
                         ? 'text-black'
                         : 'text-[#FAF9F6] hover:text-white'
                     }`}
