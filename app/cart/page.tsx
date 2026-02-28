@@ -293,7 +293,7 @@ const CartContent: React.FC = () => {
   }
 
   return (
-    <div className="bg-cream min-h-screen py-12">
+    <div className="bg-cream min-h-screen pt-24 pb-12">
       <Script
         id="razorpay-checkout-js"
         src="https://checkout.razorpay.com/v1/checkout.js"

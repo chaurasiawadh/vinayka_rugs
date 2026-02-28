@@ -301,10 +301,10 @@ const Login: React.FC = () => {
             <Image
               src="/images/logo.png"
               alt="Vinayka Rugs"
-              width={250}
-              height={80}
+              width={134}
+              height={96}
               priority
-              className="w-auto h-24 "
+              className="w-auto h-20 object-contain"
             />
           </div>
           <p className="text-lg font-light opacity-90 max-w-md mx-auto">
@@ -339,10 +339,10 @@ const Login: React.FC = () => {
           <Image
             src="/images/logo.png"
             alt="Vinayka Rugs"
-            width={180}
-            height={50}
+            width={90}
+            height={64}
             priority
-            className="w-auto h-16"
+            className="w-auto h-16 object-contain"
           />
         </div>
 

@@ -45,7 +45,7 @@ const OrderDetailsContent = () => {
   if (!order) return null;
 
   return (
-    <div className="bg-[#f1f3f6] min-h-screen pb-12 pt-4">
+    <div className="bg-[#f1f3f6] min-h-screen pb-12 pt-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Actions */}
         <div className="flex items-center justify-between mb-4">

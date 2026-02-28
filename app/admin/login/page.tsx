@@ -67,8 +67,8 @@ const AdminLogin = () => {
             <Image
               src="/images/logo.png"
               alt="Vinayka Rugs"
-              width={180}
-              height={50}
+              width={90}
+              height={64}
               className="w-auto h-16 object-contain"
             />
           </div>

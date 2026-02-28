@@ -172,7 +172,7 @@ export default function ProductDetails({
     <div className="bg-[#FAF8F6] min-h-screen pb-20">
       <div className="w-full pl-8 pr-8">
         {/* Breadcrumb Navigation - Outside white container */}
-        <div className="mb-6">
+        <div className="mb-6 mt-14">
           <Breadcrumb
             category={product.category}
             collection={product.collection}

@@ -61,9 +61,9 @@ const Admin: React.FC = () => {
             <Image
               src="/images/logo.png"
               alt="Vinayka Rugs"
-              width={160}
-              height={40}
-              className="w-auto h-12"
+              width={67}
+              height={48}
+              className="w-auto h-12 object-contain"
             />
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
               Admin Panel

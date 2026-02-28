@@ -9,15 +9,15 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
-          <div className="space-y-6">
+          <div className="space-y-1">
             <Link href="/" className="inline-block">
               <Image
                 src="/images/logo.png"
                 alt="Vinayka Rugs"
-                width={250}
-                height={80}
+                width={134}
+                height={94}
                 priority
-                className="w-auto h-24 mb-[-24px] mt-[-12px]"
+                className="w-auto h-20 object-contain bg-white p-2 rounded-md"
               />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
@@ -77,14 +77,14 @@ const Footer: React.FC = () => {
                   Contact Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/admin"
                   className="hover:text-terracotta transition-colors"
                 >
                   Admin Login
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -94,7 +94,10 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm text-gray-400 mb-6">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="shrink-0 mt-0.5 text-terracotta" />
-                <span>Bhadohi, Varanasi, Uttar Pradesh</span>
+                <span>
+                  SHYAMA EXPORTS Chauri Bazar (Main Road), Parsipur Bhadohi,
+                  Uttar Pradesh
+                </span>
               </li>
               <li className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
