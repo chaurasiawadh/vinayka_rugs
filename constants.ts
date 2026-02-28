@@ -31,11 +31,14 @@ export const WEAVE_TYPES = [
   'Cut Pile',
 ];
 export const SIZES = [
+  '2x2 ft',
   '2x4 ft',
   '3x5 ft',
+  '4x4 ft',
   '4x6 ft',
   '5x7 ft',
   '5x8 ft',
+  '6x6 ft',
   '6x9 ft',
   '8x10 ft',
   '9x12 ft',
