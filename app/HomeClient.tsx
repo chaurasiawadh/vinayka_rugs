@@ -11,10 +11,27 @@ import { GalleryItem } from '@/types';
 import { motion } from 'framer-motion';
 import UploadPrompt from '../components/visualizer/UploadPrompt';
 
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1620626011761-996317b8d101?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://images.unsplash.com/photo-1600607688969-a5bfcd64bd0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+];
+
 const HomeClient: React.FC = () => {
   const { products, openBespokeModal } = useShop();
   const galleryItems = useCollection('gallery') as GalleryItem[];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const [bgImage, setBgImage] = React.useState<string>('');
+  const [imageLoaded, setImageLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    // Select a random image on mount
+    const randomImg =
+      HERO_IMAGES[Math.floor(Math.random() * HERO_IMAGES.length)];
+    setBgImage(randomImg);
+  }, []);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -37,155 +54,99 @@ const HomeClient: React.FC = () => {
     featuredProducts.length > 0 ? featuredProducts : products.slice(0, 4);
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in relative">
       {/* Hero Section Redesign */}
-      <section className="relative min-h-screen w-full flex items-center overflow-hidden bg-[#FAF8F6] pt-24 lg:pt-32">
-        {/* Background is now clean to match the processed asset */}
+      <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center overflow-hidden bg-black">
+        {/* Background Image */}
+        {bgImage && (
+          <img
+            src={bgImage}
+            alt="Luxury Rugs Interior"
+            onLoad={() => setImageLoaded(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        )}
 
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 relative z-10 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center pt-20 lg:pt-0">
-            {/* Left Content */}
-            <div className="flex flex-col space-y-8 max-w-2xl">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="flex flex-col space-y-4"
-              >
-                <span className="text-terracotta text-xs md:text-sm font-bold tracking-[0.4em] uppercase">
-                  The Art of Flooring
-                </span>
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-text-body font-medium leading-[1.1]">
-                  Weave Stories <br />
-                  Into{' '}
-                  <span className="text-terracotta italic">Every Room</span>
-                </h1>
-              </motion.div>
+        {/* Dark Overlay for Readability */}
+        <div className="absolute inset-0 bg-black/40 z-10" />
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-gray-600 text-lg md:text-xl max-w-lg font-light leading-relaxed"
-              >
-                Hand-knotted masterpieces blending tradition and modern luxury
-                for timeless interiors.
-              </motion.p>
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 relative z-20 w-full flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="flex flex-col space-y-6 items-center max-w-4xl"
+          >
+            <span className="text-white/90 text-xs md:text-sm font-bold tracking-[0.4em] uppercase drop-shadow-md">
+              The Art of Flooring
+            </span>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white font-medium leading-[1.1] drop-shadow-lg">
+              Weave Stories <br />
+              Into <span className="italic text-white/90">Every Room</span>
+            </h1>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="flex flex-col sm:flex-row gap-5"
-              >
-                <Link href="/shop">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      size="lg"
-                      className="min-w-[200px] bg-text-body hover:bg-black text-white rounded-full py-6 text-sm tracking-widest uppercase font-bold shadow-xl transition-all"
-                    >
-                      Shop Collection
-                    </Button>
-                  </motion.div>
-                </Link>
-                <Link href="/bespoke">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="border-gray-300 text-text-body hover:border-text-body min-w-[200px] rounded-full py-6 text-sm tracking-widest uppercase font-bold transition-all"
-                    >
-                      Bespoke Services
-                    </Button>
-                  </motion.div>
-                </Link>
-              </motion.div>
+            <p className="text-gray-200 text-lg md:text-xl max-w-2xl font-light leading-relaxed drop-shadow-md mt-6">
+              Hand-knotted masterpieces blending tradition and modern luxury for
+              timeless interiors.
+            </p>
 
-              {/* Trust Indicators */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 1 }}
-                className="pt-10 flex items-center gap-8 border-t border-gray-200 mt-10"
-              >
-                <div className="flex flex-col">
-                  <span className="text-2xl font-serif font-bold text-text-body">
-                    2K+
-                  </span>
-                  <span className="text-[10px] uppercase tracking-widest text-text-muted">
-                    Master Weavers
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-serif font-bold text-text-body">
-                    150+
-                  </span>
-                  <span className="text-[10px] uppercase tracking-widest text-text-muted">
-                    Global Awards
-                  </span>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Right Rug Visual */}
-            <div className="relative">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
-                animate={{ opacity: 1, scale: 1.4, rotate: 0 }}
-                transition={{ duration: 1.2, ease: 'easeOut' }}
-                className="relative lg:scale-125 xl:scale-150 origin-center"
-              >
-                {/* Floating Rug Wrapper */}
+            <div className="flex flex-col sm:flex-row gap-5 mt-10 justify-center">
+              <Link href="/shop">
                 <motion.div
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                  className="relative z-10"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <img
-                    src="/images/hero-model-rug-final.png"
-                    alt="Luxury Rug Presentation"
-                    className="w-full h-auto transform transition-transform duration-700"
-                  />
+                  <Button
+                    size="lg"
+                    className="min-w-[200px] bg-[#C19A6B] text-white hover:bg-[#A88256] rounded-full py-6 text-sm tracking-widest uppercase font-serif shadow-lg hover:shadow-2xl transition-all duration-300"
+                  >
+                    Shop Collection
+                  </Button>
                 </motion.div>
-              </motion.div>
-
-              {/* Floating Info Card */}
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: 1,
-                }}
-                className="absolute -bottom-6 lg:-bottom-12 left-0 lg:-left-12 bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-2xl z-20 hidden md:flex items-center gap-5 border border-gray-100 min-w-[240px]"
-              >
-                <div className="w-12 h-12 bg-terracotta rounded-xl flex items-center justify-center text-white shadow-soft">
-                  <Star size={24} fill="currentColor" />
-                </div>
-                <div>
-                  <h4 className="font-serif font-bold text-text-body text-lg leading-tight">
-                    Hand-Knotted
-                  </h4>
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-terracotta mt-1 font-semibold">
-                    Silk & Wool Masterpiece
-                  </p>
-                </div>
-              </motion.div>
+              </Link>
+              <Link href="/bespoke">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-[#C19A6B] text-[#C19A6B] hover:bg-[#C19A6B]/10 min-w-[200px] rounded-full py-6 text-sm tracking-widest uppercase font-serif shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur-sm"
+                  >
+                    Bespoke Services
+                  </Button>
+                </motion.div>
+              </Link>
             </div>
-          </div>
+
+            {/* Trust Indicators - Now centered at the bottom of the hero text block */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1 }}
+              className="mt-16 flex items-center justify-center gap-12 border-t border-white/20 pt-8"
+            >
+              <div className="flex flex-col items-center">
+                <span className="text-3xl font-serif font-bold text-white drop-shadow-md">
+                  2K+
+                </span>
+                <span className="text-[10px] uppercase tracking-widest text-white/80 mt-1">
+                  Master Weavers
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-3xl font-serif font-bold text-white drop-shadow-md">
+                  150+
+                </span>
+                <span className="text-[10px] uppercase tracking-widest text-white/80 mt-1">
+                  Global Awards
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 

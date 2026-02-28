@@ -75,8 +75,10 @@ const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 bg-white/90 backdrop-blur-xl ${
-          isScrolled ? 'shadow-sm border-b border-gray-100/50' : ''
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
+          isScrolled
+            ? 'bg-white shadow-md border-b border-gray-100'
+            : 'bg-white/40 backdrop-blur-md border-b border-white/50 shadow-sm'
         }`}
         onMouseLeave={() => setIsShopHovered(false)}
       >
@@ -86,7 +88,7 @@ const Header: React.FC = () => {
           <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16">
             <div className="flex items-center justify-between">
               {/* Logo - Left aligned */}
-              <div className="flex-shrink-0 w-1/4">
+              {/* <div className="flex-shrink-0 w-1/4">
                 <Link
                   href="/"
                   className="inline-flex items-center group transition-all duration-300 hover:opacity-80 active:scale-95"
@@ -100,7 +102,7 @@ const Header: React.FC = () => {
                     className="w-auto h-20 object-contain"
                   />
                 </Link>
-              </div>
+              </div> */}
 
               {/* Desktop Nav - Centered */}
               <div className="hidden lg:flex flex-1 justify-center">
