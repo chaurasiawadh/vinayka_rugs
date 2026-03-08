@@ -1,10 +1,13 @@
 import { MetadataRoute } from 'next';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL || 'https://www.vinaykarugs.com';
 
-  return [
+  // Static pages
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}`,
       lastModified: new Date(),
@@ -44,7 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/events`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'weekly',
       priority: 0.7,
     },
     {
@@ -72,4 +75,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     },
   ];
+
+  // Dynamic product pages from Firebase
+  let productPages: MetadataRoute.Sitemap = [];
+  try {
+    const querySnapshot = await getDocs(collection(db, 'products'));
+    productPages = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        url: `${baseUrl}/product/${doc.id}`,
+        lastModified: data.updatedAt?.toDate?.() || new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      };
+    });
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Sitemap: Error fetching products:', error);
+  }
+
+  return [...staticPages, ...productPages];
 }

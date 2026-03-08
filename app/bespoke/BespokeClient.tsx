@@ -10,7 +10,7 @@ const BespokeClient: React.FC = () => {
   const { openBespokeModal } = useShop();
 
   return (
-    <div className="bg-cream animate-fade-in pt-20">
+    <div className="bg-cream animate-fade-in ">
       {/* Hero */}
       <section className="relative h-[80vh] overflow-hidden">
         <ImageSmart

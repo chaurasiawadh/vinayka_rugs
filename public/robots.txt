@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block admin/private paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://www.vinaykarugs.com/sitemap.xml
