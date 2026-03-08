@@ -73,6 +73,7 @@ const Header: React.FC = () => {
     { name: 'Home', path: '/' },
     { name: 'Shop', path: '/shop', hasMegaMenu: true },
     { name: 'Bespoke', path: '/bespoke' },
+    { name: 'About', path: '/about' },
     { name: 'Store Locator', path: '/store-locator' },
   ];
 

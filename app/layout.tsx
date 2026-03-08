@@ -15,9 +15,28 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://vinaykarugs.com'),
-  title: 'Vinayka Rugs | Luxury Hand-Knotted Carpets',
-  description: 'Vinayka Rugs offers premium hand-knotted carpets.',
+  metadataBase: new URL('https://www.vinaykarugs.com'),
+  title: {
+    default: 'Vinayka Rugs | Luxury Hand-Knotted Carpets',
+    template: '%s | Vinayka Rugs',
+  },
+  description:
+    'Vinayka Rugs offers premium hand-knotted carpets crafted by master artisans from Varanasi. Bespoke designs, free shipping pan India.',
+  alternates: {
+    canonical: 'https://www.vinaykarugs.com',
+  },
+  openGraph: {
+    siteName: 'Vinayka Rugs',
+    type: 'website',
+    locale: 'en_IN',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
