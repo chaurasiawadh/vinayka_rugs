@@ -11,27 +11,10 @@ import { GalleryItem } from '@/types';
 import { motion } from 'framer-motion';
 import UploadPrompt from '../components/visualizer/UploadPrompt';
 
-const HERO_IMAGES = [
-  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2Q2MIez8S9sfGP4g5WohVpmUMOQxJqdkLFTcy',
-  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2HPyTCIegap6B2L74KthM1CeG0Y9ENXbDOvFS',
-  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B21hbtJhvY0p3ukrcz4Bo8JlQw5TsevVaWSF1n',
-  'https://f5ub3ywvhr.ufs.sh/f/Hmsrx7gap6B2SmHUNeldaI2ulv5ywRb6cpBAWTjkPZ1VE7MD',
-];
-
 const HomeClient: React.FC = () => {
   const { products, openBespokeModal } = useShop();
   const galleryItems = useCollection('gallery') as GalleryItem[];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-
-  const [bgImage, setBgImage] = React.useState<string>('');
-  const [imageLoaded, setImageLoaded] = React.useState(false);
-
-  React.useEffect(() => {
-    // Select a random image on mount
-    const randomImg =
-      HERO_IMAGES[Math.floor(Math.random() * HERO_IMAGES.length)];
-    setBgImage(randomImg);
-  }, []);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -57,17 +40,16 @@ const HomeClient: React.FC = () => {
     <div className="animate-fade-in relative">
       {/* Hero Section Redesign */}
       <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center overflow-hidden bg-black">
-        {/* Background Image */}
-        {bgImage && (
-          <img
-            src={bgImage}
-            alt="Luxury Rugs Interior"
-            onLoad={() => setImageLoaded(true)}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
-        )}
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
 
         {/* Dark Overlay for Readability */}
         <div className="absolute inset-0 bg-black/40 z-10" />
