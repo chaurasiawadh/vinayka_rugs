@@ -176,7 +176,6 @@ const GalleryManager: React.FC = () => {
               onChange={handleImageUpload}
               label="Cover Image"
               error={uploadError}
-              showFileUpload={false}
             />
           </div>
         </div>

@@ -496,7 +496,6 @@ const ProductManager = () => {
                     onChange={handleImageUpload}
                     label="Add Product Image"
                     error={uploadError}
-                    showFileUpload={false}
                   />
                 </div>
               )}

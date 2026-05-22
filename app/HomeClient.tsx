@@ -10,6 +10,7 @@ import { useCollection } from '@/hooks/useFirestore';
 import { GalleryItem } from '@/types';
 import { motion } from 'framer-motion';
 import UploadPrompt from '../components/visualizer/UploadPrompt';
+import HeroBanner from '@/components/hero/hero-banner';
 
 const HomeClient: React.FC = () => {
   const { products, openBespokeModal } = useShop();
@@ -40,16 +41,7 @@ const HomeClient: React.FC = () => {
     <div className="animate-fade-in relative">
       {/* Hero Section Redesign */}
       <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center overflow-hidden bg-black">
-        {/* Background Video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-        </video>
+        <HeroBanner />
 
         {/* Dark Overlay for Readability */}
         <div className="absolute inset-0 bg-black/40 z-10" />

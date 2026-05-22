@@ -261,3 +261,10 @@ export interface SearchResult {
   facets: Facet[];
   totalCount: number;
 }
+
+export type {
+  HeroMediaItem,
+  HeroMediaType,
+  HeroMediaFormData,
+  HeroMediaLoadStatus,
+} from './types/hero-media.types';

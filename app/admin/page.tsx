@@ -9,16 +9,18 @@ import {
   LogOut,
   Loader,
   ArrowLeft,
+  Film,
 } from 'lucide-react';
 import ProductManager from '@/components/admin/ProductManager';
 import GalleryManager from '@/components/admin/GalleryManager';
+import HeroMediaAdmin from '@/components/admin/hero-media-admin';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const Admin: React.FC = () => {
   const { user, userProfile, loading, logout } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'products' | 'gallery'>(
+  const [activeTab, setActiveTab] = useState<'products' | 'gallery' | 'hero'>(
     'products'
   );
 
@@ -92,6 +94,17 @@ const Admin: React.FC = () => {
           >
             <ImageIcon size={20} /> Gallery / Showcase
           </button>
+
+          <button
+            onClick={() => setActiveTab('hero')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'hero'
+                ? 'bg-terracotta text-white shadow-md'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <Film size={20} /> Hero Banner
+          </button>
         </nav>
         <div className="p-4 border-t">
           <div className="mb-4 px-2">
@@ -112,7 +125,9 @@ const Admin: React.FC = () => {
         </div>
       </aside>
       <main className="flex-1 p-8 overflow-y-auto">
-        {activeTab === 'products' ? <ProductManager /> : <GalleryManager />}
+        {activeTab === 'products' && <ProductManager />}
+        {activeTab === 'gallery' && <GalleryManager />}
+        {activeTab === 'hero' && <HeroMediaAdmin />}
       </main>
     </div>
   );

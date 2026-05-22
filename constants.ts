@@ -75,3 +75,20 @@ export const ROOMS = [
   'Outdoor',
 ];
 export const SHAPES = ['Square', 'Runner', 'Round', 'Rectangle'];
+
+export const HERO_MEDIA_COLLECTION = 'heroMedia';
+export const HERO_MEDIA_STORAGE_IMAGE_PREFIX = 'hero-media/images';
+export const HERO_MEDIA_STORAGE_VIDEO_PREFIX = 'hero-media/videos';
+export const HERO_MEDIA_STORAGE_THUMBNAIL_PREFIX = 'hero-media/thumbnails';
+export const HERO_MEDIA_MIN_ITEMS = 1;
+export const HERO_MEDIA_SESSION_KEY = 'vinayka_last_hero_media_id';
+export const HERO_MEDIA_FALLBACK_VIDEO = '/hero-video.mp4';
+
+export const HERO_MEDIA_ERRORS = {
+  cannotDeleteLast:
+    'At least one hero media item must remain. Add another item before deleting this one.',
+  uploadFailed: 'Upload failed. Please try again or paste a URL.',
+  corsUpload: "CORS Error: Please use 'Paste URL' or configure bucket CORS.",
+  mediaRequired: 'Please upload or provide a media URL first.',
+  emptyHero: 'No hero media configured. Please add items in the admin panel.',
+} as const;
