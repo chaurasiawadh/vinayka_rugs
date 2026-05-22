@@ -5,7 +5,16 @@ import { useSearchParams } from 'next/navigation';
 import { Filter, ChevronDown, Check, X } from 'lucide-react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { CATEGORIES, MATERIALS, ROOMS, SHAPES, SIZES } from '@/constants';
+import {
+  CATEGORIES,
+  MATERIALS,
+  ROOMS,
+  SHAPES,
+  SIZES,
+  SHOP_PRODUCTS_PAGE_SIZE,
+} from '@/constants';
+import { useClientPagination } from '@/hooks/use-client-pagination';
+import PaginationControls from '@/components/ui/pagination-controls';
 import ProductCard from '@/components/ProductCard';
 import Button from '@/components/Button';
 import { useShop } from '@/context/ShopContext';
@@ -174,6 +183,30 @@ const ShopClient: React.FC = () => {
     sortOption,
     searchQuery,
   ]);
+
+  const {
+    paginatedItems: paginatedProducts,
+    pageIndex,
+    pageSize,
+    totalItems,
+    hasMore,
+    hasPrevious,
+    goToNextPage,
+    goToPreviousPage,
+  } = useClientPagination({
+    items: filteredProducts,
+    pageSize: SHOP_PRODUCTS_PAGE_SIZE,
+    resetDeps: [
+      selectedStyles,
+      selectedMaterials,
+      selectedRooms,
+      selectedShapes,
+      selectedSizes,
+      priceRange,
+      sortOption,
+      searchQuery,
+    ],
+  });
 
   const toggleFilter = (
     item: string,
@@ -515,9 +548,23 @@ const ShopClient: React.FC = () => {
               </div>
             )}
 
+            {filteredProducts.length > 0 && (
+              <PaginationControls
+                pageIndex={pageIndex}
+                pageSize={pageSize}
+                totalItems={totalItems}
+                totalOnPage={paginatedProducts.length}
+                hasMore={hasMore}
+                hasPrevious={hasPrevious}
+                onNext={goToNextPage}
+                onPrevious={goToPreviousPage}
+                className="mb-6"
+              />
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
+                paginatedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))
               ) : (
@@ -532,6 +579,20 @@ const ShopClient: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {filteredProducts.length > 0 && (
+              <PaginationControls
+                pageIndex={pageIndex}
+                pageSize={pageSize}
+                totalItems={totalItems}
+                totalOnPage={paginatedProducts.length}
+                hasMore={hasMore}
+                hasPrevious={hasPrevious}
+                onNext={goToNextPage}
+                onPrevious={goToPreviousPage}
+                className="mt-8"
+              />
+            )}
           </div>
         </div>
       </div>

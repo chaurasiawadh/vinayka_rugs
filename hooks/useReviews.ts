@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Review } from '@/types';
 import { db } from '@/lib/firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import {
   calculateAverageRating,
   calculateRatingDistribution,
@@ -29,21 +29,28 @@ export const useProductReviews = (productId: string) => {
       return;
     }
 
-    const reviewsRef = collection(db, 'reviews');
-    const q = query(reviewsRef, where('productId', '==', productId));
+    let cancelled = false;
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
+    const loadReviews = async () => {
+      setLoading(true);
+      try {
+        const reviewsRef = collection(db, 'reviews');
+        const q = query(
+          reviewsRef,
+          where('productId', '==', productId),
+          limit(100)
+        );
+        const snapshot = await getDocs(q);
+        if (cancelled) return;
+
         const reviewsData = snapshot.docs.map(
-          (doc) =>
+          (docSnap) =>
             ({
-              id: doc.id,
-              ...doc.data(),
+              id: docSnap.id,
+              ...docSnap.data(),
             }) as Review
         );
 
-        // Sort by date descending (newest first)
         reviewsData.sort((a, b) => {
           const dateA = a.createdAt?.toDate?.() || new Date(0);
           const dateB = b.createdAt?.toDate?.() || new Date(0);
@@ -54,15 +61,21 @@ export const useProductReviews = (productId: string) => {
         setTotalReviews(reviewsData.length);
         setAverageRating(calculateAverageRating(reviewsData));
         setDistribution(calculateRatingDistribution(reviewsData));
-        setLoading(false);
-      },
-      (_error) => {
-        // Error fetching reviews
-        setLoading(false);
+      } catch {
+        if (!cancelled) {
+          setReviews([]);
+          setTotalReviews(0);
+          setAverageRating(0);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    );
+    };
 
-    return () => unsubscribe();
+    loadReviews();
+    return () => {
+      cancelled = true;
+    };
   }, [productId]);
 
   return {

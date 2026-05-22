@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useProducts } from '@/hooks/useFirestore';
+import { useShop } from '@/context/ShopContext';
+import { useClientPagination } from '@/hooks/use-client-pagination';
+import PaginationControls from '@/components/ui/pagination-controls';
+import { SHOP_PRODUCTS_PAGE_SIZE } from '@/constants';
 import { mockSearchProducts } from '@/utils/mockSearch';
 import { SearchResult } from '@/types';
 import ProductCard from '@/components/ProductCard';
@@ -14,7 +17,7 @@ const SearchResults: React.FC = () => {
   const searchParams = useSearchParams();
   const q = searchParams.get('q') || '';
 
-  const { products, loading } = useProducts();
+  const { products, loading } = useShop();
   const [results, setResults] = useState<SearchResult | null>(null);
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string[]>
@@ -45,6 +48,21 @@ const SearchResults: React.FC = () => {
   };
 
   const clearFilters = () => setSelectedFilters({});
+
+  const {
+    paginatedItems: paginatedProducts,
+    pageIndex,
+    pageSize,
+    totalItems,
+    hasMore,
+    hasPrevious,
+    goToNextPage,
+    goToPreviousPage,
+  } = useClientPagination({
+    items: results?.products ?? [],
+    pageSize: SHOP_PRODUCTS_PAGE_SIZE,
+    resetDeps: [q, selectedFilters, sort, results?.products.length],
+  });
 
   if (loading || !results)
     return <div className="p-20 text-center">Loading...</div>;
@@ -132,11 +150,35 @@ const SearchResults: React.FC = () => {
           {/* Product Grid */}
           <div className="flex-1">
             {results.products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {results.products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <PaginationControls
+                  pageIndex={pageIndex}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalOnPage={paginatedProducts.length}
+                  hasMore={hasMore}
+                  hasPrevious={hasPrevious}
+                  onNext={goToNextPage}
+                  onPrevious={goToPreviousPage}
+                  className="mb-6"
+                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {paginatedProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                <PaginationControls
+                  pageIndex={pageIndex}
+                  pageSize={pageSize}
+                  totalItems={totalItems}
+                  totalOnPage={paginatedProducts.length}
+                  hasMore={hasMore}
+                  hasPrevious={hasPrevious}
+                  onNext={goToNextPage}
+                  onPrevious={goToPreviousPage}
+                  className="mt-8"
+                />
+              </>
             ) : (
               <div className="py-20 text-center bg-white rounded-lg border border-dashed border-gray-300">
                 <h3 className="font-serif text-xl mb-2">No results found</h3>

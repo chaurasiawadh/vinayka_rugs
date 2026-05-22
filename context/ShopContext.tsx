@@ -4,6 +4,8 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useMemo,
+  useCallback,
 } from 'react';
 import {
   Product,
@@ -52,6 +54,7 @@ const mergeCarts = (local: CartItem[], remote: CartItem[]) => {
 interface ShopContextType {
   products: Product[];
   loading: boolean;
+  refreshProducts: () => Promise<void>;
   cart: CartItem[];
   directPurchaseItem: CartItem | null;
   setDirectPurchaseItem: (item: CartItem | null) => void;
@@ -103,10 +106,11 @@ interface ShopContextType {
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
-export const ShopProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const { products, loading } = useProducts();
+export const ShopProvider: React.FC<{
+  children: ReactNode;
+  enableProducts?: boolean;
+}> = ({ children, enableProducts = true }) => {
+  const { products, loading, refreshProducts } = useProducts(enableProducts);
   const { user } = useAuth(); // Integrate Auth
 
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -525,26 +529,34 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
 
-  const notify = (
-    message: string,
-    type: 'success' | 'error' | 'info' = 'success'
-  ) => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
-  };
-
-  const cartTotal = cart.reduce(
-    (acc, item) => acc + Number(item.price) * item.quantity,
-    0
+  const cartTotal = useMemo(
+    () =>
+      cart.reduce((acc, item) => acc + Number(item.price) * item.quantity, 0),
+    [cart]
   );
-  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-  const shippingDiff = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal);
+  const cartCount = useMemo(
+    () => cart.reduce((acc, item) => acc + item.quantity, 0),
+    [cart]
+  );
+  const shippingDiff = useMemo(
+    () => Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal),
+    [cartTotal]
+  );
+
+  const notify = useCallback(
+    (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+      setNotification({ message, type });
+      setTimeout(() => setNotification(null), 3000);
+    },
+    []
+  );
 
   return (
     <ShopContext.Provider
       value={{
         products,
         loading,
+        refreshProducts,
         cart,
         directPurchaseItem,
         setDirectPurchaseItem,

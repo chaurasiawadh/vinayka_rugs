@@ -6,15 +6,17 @@ import { ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
 import { useShop } from '../context/ShopContext';
-import { useCollection } from '@/hooks/useFirestore';
+import { useFeaturedProducts, useGalleryOnce } from '@/hooks/useFirestore';
 import { GalleryItem } from '@/types';
 import { motion } from 'framer-motion';
 import UploadPrompt from '../components/visualizer/UploadPrompt';
 import HeroBanner from '@/components/hero/hero-banner';
 
 const HomeClient: React.FC = () => {
-  const { products, openBespokeModal } = useShop();
-  const galleryItems = useCollection('gallery') as GalleryItem[];
+  const { openBespokeModal } = useShop();
+  const { products: displayProducts } = useFeaturedProducts(4);
+  const { items: galleryItems } = useGalleryOnce();
+  const gallery = galleryItems as GalleryItem[];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -31,11 +33,6 @@ const HomeClient: React.FC = () => {
       });
     }
   };
-
-  // Filter for trending products, or fall back to first 4
-  const featuredProducts = products.filter((p) => p.isTrending).slice(0, 4);
-  const displayProducts =
-    featuredProducts.length > 0 ? featuredProducts : products.slice(0, 4);
 
   return (
     <div className="animate-fade-in relative">
@@ -146,7 +143,7 @@ const HomeClient: React.FC = () => {
           </div>
         </div>
       </section>
-      {galleryItems.length > 0 && (
+      {gallery.length > 0 && (
         <section className="py-24 bg-white overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
@@ -187,7 +184,7 @@ const HomeClient: React.FC = () => {
               className="flex gap-8 overflow-x-auto pb-12 snap-x snap-mandatory no-scrollbar"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {galleryItems.map((item) => (
+              {gallery.map((item) => (
                 <motion.div
                   key={item.id}
                   whileHover={{ y: -10 }}
@@ -197,6 +194,8 @@ const HomeClient: React.FC = () => {
                     src={item.image}
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                   <div className="absolute bottom-10 left-10 right-10 text-white">

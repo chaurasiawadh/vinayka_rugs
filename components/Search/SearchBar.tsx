@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
-import { useProducts } from '../../hooks/useFirestore';
 import { mockAutocomplete } from '../../utils/mockSearch';
 import { SearchSuggestion } from '../../types';
 import SearchAutocomplete from './SearchAutocomplete';
 import { useShop } from '../../context/ShopContext';
 
 const SearchBar: React.FC<{ className?: string }> = ({ className = '' }) => {
-  const { searchQuery: query, setSearchQuery: setQuery } = useShop();
+  const { searchQuery: query, setSearchQuery: setQuery, products } = useShop();
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { products } = useProducts();
   const pathname =
     typeof window !== 'undefined' ? window.location.pathname : '';
 

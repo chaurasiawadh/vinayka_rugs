@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Star } from 'lucide-react';
-import { useProductReviews } from '@/hooks/useReviews';
+import { memo } from 'react';
 
 interface ProductCardProps {
   id: string;
@@ -10,11 +10,11 @@ interface ProductCardProps {
   originalPrice?: number;
   image: string;
   tags?: string[];
-  rating: number; // Kept for backward compatibility but not used
-  reviewsCount: number; // Kept for backward compatibility but not used
+  rating?: number;
+  reviewsCount?: number;
 }
 
-export default function ProductCard({
+const ProductCard = ({
   id,
   name,
   brand,
@@ -22,8 +22,10 @@ export default function ProductCard({
   originalPrice,
   image,
   tags,
-}: ProductCardProps) {
-  const { averageRating, totalReviews, loading } = useProductReviews(id);
+  rating = 0,
+  reviewsCount = 0,
+}: ProductCardProps) => {
+  const displayRating = Math.floor(rating);
 
   return (
     <Link
@@ -34,6 +36,8 @@ export default function ProductCard({
         <img
           src={image}
           alt={name}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {tags && tags.length > 0 && (
@@ -56,22 +60,17 @@ export default function ProductCard({
         </h3>
         <p className="text-xs text-gray-500 mb-2">{brand}</p>
 
-        {/* Dynamic Rating */}
-        {loading ? (
-          <div className="flex items-center gap-1.5 mb-3 h-4">
-            <div className="animate-pulse bg-gray-200 h-3 w-16 rounded"></div>
-          </div>
-        ) : (
+        {rating > 0 && (
           <div className="flex items-center gap-1.5 mb-3">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-3 h-3 ${i < Math.floor(averageRating) ? 'fill-current text-[#D4C49D]' : 'text-gray-200'}`}
+                  className={`w-3 h-3 ${i < displayRating ? 'fill-current text-[#D4C49D]' : 'text-gray-200'}`}
                 />
               ))}
             </div>
-            <span className="text-xs text-gray-400">({totalReviews})</span>
+            <span className="text-xs text-gray-400">({reviewsCount})</span>
           </div>
         )}
 
@@ -88,4 +87,6 @@ export default function ProductCard({
       </div>
     </Link>
   );
-}
+};
+
+export default memo(ProductCard);

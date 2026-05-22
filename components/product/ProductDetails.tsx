@@ -744,8 +744,8 @@ export default function ProductDetails({
                 price={p.price}
                 originalPrice={p.originalPrice}
                 image={p.images[0]}
-                rating={p.rating}
-                reviewsCount={p.reviewsCount}
+                rating={p.rating ?? 0}
+                reviewsCount={p.reviews ?? 0}
                 tags={p.tags}
               />
             ))}

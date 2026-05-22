@@ -84,6 +84,10 @@ export const HERO_MEDIA_MIN_ITEMS = 1;
 export const HERO_MEDIA_SESSION_KEY = 'vinayka_last_hero_media_id';
 export const HERO_MEDIA_FALLBACK_VIDEO = '/hero-video.mp4';
 
+export const ADMIN_PRODUCTS_PAGE_SIZE = 10;
+export const SHOP_PRODUCTS_PAGE_SIZE = 12;
+export const GALLERY_PAGE_SIZE = 10;
+
 export const HERO_MEDIA_ERRORS = {
   cannotDeleteLast:
     'At least one hero media item must remain. Add another item before deleting this one.',

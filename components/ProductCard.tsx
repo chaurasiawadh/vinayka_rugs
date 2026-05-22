@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart, ShoppingBag, Star, Loader2 } from 'lucide-react';
@@ -11,22 +11,55 @@ interface ProductCardProps {
   product: Product;
 }
 
+const parsePrice = (price: number | string | undefined): number => {
+  if (typeof price === 'number') return price;
+  if (typeof price === 'string') return parseFloat(price.replace(/,/g, ''));
+  return 0;
+};
+
+const getPriceData = (product: Product) => {
+  let price = 0;
+  let mrp = 0;
+
+  if (product.sizes?.length > 0) {
+    const firstSize = product.sizes[0];
+
+    if (product.sizePrices?.[firstSize]) {
+      price = parsePrice(product.sizePrices[firstSize]);
+    } else if (product.sizePrices) {
+      const prices = Object.values(product.sizePrices)
+        .map((p) => parsePrice(p))
+        .filter((p) => p > 0);
+      if (prices.length > 0) price = Math.min(...prices);
+    }
+
+    if (product.sizeOriginalPrices?.[firstSize]) {
+      mrp = parsePrice(product.sizeOriginalPrices[firstSize]);
+    }
+  }
+
+  if (price === 0) price = parsePrice(product.price);
+  if (mrp === 0) mrp = parsePrice(product.mrp);
+
+  return { price, mrp };
+};
+
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { price: displayPrice, mrp: displayMrp } = useMemo(
+    () => getPriceData(product),
+    [product]
+  );
+  const discount = useMemo(
+    () =>
+      displayMrp > displayPrice
+        ? Math.round(((displayMrp - displayPrice) / displayMrp) * 100)
+        : 0,
+    [displayMrp, displayPrice]
+  );
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
   const isWishlisted = isInWishlist(product.id);
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    // If the click was on the Quick Add or Wishlist button, don't navigate
-    if ((e.target as HTMLElement).closest('button')) {
-      return;
-    }
-
-    e.preventDefault();
-    setIsNavigating(true);
-    router.push(`/product/${product.id}`);
-  };
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,50 +75,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     toggleWishlist(product.id);
   };
 
-  // Helper to parse price
-  const parsePrice = (price: any): number => {
-    if (typeof price === 'number') return price;
-    if (typeof price === 'string') return parseFloat(price.replace(/,/g, ''));
-    return 0;
-  };
-
-  const getPriceData = () => {
-    let price = 0;
-    let mrp = 0;
-
-    // Try to find for the first size (matching default selection)
-    if (product.sizes?.length > 0) {
-      const firstSize = product.sizes[0];
-
-      // Calculate Price
-      if (product.sizePrices?.[firstSize]) {
-        price = parsePrice(product.sizePrices[firstSize]);
-      } else if (product.sizePrices) {
-        // Fallback to lowest price
-        const prices = Object.values(product.sizePrices)
-          .map((p) => parsePrice(p))
-          .filter((p) => p > 0);
-        if (prices.length > 0) price = Math.min(...prices);
-      }
-
-      // Calculate MRP
-      if (product.sizeOriginalPrices?.[firstSize]) {
-        mrp = parsePrice(product.sizeOriginalPrices[firstSize]);
-      }
-    }
-
-    // Fallbacks if not found in sizes
-    if (price === 0) price = parsePrice(product.price);
-    if (mrp === 0) mrp = parsePrice(product.mrp);
-
-    return { price, mrp };
-  };
-
-  const { price: displayPrice, mrp: displayMrp } = getPriceData();
-  const discount =
-    displayMrp > displayPrice
-      ? Math.round(((displayMrp - displayPrice) / displayMrp) * 100)
-      : 0;
+  const handleCardClick = useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest('button')) return;
+      e.preventDefault();
+      setIsNavigating(true);
+      router.push(`/product/${product.id}`);
+    },
+    [router, product.id]
+  );
 
   return (
     <div className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -96,12 +94,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <img
           src={product.images?.[0] || PLACEHOLDER_IMAGE}
           alt={product.name}
+          loading="lazy"
+          decoding="async"
           className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
         />
         {product.images?.[1] && (
           <img
             src={product.images[1]}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 object-cover w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
         )}
@@ -217,4 +219,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

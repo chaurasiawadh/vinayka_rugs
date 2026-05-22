@@ -26,7 +26,8 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useProducts } from '@/hooks/useFirestore';
+import { usePaginatedProducts } from '@/hooks/use-paginated-products';
+import PaginationControls from '@/components/ui/pagination-controls';
 import Button from '@/components/Button';
 import ImageInput from '@/components/ImageInput';
 import {
@@ -124,7 +125,17 @@ const INITIAL_PRODUCT: Partial<Product> = {
 
 const ProductManager = () => {
   const router = useRouter();
-  const { products } = useProducts();
+  const {
+    products,
+    loading: listLoading,
+    hasMore,
+    hasPrevious,
+    pageIndex,
+    pageSize,
+    refresh,
+    goToNextPage,
+    goToPreviousPage,
+  } = usePaginatedProducts();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<Product>>(INITIAL_PRODUCT);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -321,6 +332,7 @@ const ProductManager = () => {
       setIsEditing(false);
       setFormData(INITIAL_PRODUCT);
       setUploadError(null);
+      await refresh();
     } catch (err: any) {
       alert(`Error saving product: ${err.message || 'Unknown error'}`);
     } finally {
@@ -343,6 +355,7 @@ const ProductManager = () => {
     try {
       await deleteDoc(doc(db, 'products', deleteModal.id));
       setDeleteModal({ isOpen: false, id: null });
+      await refresh();
     } catch (err) {
       alert('Failed to delete product.');
     } finally {
@@ -1380,9 +1393,7 @@ const ProductManager = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-serif">
-          Product Inventory ({products.length})
-        </h2>
+        <h2 className="text-2xl font-serif">Product Inventory</h2>
         <Button
           onClick={() => {
             setFormData(INITIAL_PRODUCT);
@@ -1392,84 +1403,117 @@ const ProductManager = () => {
           <Plus size={18} className="mr-2" /> Add Product
         </Button>
       </div>
+      <PaginationControls
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        totalOnPage={products.length}
+        hasMore={hasMore}
+        hasPrevious={hasPrevious}
+        onNext={goToNextPage}
+        onPrevious={goToPreviousPage}
+        loading={listLoading}
+      />
+
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50 text-text-muted text-sm uppercase">
-            <tr>
-              <th className="p-4">Product</th>
-              <th className="p-4">Price</th>
-              <th className="p-4">Stock</th>
-              <th className="p-4">Stats</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {products.map((p) => (
-              <tr key={p.id} className="hover:bg-gray-50">
-                <td className="p-4 flex gap-3 items-center">
-                  <img
-                    src={p.images[0]}
-                    className="h-10 w-10 rounded object-cover"
-                    alt={p.name}
-                  />
-                  <button
-                    onClick={() => handleEdit(p)}
-                    className="text-left hover:opacity-70 transition-opacity"
-                  >
-                    <div className="font-medium">{p.name}</div>
-                    <div className="text-xs text-text-muted">{p.category}</div>
-                  </button>
-                </td>
-                <td className="p-4">
-                  <div>₹{p.price.toLocaleString()}</div>
-                  {p.mrp > p.price && (
-                    <div className="text-xs text-gray-400 line-through">
-                      ₹{p.mrp.toLocaleString()}
-                    </div>
-                  )}
-                </td>
-                <td className="p-4">
-                  {p.inStock ? (
-                    <span className="text-green-600 text-xs font-bold bg-green-50 px-2 py-1 rounded">
-                      In Stock
-                    </span>
-                  ) : (
-                    <span className="text-red-500 text-xs font-bold bg-red-50 px-2 py-1 rounded">
-                      Out of Stock
-                    </span>
-                  )}
-                </td>
-                <td className="p-4 text-xs text-text-muted">
-                  ★ {p.rating} ({p.reviews})
-                </td>
-                <td className="p-4 text-right space-x-2">
-                  <button
-                    onClick={() => handleEdit(p)}
-                    className="p-2 hover:bg-gray-200 rounded text-gray-600"
-                    title="Edit Product"
-                  >
-                    <Edit2 size={16} />
-                  </button>
-                  <button
-                    onClick={() => router.push(`/admin/reviews/${p.id}`)}
-                    className="p-2 hover:bg-blue-50 rounded text-blue-600"
-                    title="Manage Reviews"
-                  >
-                    <MessageSquare size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    className="p-2 hover:bg-error/10 rounded text-error"
-                    title="Delete Product"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </td>
+        {listLoading ? (
+          <div className="p-12 flex justify-center">
+            <div className="w-8 h-8 border-4 border-terracotta border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <table className="w-full text-left">
+            <thead className="bg-gray-50 text-text-muted text-sm uppercase">
+              <tr>
+                <th className="p-4">Product</th>
+                <th className="p-4">Price</th>
+                <th className="p-4">Stock</th>
+                <th className="p-4">Stats</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {products.map((p) => (
+                <tr key={p.id} className="hover:bg-gray-50">
+                  <td className="p-4 flex gap-3 items-center">
+                    <img
+                      src={p.images[0]}
+                      className="h-10 w-10 rounded object-cover"
+                      alt={p.name}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <button
+                      onClick={() => handleEdit(p)}
+                      className="text-left hover:opacity-70 transition-opacity"
+                    >
+                      <div className="font-medium">{p.name}</div>
+                      <div className="text-xs text-text-muted">
+                        {p.category}
+                      </div>
+                    </button>
+                  </td>
+                  <td className="p-4">
+                    <div>₹{p.price.toLocaleString()}</div>
+                    {p.mrp > p.price && (
+                      <div className="text-xs text-gray-400 line-through">
+                        ₹{p.mrp.toLocaleString()}
+                      </div>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    {p.inStock ? (
+                      <span className="text-green-600 text-xs font-bold bg-green-50 px-2 py-1 rounded">
+                        In Stock
+                      </span>
+                    ) : (
+                      <span className="text-red-500 text-xs font-bold bg-red-50 px-2 py-1 rounded">
+                        Out of Stock
+                      </span>
+                    )}
+                  </td>
+                  <td className="p-4 text-xs text-text-muted">
+                    ★ {p.rating} ({p.reviews})
+                  </td>
+                  <td className="p-4 text-right space-x-2">
+                    <button
+                      onClick={() => handleEdit(p)}
+                      className="p-2 hover:bg-gray-200 rounded text-gray-600"
+                      title="Edit Product"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button
+                      onClick={() => router.push(`/admin/reviews/${p.id}`)}
+                      className="p-2 hover:bg-blue-50 rounded text-blue-600"
+                      title="Manage Reviews"
+                    >
+                      <MessageSquare size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="p-2 hover:bg-error/10 rounded text-error"
+                      title="Delete Product"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
+
+      <PaginationControls
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        totalOnPage={products.length}
+        hasMore={hasMore}
+        hasPrevious={hasPrevious}
+        onNext={goToNextPage}
+        onPrevious={goToPreviousPage}
+        loading={listLoading}
+        className="pt-2"
+      />
 
       <DeleteConfirmModal
         isOpen={deleteModal.isOpen}

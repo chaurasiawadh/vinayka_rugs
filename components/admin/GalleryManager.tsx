@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useClientPagination } from '@/hooks/use-client-pagination';
+import PaginationControls from '@/components/ui/pagination-controls';
+import { GALLERY_PAGE_SIZE } from '@/constants';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { db, storage } from '@/lib/firebase';
 import {
@@ -20,6 +23,18 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 
 const GalleryManager: React.FC = () => {
   const galleryItems = useCollection('gallery') as GalleryItem[];
+  const {
+    paginatedItems,
+    pageIndex,
+    pageSize,
+    hasMore,
+    hasPrevious,
+    goToNextPage,
+    goToPreviousPage,
+  } = useClientPagination({
+    items: galleryItems,
+    pageSize: GALLERY_PAGE_SIZE,
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<GalleryItem>>({
     title: '',
@@ -208,8 +223,21 @@ const GalleryManager: React.FC = () => {
         </Button>
       </div>
 
+      {galleryItems.length > 0 && (
+        <PaginationControls
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          totalItems={galleryItems.length}
+          totalOnPage={paginatedItems.length}
+          hasMore={hasMore}
+          hasPrevious={hasPrevious}
+          onNext={goToNextPage}
+          onPrevious={goToPreviousPage}
+        />
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {galleryItems.map((item) => (
+        {paginatedItems.map((item) => (
           <div
             key={item.id}
             className="group relative h-[300px] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
@@ -217,6 +245,8 @@ const GalleryManager: React.FC = () => {
             <img
               src={item.image}
               alt={item.title}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
