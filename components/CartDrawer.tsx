@@ -37,19 +37,25 @@ const CartDrawer: React.FC = () => {
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={() => setIsCartOpen(false)}
-      ></div>
+      />
 
-      {/* Drawer */}
-      <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-slide-up md:animate-none md:transition-transform">
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <h2 className="font-serif text-xl">Your Bag ({cart.length})</h2>
+      {/* Drawer — slides in from right on all screen sizes */}
+      <div className="relative w-full max-w-[400px] bg-white h-full shadow-drawer flex flex-col animate-slide-in-right">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <h2 className="font-serif text-xl font-medium">
+            Your Bag
+            <span className="ml-2 text-sm font-normal text-text-muted">
+              ({cart.length})
+            </span>
+          </h2>
           <button
             onClick={() => setIsCartOpen(false)}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            aria-label="Close cart"
+            className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors active:scale-95"
           >
-            <X size={24} />
+            <X size={20} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -79,94 +85,110 @@ const CartDrawer: React.FC = () => {
         </div>
 
         {/* Items */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-center">
-              <ShoppingBagIcon className="w-12 h-12 text-gray-300 mb-3" />
-              <p className="text-text-muted">Your bag is empty.</p>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-5">
+                <ShoppingBagIcon className="w-7 h-7 text-gray-300" />
+              </div>
+              <h3 className="font-serif text-lg text-gray-700 mb-1">
+                Your bag is empty
+              </h3>
+              <p className="text-sm text-text-muted mb-6 max-w-[200px]">
+                Discover our handcrafted rug collection
+              </p>
               <Button
-                variant="outline"
+                variant="primary"
                 size="sm"
-                className="mt-4"
                 onClick={() => {
                   setIsCartOpen(false);
                   router.push('/shop');
                 }}
               >
-                Start Shopping
+                Browse Collection
               </Button>
               <button
                 onClick={() => {
                   setIsCartOpen(false);
                   openBespokeModal('Cart Drawer Empty');
                 }}
-                className="mt-6 text-sm font-medium text-terracotta hover:underline flex items-center gap-2"
+                className="mt-5 text-xs font-semibold text-terracotta hover:underline flex items-center gap-1.5 transition-colors"
               >
-                <PenTool size={14} /> Create a Custom Rug
+                <PenTool size={13} /> Create a Custom Rug
               </button>
             </div>
           ) : (
             cart.map((item) => (
               <div
                 key={`${item.id}-${item.selectedSize}`}
-                className="flex gap-4"
+                className="flex gap-3.5 pb-5 border-b border-gray-50 last:border-0 last:pb-0"
               >
-                <div className="w-20 h-24 bg-gray-100 rounded-md overflow-hidden shrink-0">
+                <div className="w-[72px] h-[84px] bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-100">
                   <img
                     src={item.images[0]}
                     alt={item.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-text-body">{item.name}</h3>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-medium text-sm text-text-body leading-snug line-clamp-2">
+                      {item.name}
+                    </h3>
                     <button
                       onClick={() => removeFromCart(item.id, item.selectedSize)}
-                      className="text-gray-400 hover:text-error"
+                      aria-label="Remove item"
+                      className="p-1 text-gray-300 hover:text-error rounded transition-colors flex-shrink-0 active:scale-90"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={15} />
                     </button>
                   </div>
-                  <p className="text-sm text-text-muted">
-                    {item.selectedSize} | {item.material}
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {item.selectedSize}
+                    {item.material ? ` · ${item.material}` : ''}
                   </p>
-                  <p className="text-sm font-medium mt-1">
-                    ₹{item.price.toLocaleString('en-IN')}
-                  </p>
-
-                  <div className="flex items-center gap-3 mt-3">
-                    <button
-                      onClick={() => {
-                        if (item.quantity === 1) {
-                          removeFromCart(item.id, item.selectedSize);
-                        } else {
+                  <div className="flex items-center justify-between mt-2.5">
+                    <div className="flex items-center gap-1 border border-gray-200 rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => {
+                          if (item.quantity === 1) {
+                            removeFromCart(item.id, item.selectedSize);
+                          } else {
+                            updateQuantity(
+                              item.id,
+                              item.selectedSize,
+                              item.quantity - 1
+                            );
+                          }
+                        }}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors active:bg-gray-100"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus size={13} />
+                      </button>
+                      <span className="text-sm font-semibold w-7 text-center">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() =>
                           updateQuantity(
                             item.id,
                             item.selectedSize,
-                            item.quantity - 1
-                          );
+                            item.quantity + 1
+                          )
                         }
-                      }}
-                      className="p-1 rounded hover:bg-gray-100 border border-gray-200"
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <span className="text-sm font-medium w-4 text-center">
-                      {item.quantity}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors active:bg-gray-100"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus size={13} />
+                      </button>
+                    </div>
+                    <span className="text-sm font-semibold text-text-body">
+                      ₹
+                      {(Number(item.price) * item.quantity).toLocaleString(
+                        'en-IN'
+                      )}
                     </span>
-                    <button
-                      onClick={() =>
-                        updateQuantity(
-                          item.id,
-                          item.selectedSize,
-                          item.quantity + 1
-                        )
-                      }
-                      className="p-1 rounded hover:bg-gray-100 border border-gray-200"
-                    >
-                      <Plus size={14} />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -176,15 +198,15 @@ const CartDrawer: React.FC = () => {
 
         {/* Footer */}
         {cart.length > 0 && (
-          <div className="p-4 border-t border-gray-100 bg-white">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-text-muted">Subtotal</span>
-              <span className="text-xl font-medium">
+          <div className="px-5 py-4 border-t border-gray-100 bg-white space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-text-muted">Subtotal</span>
+              <span className="text-lg font-semibold text-text-body">
                 ₹{cartTotal.toLocaleString('en-IN')}
               </span>
             </div>
-            <p className="text-xs text-gray-500 mb-4 text-center">
-              Shipping & taxes calculated at checkout.
+            <p className="text-[11px] text-gray-400 text-center">
+              Shipping &amp; taxes calculated at checkout
             </p>
             <Button
               onClick={handleCheckout}
@@ -192,24 +214,21 @@ const CartDrawer: React.FC = () => {
               size="lg"
               className="flex items-center justify-between group"
             >
-              <span>Checkout</span>
+              <span>Proceed to Checkout</span>
               <ArrowRight
-                size={18}
+                size={17}
                 className="group-hover:translate-x-1 transition-transform"
               />
             </Button>
-
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <button
-                onClick={() => {
-                  setIsCartOpen(false);
-                  openBespokeModal('Cart Drawer Footer');
-                }}
-                className="w-full text-xs font-medium text-text-muted hover:text-terracotta flex items-center justify-center gap-2 py-2"
-              >
-                <PenTool size={12} /> Need a custom size? Request Bespoke
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                setIsCartOpen(false);
+                openBespokeModal('Cart Drawer Footer');
+              }}
+              className="w-full text-xs font-medium text-text-muted hover:text-terracotta flex items-center justify-center gap-1.5 py-1.5 transition-colors"
+            >
+              <PenTool size={12} /> Need a custom size? Request Bespoke
+            </button>
           </div>
         )}
       </div>

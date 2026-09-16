@@ -45,28 +45,28 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
           </>
         )}
       </p>
-      <div className="flex items-center gap-2 pr-20 sm:pr-0 max-w-full">
+      <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-2 mt-2 sm:mt-0">
         <button
           type="button"
           onClick={onPrevious}
           disabled={!hasPrevious || loading}
-          className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[44px]"
           aria-label="Previous page"
         >
           <ChevronLeft size={16} />
-          Previous
+          <span className="hidden sm:inline">Previous</span>
         </button>
-        <span className="text-sm text-gray-600 min-w-[80px] text-center">
+        <span className="text-sm font-medium text-gray-600 min-w-[80px] text-center">
           Page {pageIndex + 1}
         </span>
         <button
           type="button"
           onClick={onNext}
           disabled={!hasMore || loading}
-          className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[44px]"
           aria-label="Next page"
         >
-          Next
+          <span className="hidden sm:inline">Next</span>
           <ChevronRight size={16} />
         </button>
       </div>
