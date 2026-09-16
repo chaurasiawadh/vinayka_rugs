@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { Heart, ShoppingBag, Star, Loader2 } from 'lucide-react';
 import { Product } from '../types';
 import { useShop } from '../context/ShopContext';
-import Button from './Button';
 import { PLACEHOLDER_IMAGE } from '../constants';
 
 interface ProductCardProps {
@@ -86,7 +85,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   );
 
   return (
-    <div className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+    <div className="group relative bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 min-w-0 flex flex-col h-full">
+      {/* Image Area */}
       <div
         onClick={handleCardClick}
         className="block relative aspect-[4/5] overflow-hidden bg-gray-100 cursor-pointer"
@@ -108,107 +108,108 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           />
         )}
 
-        {/* Loader Overlay */}
+        {/* Navigation Loader Overlay */}
         {isNavigating && (
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-30 flex items-center justify-center transition-all animate-in fade-in duration-300">
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative">
-                <Loader2 className="animate-spin text-terracotta" size={40} />
-                <div className="absolute inset-0 animate-ping rounded-full border-2 border-terracotta/20"></div>
-              </div>
-              <span className="text-sm font-medium text-terracotta animate-pulse">
-                Loading Details...
-              </span>
-            </div>
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-30 flex items-center justify-center animate-fade-in">
+            <Loader2 className="animate-spin text-terracotta" size={36} />
           </div>
         )}
 
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
+        {/* Product Badges */}
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5">
           {product.isNew && (
-            <span className="bg-white/90 backdrop-blur text-xs font-semibold px-2 py-1 uppercase tracking-wider text-teal">
+            <span className="badge badge-info text-[9px] sm:text-[11px] px-1.5 py-0.5 sm:px-2 sm:py-1">
               New
             </span>
           )}
           {product.isSale && (
-            <span className="bg-amber text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">
+            <span className="badge badge-warning text-[9px] sm:text-[11px] px-1.5 py-0.5 sm:px-2 sm:py-1">
               Sale
             </span>
           )}
           {!product.inStock && (
-            <span className="bg-gray-800 text-white text-xs font-semibold px-2 py-1 uppercase tracking-wider">
+            <span className="badge badge-neutral text-[9px] sm:text-[11px] px-1.5 py-0.5 sm:px-2 sm:py-1">
               Sold Out
             </span>
           )}
         </div>
 
-        <div className="absolute right-3 top-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 flex flex-col gap-2">
+        {/* Wishlist Button */}
+        <div className="absolute right-2 top-2 sm:right-3 sm:top-3 md:translate-x-10 md:opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100 transition-all duration-300">
           <button
             onClick={handleWishlist}
-            className={`p-2 rounded-full shadow-md transition-all active:scale-90 ${isWishlisted ? 'bg-error text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+            aria-label={
+              isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'
+            }
+            className={`p-1.5 sm:p-2 rounded-full shadow-md transition-all active:scale-90 ${
+              isWishlisted
+                ? 'bg-error text-white'
+                : 'bg-white/90 text-gray-600 hover:bg-white hover:text-error'
+            }`}
           >
             <Heart
-              size={18}
+              size={15}
               fill={isWishlisted ? 'currentColor' : 'none'}
-              className={`transition-transform duration-300 ${isWishlisted ? 'scale-110' : 'scale-100'}`}
+              className="transition-transform duration-200 sm:w-[17px] sm:h-[17px]"
             />
           </button>
         </div>
 
-        <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+        {/* Quick Add */}
+        <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 md:translate-y-full md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-300">
           {product.inStock ? (
-            <Button
+            <button
               onClick={handleQuickAdd}
-              variant="primary"
-              fullWidth
-              size="sm"
-              className="shadow-lg backdrop-blur-sm bg-terracotta/90"
+              className="w-full bg-terracotta/90 hover:bg-terracotta text-white text-[10px] sm:text-xs font-semibold py-2 px-2 sm:py-2.5 sm:px-4 rounded-md sm:rounded-lg shadow-md backdrop-blur-sm active:scale-95 transition-all flex items-center justify-center gap-1 sm:gap-2"
             >
-              <ShoppingBag size={16} className="mr-2" /> Quick Add
-            </Button>
+              <ShoppingBag size={12} className="sm:w-3.5 sm:h-3.5" />
+              <span className="truncate">Quick Add</span>
+            </button>
           ) : (
-            <Button
-              variant="ghost"
-              fullWidth
-              size="sm"
-              className="bg-white/90 cursor-not-allowed"
+            <button
+              disabled
+              className="w-full bg-white/80 text-gray-400 text-[10px] sm:text-xs font-semibold py-2 px-2 sm:py-2.5 sm:px-4 rounded-md sm:rounded-lg backdrop-blur-sm cursor-not-allowed"
             >
               Notify Me
-            </Button>
+            </button>
           )}
         </div>
       </div>
 
-      <div className="p-4">
+      {/* Card Info */}
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1 min-w-0">
         <Link href={`/product/${product.id}`}>
-          <h3 className="font-serif text-lg text-text-body group-hover:text-terracotta transition-colors">
+          <h3 className="font-serif text-sm sm:text-lg leading-snug text-text-body group-hover:text-terracotta transition-colors duration-200 line-clamp-1">
             {product.name}
           </h3>
         </Link>
+
         {product.rating > 0 && (
-          <div className="flex items-center gap-1 mt-1">
-            <Star size={14} className="fill-[#D4C49D] text-[#D4C49D]" />
-            <span className="text-xs font-medium text-gray-600">
-              {product.rating || 0}
+          <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
+            <Star size={10} className="fill-amber text-amber sm:w-3 sm:h-3" />
+            <span className="text-[10px] sm:text-xs font-semibold text-gray-700">
+              {product.rating}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-[10px] sm:text-xs text-text-subtle">
               ({product.reviews || 0})
             </span>
           </div>
         )}
-        <p className="text-sm text-text-muted mt-1 mb-2 line-clamp-1">
+
+        <p className="text-[10px] sm:text-xs text-text-muted mt-1 mb-2 sm:mb-2.5 line-clamp-1 leading-relaxed">
           {product.shortDescription}
         </p>
 
-        <div className="flex items-center gap-2 mt-2">
-          <span className="font-medium text-text-body text-lg">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+          <span className="font-semibold text-text-body text-sm sm:text-base">
             ₹{displayPrice.toLocaleString('en-IN')}
           </span>
           {displayMrp > displayPrice && (
             <>
-              <span className="text-sm text-gray-400 line-through">
+              <span className="text-[10px] sm:text-sm text-text-subtle line-through">
                 ₹{displayMrp.toLocaleString('en-IN')}
               </span>
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-sm">
+              <span className="badge badge-success text-[9px] sm:text-[10px] px-1 py-0.5">
                 {discount}% OFF
               </span>
             </>

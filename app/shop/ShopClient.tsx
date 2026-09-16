@@ -2,7 +2,14 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Filter, ChevronDown, Check, X } from 'lucide-react';
+import {
+  Filter,
+  ChevronDown,
+  Check,
+  X,
+  LayoutGrid,
+  Square,
+} from 'lucide-react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import {
@@ -63,6 +70,7 @@ const ShopClient: React.FC = () => {
   });
   const [sortOption, setSortOption] = useState('popular');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [mobileColumns, setMobileColumns] = useState<1 | 2>(2);
 
   useEffect(() => {
     const cat = searchParams.get('cat') || searchParams.get('category');
@@ -280,14 +288,12 @@ const ShopClient: React.FC = () => {
         {items.map((item) => (
           <label
             key={item}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-3 cursor-pointer group py-1"
           >
             <div
-              className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${current.includes(item) ? 'bg-terracotta border-terracotta' : 'border-gray-300 group-hover:border-terracotta'}`}
+              className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${current.includes(item) ? 'bg-terracotta border-terracotta text-white shadow-sm' : 'border-gray-300 bg-white group-hover:border-terracotta/60 group-hover:bg-terracotta/5'}`}
             >
-              {current.includes(item) && (
-                <Check size={10} className="text-white" />
-              )}
+              {current.includes(item) && <Check size={12} strokeWidth={3} />}
             </div>
             <input
               type="checkbox"
@@ -296,7 +302,7 @@ const ShopClient: React.FC = () => {
               onChange={() => toggleFilter(item, current, setter)}
             />
             <span
-              className={`text-sm ${current.includes(item) ? 'text-gray-900 font-medium' : 'text-gray-500'}`}
+              className={`text-sm ${current.includes(item) ? 'text-gray-900 font-semibold' : 'text-text-muted group-hover:text-gray-800 transition-colors'}`}
             >
               {item}
             </span>
@@ -315,71 +321,103 @@ const ShopClient: React.FC = () => {
 
   return (
     <div className="bg-cream min-h-screen pb-20 pt-4">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-200 pb-6">
-          <div className="flex items-center gap-4 mt-4 md:mt-0">
+      <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 sm:mb-8 border-b border-gray-200 pb-4 sm:pb-6">
+          {/* Mobile Top Controls: Filter & Grid View */}
+          <div className="flex justify-between items-center w-full md:hidden mb-4 pb-4 border-b border-gray-100">
             <button
-              className="md:hidden flex items-center gap-2 font-medium"
-              onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+              className="flex items-center justify-center gap-2 font-medium hover:text-terracotta transition-colors flex-1 border border-gray-200 rounded-lg py-2 bg-white shadow-sm"
+              onClick={() => setIsMobileFilterOpen(true)}
+            >
+              <Filter size={18} /> Filters
+            </button>
+            <div className="ml-4 flex items-center gap-1 bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
+              <button
+                onClick={() => setMobileColumns(1)}
+                className={`p-1.5 rounded transition-all ${mobileColumns === 1 ? 'bg-cream-dark text-terracotta shadow-sm' : 'text-gray-400 hover:text-gray-700'}`}
+                aria-label="Single column view"
+              >
+                <Square size={18} />
+              </button>
+              <button
+                onClick={() => setMobileColumns(2)}
+                className={`p-1.5 rounded transition-all ${mobileColumns === 2 ? 'bg-cream-dark text-terracotta shadow-sm' : 'text-gray-400 hover:text-gray-700'}`}
+                aria-label="Two column view"
+              >
+                <LayoutGrid size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-row justify-between w-full md:w-auto items-center">
+            {/* Desktop Filter Button (hidden on mobile) */}
+            <button
+              className="hidden md:flex items-center gap-2 font-medium hover:text-terracotta transition-colors mr-6"
+              onClick={() => setIsMobileFilterOpen(true)}
             >
               <Filter size={18} /> Filters
             </button>
 
-            {/* Size Filter Dropdown */}
-            <div className="relative group z-30">
-              <button className="flex items-center gap-2 text-sm font-medium hover:text-terracotta py-2">
-                Size
-                {selectedSizes.length > 0 && (
-                  <span className="bg-terracotta text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                    {selectedSizes.length}
-                  </span>
-                )}
-                <ChevronDown size={14} />
-              </button>
-              <div className="absolute left-0 top-full mt-1 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all border border-gray-100 p-2 transform origin-top-left">
-                <div className="space-y-1 max-h-64 overflow-y-auto custom-scrollbar">
-                  {SIZES.map((size) => (
-                    <label
-                      key={size}
-                      className="flex items-center gap-3 cursor-pointer hover:bg-cream/50 p-2 rounded-md transition-colors"
-                    >
-                      <div
-                        className={`w-4 h-4 rounded flex-shrink-0 flex items-center justify-center transition-colors border ${selectedSizes.includes(size) ? 'bg-terracotta border-terracotta' : 'border-gray-300'}`}
+            <div className="flex items-center justify-between w-full md:w-auto gap-4">
+              {/* Size Filter Dropdown */}
+              <div className="relative group z-30">
+                <button className="flex items-center gap-2 text-sm font-medium hover:text-terracotta py-2">
+                  Size
+                  {selectedSizes.length > 0 && (
+                    <span className="bg-terracotta text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                      {selectedSizes.length}
+                    </span>
+                  )}
+                  <ChevronDown size={14} />
+                </button>
+                <div className="absolute left-0 top-full mt-1 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all border border-gray-100 p-2 transform origin-top-left">
+                  <div className="space-y-1 max-h-64 overflow-y-auto custom-scrollbar">
+                    {SIZES.map((size) => (
+                      <label
+                        key={size}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-cream/50 p-2 rounded-md transition-colors"
                       >
-                        {selectedSizes.includes(size) && (
-                          <Check size={10} className="text-white" />
-                        )}
-                      </div>
-                      <input
-                        type="checkbox"
-                        className="hidden"
-                        checked={selectedSizes.includes(size)}
-                        onChange={() =>
-                          toggleFilter(size, selectedSizes, setSelectedSizes)
-                        }
-                      />
-                      <span
-                        className={`text-sm ${selectedSizes.includes(size) ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
-                      >
-                        {size}
-                      </span>
-                    </label>
-                  ))}
+                        <div
+                          className={`w-4 h-4 rounded flex-shrink-0 flex items-center justify-center transition-colors border ${selectedSizes.includes(size) ? 'bg-terracotta border-terracotta' : 'border-gray-300'}`}
+                        >
+                          {selectedSizes.includes(size) && (
+                            <Check size={10} className="text-white" />
+                          )}
+                        </div>
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={selectedSizes.includes(size)}
+                          onChange={() =>
+                            toggleFilter(size, selectedSizes, setSelectedSizes)
+                          }
+                        />
+                        <span
+                          className={`text-sm ${selectedSizes.includes(size) ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
+                        >
+                          {size}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="relative group z-20">
-              <button className="flex items-center gap-2 text-sm font-medium hover:text-terracotta py-2">
-                Sort by:{' '}
-                <span className="text-gray-900">
-                  {sortOption.replace('-', ' ')}
-                </span>{' '}
-                <ChevronDown size={14} />
-              </button>
-              <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all border border-gray-100 py-1 transform origin-top-left">
-                {['popular', 'newest', 'price-low-high', 'price-high-low'].map(
-                  (opt) => (
+              <div className="relative group z-20">
+                <button className="flex items-center gap-2 text-sm font-medium hover:text-terracotta py-2">
+                  Sort by:{' '}
+                  <span className="text-gray-900">
+                    {sortOption.replace('-', ' ')}
+                  </span>{' '}
+                  <ChevronDown size={14} />
+                </button>
+                <div className="absolute right-0 md:left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all border border-gray-100 py-1 transform origin-top-right md:origin-top-left">
+                  {[
+                    'popular',
+                    'newest',
+                    'price-low-high',
+                    'price-high-low',
+                  ].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => setSortOption(opt)}
@@ -387,23 +425,34 @@ const ShopClient: React.FC = () => {
                     >
                       {opt.replace(/-/g, ' ')}
                     </button>
-                  )
-                )}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-8">
-          {/* Sidebar Filters (Desktop) */}
+        <div className="flex gap-8 relative items-start">
+          {/* Mobile Filter Backdrop */}
+          {isMobileFilterOpen && (
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setIsMobileFilterOpen(false)}
+            />
+          )}
+          {/* Sidebar Filters */}
           <aside
-            className={`w-64 flex-shrink-0 ${isMobileFilterOpen ? 'fixed inset-0 z-50 bg-white p-6 overflow-y-auto' : 'hidden md:block'}`}
+            className={`w-64 flex-shrink-0 ${isMobileFilterOpen ? 'fixed inset-y-0 right-0 z-50 p-6 bg-surface overflow-y-auto animate-slide-in-right shadow-drawer max-w-[320px] w-full' : 'hidden md:block md:sticky md:top-28 md:max-h-[calc(100vh-8rem)] md:overflow-y-auto custom-scrollbar md:pr-4'}`}
           >
             {isMobileFilterOpen && (
               <div className="flex justify-between items-center mb-6 md:hidden">
-                <h2 className="font-serif text-xl">Filters</h2>
-                <button onClick={() => setIsMobileFilterOpen(false)}>
-                  <span className="text-2xl">&times;</span>
+                <h2 className="font-serif text-xl font-medium">Filters</h2>
+                <button
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="p-1.5 hover:bg-gray-100 rounded-full transition-colors active:scale-95"
+                  aria-label="Close filters"
+                >
+                  <X size={20} />
                 </button>
               </div>
             )}
@@ -562,7 +611,9 @@ const ShopClient: React.FC = () => {
               />
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              className={`grid gap-4 sm:gap-6 lg:gap-8 ${mobileColumns === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 lg:grid-cols-3`}
+            >
               {filteredProducts.length > 0 ? (
                 paginatedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />

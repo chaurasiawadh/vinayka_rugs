@@ -178,44 +178,51 @@ const AccountPage = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      {/* Header / Banner */}
-      <div className="bg-gray-900 text-white pt-24 pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="font-serif text-4xl mb-2">My Account</h1>
-          <p className="text-gray-400 font-light">
-            Manage your profile and view your orders
+      {/* Page Header — Brand-consistent hero */}
+      <div className="bg-[#1C1311] text-white pt-20 sm:pt-24 pb-16 px-5 sm:px-8 lg:px-16 relative overflow-hidden">
+        {/* Subtle texture overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-terracotta/20 via-transparent to-teal/10 pointer-events-none" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <p className="text-terracotta text-xs font-bold uppercase tracking-[0.2em] mb-3">
+            My Account
+          </p>
+          <h1 className="font-serif text-3xl sm:text-4xl text-white mb-2">
+            Welcome, {userProfile.firstName}
+          </h1>
+          <p className="text-gray-400 text-sm font-light">
+            Manage your profile, addresses, and view your orders
           </p>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 -mt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-16 -mt-8 sm:-mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Sidebar / Profile Card */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-24">
-              <div className="p-8 text-center border-b border-gray-100">
-                <div className="w-24 h-24 bg-terracotta/10 rounded-full mx-auto flex items-center justify-center text-terracotta text-3xl font-serif font-bold mb-4 shadow-inner">
+            <div className="bg-white rounded-xl shadow-card border border-border-light overflow-hidden lg:sticky lg:top-24">
+              <div className="p-6 sm:p-8 text-center border-b border-gray-100">
+                <div className="w-20 h-20 bg-terracotta/10 rounded-full mx-auto flex items-center justify-center text-terracotta text-2xl font-bold font-serif mb-4 ring-4 ring-terracotta/10">
                   {userProfile.firstName?.[0]}
                   {userProfile.lastName?.[0]}
                 </div>
-                <h2 className="text-xl font-bold font-serif text-gray-900">
+                <h2 className="text-lg font-bold font-serif text-gray-900">
                   {userProfile.firstName} {userProfile.lastName}
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 mt-0.5">
                   {userProfile.email}
                 </p>
-                <div className="mt-4 inline-block px-3 py-1 bg-gray-100 rounded-full text-xs font-bold text-gray-600 uppercase tracking-widest">
+                <div className="mt-3 inline-block px-3 py-1 bg-terracotta/10 rounded-full text-xs font-bold text-terracotta uppercase tracking-widest">
                   {userProfile.role}
                 </div>
               </div>
               <div className="p-4">
                 <button
                   onClick={() => logout().then(() => router.push('/'))}
-                  className="w-full flex items-center justify-center gap-2 text-error hover:bg-error/5 py-3 rounded-lg transition-colors font-medium text-sm group"
+                  className="w-full flex items-center justify-center gap-2 text-error hover:bg-error/5 py-2.5 rounded-lg transition-colors font-medium text-sm group"
                 >
                   <LogOut
-                    size={16}
-                    className="group-hover:-translate-x-1 transition-transform"
+                    size={15}
+                    className="group-hover:-translate-x-0.5 transition-transform"
                   />{' '}
                   Sign Out
                 </button>

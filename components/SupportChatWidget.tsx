@@ -66,7 +66,10 @@ const SupportChatWidget: React.FC = () => {
   if (!isMounted || !whatsappNumber || isAdminRoute) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999]" ref={widgetRef}>
+    <div
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99]"
+      ref={widgetRef}
+    >
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -183,13 +186,17 @@ const SupportChatWidget: React.FC = () => {
 
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl active:scale-90 relative z-10 ${
+          className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl active:scale-90 relative z-10 ${
             isOpen
               ? 'bg-gray-100 text-gray-600 rotate-90'
               : 'bg-[#25D366] text-white hover:scale-105'
           }`}
         >
-          {isOpen ? <RiCloseLine size={32} /> : <RiWhatsappLine size={32} />}
+          {isOpen ? (
+            <RiCloseLine className="w-7 h-7 sm:w-8 sm:h-8" />
+          ) : (
+            <RiWhatsappLine className="w-7 h-7 sm:w-8 sm:h-8" />
+          )}
         </button>
       </div>
     </div>

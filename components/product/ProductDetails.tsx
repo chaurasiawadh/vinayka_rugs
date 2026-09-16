@@ -73,6 +73,22 @@ export default function ProductDetails({
   // Lightbox Logic
   const [showLightbox, setShowLightbox] = useState(false);
 
+  // Sticky Purchase Bar Logic
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const actionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (actionsRef.current) {
+        const rect = actionsRef.current.getBoundingClientRect();
+        // Show sticky bar if user has scrolled past the main actions block
+        setShowStickyBar(rect.bottom < 0);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Check if user has purchased this product
   useEffect(() => {
     const checkPurchaseStatus = async () => {
@@ -169,8 +185,8 @@ export default function ProductDetails({
   );
 
   return (
-    <div className="bg-[#FAF8F6] min-h-screen pb-20">
-      <div className="w-full pl-8 pr-8">
+    <div className="bg-[#FAF8F6] min-h-screen pb-20 relative">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb Navigation - Outside white container */}
         <div className="mb-6">
           <Breadcrumb
@@ -180,7 +196,7 @@ export default function ProductDetails({
           />
         </div>
 
-        <div className="bg-white rounded-none p-6 md:p-12 shadow-sm ">
+        <div className="bg-white rounded-none p-4 sm:p-6 md:p-12 shadow-sm ">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(auto,700px)_1fr] gap-12 lg:gap-16 items-start ">
             {/* Left Column: Sticky Images (Thumbnails + Main) */}
             <div className="lg:sticky lg:top-[110px] self-start flex flex-col lg:flex-row gap-8 z-30 ">
@@ -267,12 +283,15 @@ export default function ProductDetails({
                 </div>
 
                 {/* Mobile Thumbnails (Horizontal) */}
-                <div className="flex lg:hidden gap-3 mt-4 overflow-x-auto pb-4 scrollbar-hide">
+                <div
+                  className="flex lg:hidden gap-2 mt-4 overflow-x-auto pb-2"
+                  style={{ scrollbarWidth: 'none' }}
+                >
                   {product.images.map((img: string, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
-                      className={`flex-none w-20 h-20 bg-gray-50 border transition-all rounded-sm overflow-hidden ${
+                      className={`flex-none w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 border transition-all rounded-sm overflow-hidden ${
                         selectedImage === idx
                           ? 'border-[#41354D]'
                           : 'border-transparent'
@@ -294,13 +313,13 @@ export default function ProductDetails({
               <h2 className="text-gray-400 text-xs font-medium uppercase tracking-widest mb-2">
                 {product.brand}
               </h2>
-              <h1 className="text-4xl font-serif text-[#111] mb-4 leading-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-[#111] mb-3 leading-tight pr-10">
                 {product.name}
               </h1>
 
               {/* Short Description */}
               {product.shortDescription && (
-                <p className="text-gray-600 text-base mb-4 leading-relaxed">
+                <p className="text-gray-600 text-sm sm:text-base mb-4 leading-relaxed">
                   {product.shortDescription}
                 </p>
               )}
@@ -352,7 +371,7 @@ export default function ProductDetails({
 
                   return (
                     <>
-                      <span className="text-xl font-medium text-[#111]">
+                      <span className="text-2xl font-bold text-[#111]">
                         ₹{currentPrice.toLocaleString('en-IN')}
                       </span>
                       {currentMrp > 0 && currentMrp > currentPrice && (
@@ -382,7 +401,7 @@ export default function ProductDetails({
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`px-6 py-2.5 text-sm font-medium rounded-full transition-all border ${
+                      className={`px-4 py-2 sm:px-6 sm:py-2.5 text-sm font-medium rounded-full transition-all border ${
                         selectedSize === size
                           ? 'bg-[#111] text-white border-[#111] shadow-sm'
                           : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400 hover:text-[#111]'
@@ -538,54 +557,62 @@ export default function ProductDetails({
               )}
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-8 pb-8 border-b border-gray-100">
-                <div className="flex items-center border border-gray-200 rounded-full h-12 w-full sm:w-32">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
-                    className={`w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors ${quantity <= 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
-                  >
-                    <Minus className="w-3 h-3" />
-                  </button>
-                  <input
-                    type="text"
-                    value={quantity}
-                    readOnly
-                    className="flex-1 w-full text-center text-sm font-medium focus:outline-none"
-                  />
-                  <button
-                    onClick={() => setQuantity(Math.min(5, quantity + 1))}
-                    disabled={quantity >= 5}
-                    className={`w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors ${quantity >= 5 ? 'opacity-30 cursor-not-allowed' : ''}`}
-                  >
-                    <Plus className="w-3 h-3" />
+              <div
+                ref={actionsRef}
+                className="flex flex-col gap-4 mb-8 pb-8 border-b border-gray-100"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center border border-gray-200 rounded-full h-12 w-32">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      disabled={quantity <= 1}
+                      className={`w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors ${quantity <= 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <input
+                      type="text"
+                      value={quantity}
+                      readOnly
+                      className="flex-1 w-full text-center text-sm font-medium focus:outline-none bg-transparent"
+                    />
+                    <button
+                      onClick={() => setQuantity(Math.min(5, quantity + 1))}
+                      disabled={quantity >= 5}
+                      className={`w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors ${quantity >= 5 ? 'opacity-30 cursor-not-allowed' : ''}`}
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+                  <button className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-colors ml-auto sm:ml-0">
+                    <Heart className="w-5 h-5 text-gray-400" />
                   </button>
                 </div>
-                <button
-                  onClick={() =>
-                    addToCart(product, selectedSize || 'Standard', quantity)
-                  }
-                  className="flex-1 bg-[#41354D] text-white h-12 rounded-lg font-medium tracking-wide hover:bg-[#2D2435] transition-colors uppercase text-sm"
-                >
-                  Add to Cart
-                </button>
-                <button
-                  onClick={() => {
-                    const buyNowItem = {
-                      ...product,
-                      selectedSize: selectedSize || 'Standard',
-                      quantity: quantity,
-                    };
-                    setDirectPurchaseItem(buyNowItem);
-                    router.push('/cart?buyNow=true');
-                  }}
-                  className="flex-1 bg-terracotta text-white h-12 rounded-lg font-medium tracking-wide hover:bg-[#724D31] transition-colors uppercase text-sm"
-                >
-                  Buy Now
-                </button>
-                <button className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-colors">
-                  <Heart className="w-5 h-5 text-gray-400" />
-                </button>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() =>
+                      addToCart(product, selectedSize || 'Standard', quantity)
+                    }
+                    className="flex-1 bg-[#41354D] text-white py-3.5 sm:py-4 rounded-full font-bold tracking-wide hover:bg-[#2D2435] transition-colors uppercase text-sm shadow-sm flex items-center justify-center"
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={() => {
+                      const buyNowItem = {
+                        ...product,
+                        selectedSize: selectedSize || 'Standard',
+                        quantity: quantity,
+                      };
+                      setDirectPurchaseItem(buyNowItem);
+                      router.push('/cart?buyNow=true');
+                    }}
+                    className="flex-1 bg-terracotta text-white py-3.5 sm:py-4 rounded-full font-bold tracking-wide hover:bg-[#724D31] transition-colors uppercase text-sm shadow-sm flex items-center justify-center"
+                  >
+                    Buy Now
+                  </button>
+                </div>
               </div>
 
               {/* AR Live View Button */}
@@ -594,7 +621,7 @@ export default function ProductDetails({
               </div>
 
               {/* Trust Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12 bg-gray-50 p-6 rounded-lg">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 bg-gray-50 p-4 sm:p-6 rounded-lg">
                 <div className="text-center flex flex-col items-center">
                   <div className="mb-3 p-3 bg-amber-50 rounded-full">
                     <Diamond
@@ -641,11 +668,11 @@ export default function ProductDetails({
               </div>
 
               {/* Accordions */}
-              <div className="space-y-4">
-                <div className="border-b border-gray-100 pb-4">
+              <div className="space-y-2">
+                <div className="border-b border-gray-100 pb-2">
                   <button
                     onClick={() => toggleSection('detail')}
-                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
+                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] py-3"
                   >
                     Product Details
                     {openSection === 'detail' ? (
@@ -655,15 +682,15 @@ export default function ProductDetails({
                     )}
                   </button>
                   {openSection === 'detail' && (
-                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200 whitespace-pre-line">
+                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200 whitespace-pre-line pb-4">
                       {product.details}
                     </div>
                   )}
                 </div>
-                <div className="border-b border-gray-100 pb-4">
+                <div className="border-b border-gray-100 pb-2">
                   <button
                     onClick={() => toggleSection('material')}
-                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
+                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] py-3"
                   >
                     Material
                     {openSection === 'material' ? (
@@ -673,15 +700,15 @@ export default function ProductDetails({
                     )}
                   </button>
                   {openSection === 'material' && (
-                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200">
+                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200 pb-4">
                       {product.material}
                     </div>
                   )}
                 </div>
-                <div className="border-b border-gray-100 pb-4">
+                <div className="border-b border-gray-100 pb-2">
                   <button
                     onClick={() => toggleSection('care')}
-                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
+                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] py-3"
                   >
                     Care Instructions
                     {openSection === 'care' ? (
@@ -691,15 +718,15 @@ export default function ProductDetails({
                     )}
                   </button>
                   {openSection === 'care' && (
-                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200">
+                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200 pb-4">
                       {product.careInstructions}
                     </div>
                   )}
                 </div>
-                <div className="border-b border-gray-100 pb-4">
+                <div className="border-b border-gray-100 pb-2">
                   <button
                     onClick={() => toggleSection('shipping')}
-                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] mb-2"
+                    className="w-full flex items-center justify-between text-sm font-medium text-[#111] py-3"
                   >
                     Shipping & Returns
                     {openSection === 'shipping' ? (
@@ -709,7 +736,7 @@ export default function ProductDetails({
                     )}
                   </button>
                   {openSection === 'shipping' && (
-                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200">
+                    <div className="text-sm text-gray-500 leading-relaxed animate-in slide-in-from-top-2 duration-200 pb-4">
                       {product.shipping}
                     </div>
                   )}
@@ -882,6 +909,45 @@ export default function ProductDetails({
           }}
         />
       )}
+
+      {/* Sticky Mobile Purchase Bar */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40 transform transition-transform duration-300 md:hidden ${
+          showStickyBar ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-4 max-w-site mx-auto pb-safe">
+          <div className="flex flex-col flex-1 min-w-0">
+            <span className="text-[10px] text-gray-500 line-clamp-1">
+              {product.name}
+            </span>
+            <span className="text-base sm:text-lg font-bold text-[#111]">
+              ₹
+              {selectedSize && product.sizePrices?.[selectedSize]
+                ? (typeof product.sizePrices[selectedSize] === 'number'
+                    ? product.sizePrices[selectedSize]
+                    : parseFloat(
+                        product.sizePrices[selectedSize]
+                          .toString()
+                          .replace(/,/g, '')
+                      )
+                  ).toLocaleString('en-IN')
+                : (typeof product.price === 'number'
+                    ? product.price
+                    : parseFloat(product.price.toString().replace(/,/g, ''))
+                  ).toLocaleString('en-IN')}
+            </span>
+          </div>
+          <button
+            onClick={() =>
+              addToCart(product, selectedSize || 'Standard', quantity)
+            }
+            className="flex-none bg-[#41354D] text-white px-6 h-11 sm:h-12 rounded-lg font-medium tracking-wide hover:bg-[#2D2435] transition-colors uppercase text-sm shadow-sm"
+          >
+            Add to Cart
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -90,10 +90,10 @@ const Header: React.FC = () => {
         <div
           className={`w-full transition-all duration-500 ${isScrolled ? 'py-1' : 'py-2'}`}
         >
-          <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16">
+          <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-16">
             <div className="flex items-center justify-between">
               {/* Logo - Left aligned */}
-              <div className="flex-shrink-0 w-1/4">
+              <div className="flex-shrink-0 flex-1 lg:flex-none lg:w-1/4">
                 <Link
                   href="/"
                   className="inline-flex items-center group transition-all duration-300 hover:opacity-80 active:scale-95"
@@ -104,7 +104,7 @@ const Header: React.FC = () => {
                     width={112}
                     height={60}
                     priority
-                    className="w-auto h-12 object-contain"
+                    className="w-auto h-9 sm:h-12 object-contain"
                   />
                 </Link>
               </div>
@@ -140,7 +140,7 @@ const Header: React.FC = () => {
               </div>
 
               {/* Icons - Right aligned */}
-              <div className="flex items-center justify-end w-1/4 gap-6">
+              <div className="flex items-center justify-end flex-1 lg:flex-none lg:w-1/4 gap-3 sm:gap-6">
                 <button
                   className={`p-2 transition-colors duration-500 ${
                     isDarkText
@@ -202,7 +202,7 @@ const Header: React.FC = () => {
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               className="absolute top-full left-0 w-full bg-white z-50 shadow-sm border-t border-gray-100"
             >
-              <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-4">
+              <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-12 py-4">
                 <div className="flex items-center gap-4">
                   <Search
                     size={20}
