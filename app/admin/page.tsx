@@ -10,19 +10,21 @@ import {
   Loader,
   ArrowLeft,
   Film,
+  ClipboardList,
 } from 'lucide-react';
 import ProductManager from '@/components/admin/ProductManager';
 import GalleryManager from '@/components/admin/GalleryManager';
 import HeroMediaAdmin from '@/components/admin/hero-media-admin';
+import OrderManager from '@/components/admin/OrderManager';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const Admin: React.FC = () => {
   const { user, userProfile, loading, logout } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'products' | 'gallery' | 'hero'>(
-    'products'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'products' | 'gallery' | 'hero' | 'orders'
+  >('orders');
 
   useEffect(() => {
     if (!loading) {
@@ -85,6 +87,17 @@ const Admin: React.FC = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('orders')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'orders'
+                ? 'bg-terracotta text-white shadow-md'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <ClipboardList size={20} /> Orders
+          </button>
+
+          <button
             onClick={() => setActiveTab('gallery')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
               activeTab === 'gallery'
@@ -126,6 +139,7 @@ const Admin: React.FC = () => {
       </aside>
       <main className="flex-1 p-8 overflow-y-auto">
         {activeTab === 'products' && <ProductManager />}
+        {activeTab === 'orders' && <OrderManager />}
         {activeTab === 'gallery' && <GalleryManager />}
         {activeTab === 'hero' && <HeroMediaAdmin />}
       </main>
