@@ -17,6 +17,7 @@ import type { LucideIcon } from 'lucide-react';
 import ProductManager from '@/components/admin/ProductManager';
 import GalleryManager from '@/components/admin/GalleryManager';
 import HeroMediaAdmin from '@/components/admin/hero-media-admin';
+import OrderManager from '@/components/admin/OrderManager';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -215,17 +216,7 @@ const Admin: React.FC = () => {
         {/* Tab content */}
         <div className="p-4 sm:p-6 lg:p-8">
           {activeTab === 'products' && <ProductManager />}
-          {activeTab === 'orders' && (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <ClipboardList size={48} className="text-gray-200 mb-4" />
-              <h2 className="text-lg font-semibold text-gray-400">
-                Orders module loading…
-              </h2>
-              <p className="text-sm text-gray-300 mt-1">
-                OrderManager is on the orders-page branch.
-              </p>
-            </div>
-          )}
+          {activeTab === 'orders' && <OrderManager />}
           {activeTab === 'gallery' && <GalleryManager />}
           {activeTab === 'hero' && <HeroMediaAdmin />}
         </div>

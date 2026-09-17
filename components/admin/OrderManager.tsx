@@ -203,8 +203,12 @@ const OrderManager: React.FC = () => {
               >
                 {selectedOrder.status.replace('_', ' ')}
               </span>
-              <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                Paid (Razorpay)
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium ${selectedOrder.paymentMethod === 'COD' ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}`}
+              >
+                {selectedOrder.paymentMethod === 'COD'
+                  ? 'COD'
+                  : 'Paid (Razorpay)'}
               </span>
             </div>
           </div>
