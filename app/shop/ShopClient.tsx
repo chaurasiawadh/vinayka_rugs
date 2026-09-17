@@ -23,6 +23,7 @@ import {
 import { useClientPagination } from '@/hooks/use-client-pagination';
 import PaginationControls from '@/components/ui/pagination-controls';
 import ProductCard from '@/components/ProductCard';
+import { ProductCardSkeleton } from '@/components/product/ProductCardSkeleton';
 import Button from '@/components/Button';
 import { useShop } from '@/context/ShopContext';
 
@@ -311,13 +312,6 @@ const ShopClient: React.FC = () => {
       </div>
     </div>
   );
-
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-terracotta border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
 
   return (
     <div className="bg-cream min-h-screen pb-20 pt-4">
@@ -614,9 +608,17 @@ const ShopClient: React.FC = () => {
             <div
               className={`grid gap-4 sm:gap-6 lg:gap-8 ${mobileColumns === 1 ? 'grid-cols-1' : 'grid-cols-2'} sm:grid-cols-2 lg:grid-cols-3`}
             >
-              {filteredProducts.length > 0 ? (
-                paginatedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+              {loading ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <ProductCardSkeleton key={idx} />
+                ))
+              ) : filteredProducts.length > 0 ? (
+                paginatedProducts.map((product, idx) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    priority={idx < 4}
+                  />
                 ))
               ) : (
                 <div className="col-span-full py-20 text-center bg-white rounded-lg border border-dashed border-gray-300">
