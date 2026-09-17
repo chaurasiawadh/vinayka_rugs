@@ -1,13 +1,17 @@
 import React, { useState, memo, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Heart, ShoppingBag, Star, Loader2 } from 'lucide-react';
 import { Product } from '../types';
 import { useShop } from '../context/ShopContext';
 import { PLACEHOLDER_IMAGE } from '../constants';
 
+import { Skeleton } from './ui/Skeleton';
+
 interface ProductCardProps {
   product: Product;
+  priority?: boolean;
 }
 
 const parsePrice = (price: number | string | undefined): number => {
@@ -43,7 +47,10 @@ const getPriceData = (product: Product) => {
   return { price, mrp };
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  priority = false,
+}) => {
   const { price: displayPrice, mrp: displayMrp } = useMemo(
     () => getPriceData(product),
     [product]
@@ -58,6 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const isWishlisted = isInWishlist(product.id);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -85,25 +93,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   );
 
   return (
-    <div className="group relative bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 min-w-0 flex flex-col h-full">
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      className="group relative bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 min-w-0 flex flex-col h-full"
+    >
       {/* Image Area */}
       <div
         onClick={handleCardClick}
-        className="block relative aspect-[4/5] overflow-hidden bg-gray-100 cursor-pointer"
+        className="block relative aspect-[4/5] overflow-hidden bg-stone-100 cursor-pointer"
       >
-        <img
+        <Skeleton className="absolute inset-0 w-full h-full z-0" />
+        <Image
           src={product.images?.[0] || PLACEHOLDER_IMAGE}
-          alt={product.name}
-          loading="lazy"
-          decoding="async"
-          className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+          alt={product.name || 'Product Image'}
+          fill
+          priority={priority}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className="object-cover w-full h-full transition-all duration-700 group-hover:scale-105 z-10"
         />
-        {product.images?.[1] && (
-          <img
+        {isHovered && product.images?.[1] && (
+          <Image
             src={product.images[1]}
-            alt={product.name}
-            loading="lazy"
-            decoding="async"
+            alt={product.name || 'Product Secondary Image'}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="absolute inset-0 object-cover w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
         )}

@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
+import dynamic from 'next/dynamic';
 import './globals.css';
 import { Providers } from './providers';
-import SupportChatWidget from '@/components/SupportChatWidget';
+
+const SupportChatWidget = dynamic(
+  () => import('@/components/SupportChatWidget'),
+  { ssr: false }
+);
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-primary' });
 const spaceGrotesk = Space_Grotesk({

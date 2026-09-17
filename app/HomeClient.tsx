@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import { ProductCardSkeleton } from '@/components/product/ProductCardSkeleton';
 import Button from '../components/Button';
 import { useShop } from '../context/ShopContext';
 import { useFeaturedProducts, useGalleryOnce } from '@/hooks/useFirestore';
@@ -14,7 +15,8 @@ import HeroBanner from '@/components/hero/hero-banner';
 
 const HomeClient: React.FC = () => {
   const { openBespokeModal } = useShop();
-  const { products: displayProducts } = useFeaturedProducts(4);
+  const { products: displayProducts, loading: featuredLoading } =
+    useFeaturedProducts(4);
   const { items: galleryItems } = useGalleryOnce();
   const gallery = galleryItems as GalleryItem[];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -243,9 +245,13 @@ const HomeClient: React.FC = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {displayProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {featuredLoading
+              ? Array.from({ length: 4 }).map((_, idx) => (
+                  <ProductCardSkeleton key={idx} />
+                ))
+              : displayProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
           </div>
           <div className="mt-12 text-center sm:hidden">
             <Button variant="outline">View All Products</Button>

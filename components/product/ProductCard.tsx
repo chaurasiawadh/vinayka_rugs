@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Star } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useState } from 'react';
+import { Skeleton } from '../ui/Skeleton';
 
 interface ProductCardProps {
   id: string;
@@ -12,6 +14,7 @@ interface ProductCardProps {
   tags?: string[];
   rating?: number;
   reviewsCount?: number;
+  priority?: boolean;
 }
 
 const ProductCard = ({
@@ -24,7 +27,9 @@ const ProductCard = ({
   tags,
   rating = 0,
   reviewsCount = 0,
+  priority = false,
 }: ProductCardProps) => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const displayRating = Math.floor(rating);
 
   return (
@@ -32,13 +37,18 @@ const ProductCard = ({
       href={`/product/${id}`}
       className="group block bg-white rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
     >
-      <div className="relative overflow-hidden bg-gray-100 aspect-square">
-        <img
+      <div className="relative overflow-hidden bg-stone-100 aspect-square">
+        {!isImageLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full z-10" />
+        )}
+        <Image
           src={image}
-          alt={name}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          alt={name || 'Product Image'}
+          fill
+          priority={priority}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          onLoad={() => setIsImageLoaded(true)}
+          className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
         />
         {tags && tags.length > 0 && (
           <div className="absolute top-3 left-3 flex flex-wrap gap-2">

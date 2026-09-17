@@ -34,13 +34,7 @@ export const metadata: Metadata = {
 
 export default function Shop() {
   return (
-    <React.Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-terracotta border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      }
-    >
+    <React.Suspense fallback={null}>
       <ShopClient />
     </React.Suspense>
   );

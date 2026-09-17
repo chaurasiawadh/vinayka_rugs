@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, MouseEvent, useEffect } from 'react';
+import Image from 'next/image';
 import {
   Minus,
   Plus,
@@ -16,8 +17,9 @@ import {
   Infinity as InfinityIcon,
   RotateCcw,
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import ProductCard from './ProductCard';
-import ARButton from './ARButton';
+const ARButton = dynamic(() => import('./ARButton'), { ssr: false });
 import Breadcrumb from './Breadcrumb';
 import ReviewForm from './ReviewForm';
 import ReviewsList from './ReviewsList';
@@ -239,9 +241,12 @@ export default function ProductDetails({
                     onMouseMove={handleMouseMove}
                     className="aspect-[3/4] md:aspect-[4/5] w-full max-h-[670px] bg-[#FAFAFA] rounded-md overflow-hidden relative shadow-sm cursor-crosshair border border-gray-100"
                   >
-                    <img
+                    <Image
                       src={product.images[selectedImage]}
                       alt={product.name}
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 50vw"
                       className="w-full h-full object-cover"
                     />
                     {product.tags && (
