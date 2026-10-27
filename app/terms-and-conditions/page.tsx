@@ -317,10 +317,10 @@ const TermsAndConditionsPage: React.FC = () => {
           <p className="mb-2">
             Phone:{' '}
             <a
-              href="tel:9936169852"
+              href="tel:9250491858"
               className="text-terracotta hover:underline"
             >
-              9936169852
+              9250491858
             </a>
           </p>
           <p>Address: Bhadohi, Varanasi, Uttar Pradesh, India</p>

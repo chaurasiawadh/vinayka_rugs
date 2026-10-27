@@ -98,10 +98,10 @@ const ReturnCancellationPolicyPage: React.FC = () => {
             </a>{' '}
             or call{' '}
             <a
-              href="tel:9936169852"
+              href="tel:9250491858"
               className="text-terracotta hover:underline"
             >
-              9936169852
+              9250491858
             </a>
           </li>
           <li>Provide your order number and reason for cancellation</li>
@@ -364,10 +364,10 @@ const ReturnCancellationPolicyPage: React.FC = () => {
           <p className="mb-2">
             Phone:{' '}
             <a
-              href="tel:9936169852"
+              href="tel:9250491858"
               className="text-terracotta hover:underline"
             >
-              9936169852
+              9250491858
             </a>
           </p>
           <p className="text-sm text-gray-500 mt-2">

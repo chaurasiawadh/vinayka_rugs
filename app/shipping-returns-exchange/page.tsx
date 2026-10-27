@@ -227,8 +227,8 @@ const ShippingReturnsExchangePage: React.FC = () => {
             info@vinaykarugs.com
           </a>{' '}
           or call us at{' '}
-          <a href="tel:9936169852" className="text-terracotta hover:underline">
-            9936169852
+          <a href="tel:9250491858" className="text-terracotta hover:underline">
+            9250491858
           </a>
           .
         </p>

@@ -56,8 +56,8 @@ export const REVIEW_TAGS = [
   'Color quality',
 ];
 
-export const CONTACT_PHONE = '9936169852';
-export const WHATSAPP_NUMBER = '919936169852';
+export const CONTACT_PHONE = '9250491858';
+export const WHATSAPP_NUMBER = '919250491858';
 export const ADMIN_EMAIL = 'info@vinaykarugs.com';
 
 export const PLACEHOLDER_IMAGE =

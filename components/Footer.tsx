@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
             {/* Social links placeholder */}
             <div className="flex gap-3 pt-1">
               <a
-                href="https://wa.me/919936169852"
+                href="https://wa.me/919250491858"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
@@ -124,10 +124,10 @@ const Footer: React.FC = () => {
               <li className="flex items-center gap-3">
                 <Phone size={15} className="shrink-0 text-terracotta" />
                 <a
-                  href="tel:9936169852"
+                  href="tel:919250491858"
                   className="hover:text-white transition-colors"
                 >
-                  +91 9936169852
+                  +91 919250491858
                 </a>
               </li>
               <li className="flex items-center gap-3">
